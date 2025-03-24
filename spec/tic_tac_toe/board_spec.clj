@@ -77,8 +77,8 @@
   (it "checks if there is a player with an entire column"
     (should= true (win-column? not-full-board-x-column-win "X"))
     (should-not (win-column? not-full-board-x-column-win "O"))
-    (should-not (win-column? not-full-board-x-row-win "X"))
-    )
+    (should-not (win-column? not-full-board-x-row-win "X")))
+
   (it "checks if a player has a diagonal"
     (should= true (win-diag? not-full-board-x-diag-win "X"))
     (should= true (win-diag? not-full-board-x-ortho-diag-win "X"))
@@ -93,14 +93,4 @@
     (should= false (winner? full-board-x-column-win "O"))
     (should= false (winner? not-full-board-x-row-win "O"))
     (should= false (winner? not-full-board-x-diag-win "O"))
-    (should= false (winner? full-board-draw "O"))
-    )
-
-  #_(it "checks if the game is over"
-    (should= true (game-over? not-full-board-x-diag-win "X"))
-    (should= true (game-over? full-board-x-column-win "X"))
-    (should= true (game-over? full-board-draw "X"))
-    (should= true (game-over? full-board-draw "O"))
-    (should= false (game-over? center-x-board "O"))
-    )
-  )
+    (should= false (winner? full-board-draw "O"))))

@@ -9,8 +9,8 @@
 
 (defn change-player [state]
   (assoc state :player (if (= (get state :player) "X")
-                         "O"
-                         "X")))
+                         (console/announce-player "O")
+                         (console/announce-player "X"))))
 
 (defn evaluate-board [state]
   (cond (board/winner? (get state :board) (get state :player)) (assoc state :status "winner")
@@ -21,7 +21,7 @@
   (let [next-play (console/get-next-play)]
     (if (board/available? (get state :board) next-play)
       (assoc state :board (board/take-square (get state :board) next-play (get state :player)))
-      (recur state))))
+      (recur (console/occupied state)))))
 
 (defn play [state]
   (console/display-board (get state :board))

@@ -45,8 +45,13 @@
         position [row col]]
     position))
 
-(defn occupied []
-  (println "That isn't a valid play, please try again"))
+(defn occupied [state]
+  (println "That isn't a valid play, please try again")
+  state)
+
+(defn announce-player [character]
+  (println (str "Player " character "'s turn"))
+  character)
 
 (defn draw []
   (println "It's a draw! Good game!"))

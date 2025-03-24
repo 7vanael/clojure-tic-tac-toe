@@ -32,7 +32,6 @@
         (every? #(= character (get-in board %)) ortho-diag))))
 
 (defn winner? [board character]
-  (or (win-row? board character) (win-column? board character) (win-diag? board character)))
-
-#_(defn game-over? [board character]
-  (or (winner? board character) (not (any-space-available? board))))
+  (or (win-row? board character)
+      (win-column? board character)
+      (win-diag? board character)))

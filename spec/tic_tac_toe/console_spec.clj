@@ -5,6 +5,7 @@
 
 (describe "console"
   (with-stubs)
+
   (it "prints a welcome message"
     (should= "Welcome to tic-tac-toe!\n"
              (with-out-str (welcome))))
@@ -24,21 +25,22 @@
   (it "requests user input to select a row"
     (with-redefs [get-input (stub :get-input {:return 0})]
       (should= "Which row do you want to play in?\n"
-             (with-out-str (get-row)))))
+               (with-out-str (get-row)))))
 
   (it "requests user input to select a column"
     (with-redefs [get-input (stub :get-input {:return 0})]
       (should= "Which column do you want to play in?\n"
-             (with-out-str (get-column)))))
+               (with-out-str (get-column)))))
 
   (it "obtains coordinates for a square the player wants to play in"
-    (with-redefs [get-input (stub :get-row {:return 1})
-                  get-input (stub :get-column {:return 1})]
+    (with-redefs [get-row (stub :get-row {:return 1})
+                  get-column (stub :get-column {:return 1})]
       (should= [1 1] (get-next-play))))
 
-  (it "notifies the player that a play wasn't valid"
+  (it "notifies the player that a play wasn't valid & returns the same state"
     (should= "That isn't a valid play, please try again\n"
-             (with-out-str (occupied))))
+             (with-out-str (occupied :state)))
+    (should= :state (occupied :state)))
 
   (it "notifies the player that the game is a draw"
     (should= "It's a draw! Good game!\n"
