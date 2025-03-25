@@ -68,14 +68,21 @@
     (with-out-str
       (should= {:board  test-board/empty-board
               :player "X"
-              :status "in-progress"} (change-player state-initial))))
+                :status "in-progress"} (change-player state-initial))))
 
-  (it "changes state status to winner if a player has won"
-    (should= state-win-x-row-evaluated (evaluate-board state-win-x-row)))
+  (it "updates status to winner if a player has won"
+      (should= state-win-x-row-evaluated (evaluate-board state-win-x-row)))
 
-  (it "changes state status to draw if a board is full and no player has won"
-    (should= state-draw-evaluated (evaluate-board state-draw)))
+  (it "updates status to draw if a board is full and no player has won"
+      (should= state-draw-evaluated (evaluate-board state-draw)))
 
   (it "lets a player take a turn"
     (with-redefs [console/get-next-play (stub :console/get-next-play {:return [1 1]})]
-      (should= state-center-x (take-turn (assoc state-initial :player "X"))))))
+      (should= state-center-x (take-turn (assoc state-initial :player "X")))))
+
+  (it "doesn't let a player play in an occupied space"
+    (with-redefs [console/get-next-play (stub :console/get-next-play {:return [1 1]})
+                  console/occupied (stub :console/occupied)
+                  ]
+      (take-turn state-center-x)
+      (should-have-invoked :console/occupied state-center-x))))

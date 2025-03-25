@@ -40,7 +40,7 @@
   (it "notifies the player that a play wasn't valid & returns the same state"
     (should= "That isn't a valid play, please try again\n"
              (with-out-str (occupied :state)))
-    (should= :state (occupied :state)))
+    (should= :state (occupied :state))) ;How do I suppress the printing done by occupied and still capture the output?
 
   (it "notifies the player that the game is a draw"
     (should= "It's a draw! Good game!\n"
