@@ -12,6 +12,11 @@
    [nil "X" nil]
    [nil nil nil]])
 
+(def center-x-corner-o-board
+  [["O" nil nil]
+   [nil "X" nil]
+   [nil nil nil]])
+
 (def full-board-draw
   [["X" "X" "O"]
    ["O" "O" "X"]

@@ -23,38 +23,48 @@
 (defn validate-number [n]
   (and (number? n) (< n 4) (> n 0)))
 
-(defn get-input []
-  (println "Please enter a number (1-3)")
+(defn print-number-prompt [message]
+  (println (str "Which " message " do you want to play in?"))
+  (println "Please enter a number (1-3)"))
+
+(defn get-input [message]
+  (print-number-prompt message)
   (let [input (read-string (read-line))]
     (if (validate-number input)
       (- input 1)
-      (get-input))))
-
-(defn get-row []
-  (println "Which row do you want to play in?")
-  (get-input))
-
-(defn get-column []
-  (println "Which column do you want to play in?")
-  (get-input))
-
+      (get-input message))))
 
 (defn get-next-play []
-  (let [row (get-row)
-        col (get-column)
+  (let [row (get-input "row")
+        col (get-input "column")
         position [row col]]
     position))
 
-(defn occupied [state]
-  (println "That isn't a valid play, please try again")
-  state)
+(defn occupied []
+  (println "That isn't a valid play, please try again"))
 
 (defn announce-player [character]
-  (println (str "Player " character "'s turn"))
-  character)
+  (println (str "Player " character "'s turn")))
 
 (defn draw []
   (println "It's a draw! Good game!"))
 
 (defn announce-winner [character]
   (println (str (str/capitalize character) " wins! Good game!")))
+
+(defn display-options [character options]
+  (println "Who will play " character "?")
+  (run! println options))
+
+(defn validate-selection [options selection]
+  (contains? (set options) selection))
+
+(defn get-selection [character options]
+  (display-options character options)
+    (let [input (read-string (read-line))]
+      (if (validate-selection options input)
+        input
+        (get-selection character options))))
+
+(defn get-player-type [character options]
+  (get-selection character options))
