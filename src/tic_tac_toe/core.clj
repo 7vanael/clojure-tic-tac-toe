@@ -10,6 +10,11 @@
    :players [{:character "X" :play-type type-x}
              {:character "O" :play-type type-o}]})
 
+(def player-options
+  [:human :computer])
 
 (defn -main []
-  (game/start (initialize-state :human :human)))
+  (console/welcome)
+  (let [type-x (console/get-player-type "X" player-options)
+        type-o (console/get-player-type "O" player-options)]
+    (game/start (initialize-state type-x type-o))))

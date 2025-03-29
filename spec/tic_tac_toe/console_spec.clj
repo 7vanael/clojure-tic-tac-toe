@@ -37,7 +37,7 @@
     (should= "X wins! Good game!\n" (with-out-str (announce-winner "X"))))
 
   (it "displays the options for players to choose from"
-    (should= "Who will play  X ?\n:human\n:computer\n"
+    (should= "Who will play  X ?\nhuman\ncomputer\n"
              (with-out-str (display-options "X" [:human :computer]))))
 
   (it "asks the user for who should play character O"

@@ -54,10 +54,10 @@
 
 (defn display-options [character options]
   (println "Who will play " character "?")
-  (run! println options))
+  (run! println (map name options)))
 
 (defn validate-selection [options selection]
-  (contains? (set options) selection))
+  (contains? (set options) (keyword selection)))
 
 (defn get-selection [character options]
   (display-options character options)

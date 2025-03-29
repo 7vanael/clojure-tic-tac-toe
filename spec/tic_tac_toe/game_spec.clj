@@ -86,7 +86,8 @@
                 :active-player-index 1
                 :status              "in-progress"
                 :players             [{:character "X" :play-type :human}
-                                      {:character "O" :play-type :human}]} (change-player state-center-x))))
+                                      {:character "O" :play-type :human}]}
+               (change-player state-center-x))))
 
   (it "changes the active player X"
     (with-out-str
@@ -94,7 +95,8 @@
                 :active-player-index 0
                 :status              "in-progress"
                 :players             [{:character "X" :play-type :human}
-                                      {:character "O" :play-type :human}]} (change-player state-initial))))
+                                      {:character "O" :play-type :human}]}
+               (change-player state-initial))))
 
   (it "updates status to winner if a player has won"
     (should= state-win-x-row-evaluated (evaluate-board state-win-x-row)))
@@ -104,7 +106,8 @@
 
   (it "lets a player take a turn"
     (with-redefs [console/get-next-play (stub :next-play {:return [1 1]})]
-      (should= state-center-x (take-turn (assoc state-initial :active-player-index 0)))))
+      (should= state-center-x
+               (take-turn (assoc state-initial :active-player-index 0)))))
 
   (it "doesn't let a player play in an occupied space"
     (with-redefs [console/occupied            (stub :console/occupied)
