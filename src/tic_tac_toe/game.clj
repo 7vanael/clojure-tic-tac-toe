@@ -7,8 +7,8 @@
 
 (defn change-player [state]
   (assoc state :active-player-index (if (= (:active-player-index state) 0)
-                         (do (console/announce-player "O") 1)
-                         (do (console/announce-player "X") 0))))
+                                      (do (console/announce-player "O") 1)
+                                      (do (console/announce-player "X") 0))))
 
 (defn evaluate-board [state]
   (cond (board/winner? (get state :board) (get-in state [:players (:active-player-index state) :character])) (assoc state :status "winner")
@@ -25,9 +25,10 @@
   (computer/turn state))
 
 (defn take-turn [state]
-  (if (= :human (get-in state [:players (:active-player-index state) :play-type]))
-    (human-turn state)
-    (computer-turn state)))
+  (let [active-type (get-in state [:players (:active-player-index state) :play-type])]
+    (if (= :human active-type)
+      (human-turn state)
+      (computer-turn state))))
 
 (defn play [state]
   (console/display-board (get state :board))

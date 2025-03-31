@@ -61,7 +61,7 @@
 
 (defn get-selection [character options]
   (display-options character options)
-    (let [input (read-string (read-line))]
+    (let [input (keyword (read-string (read-line)))]
       (if (validate-selection options input)
         input
         (get-selection character options))))
