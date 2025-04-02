@@ -3,6 +3,23 @@
             [tic-tac-toe.computer :refer :all]
             [tic-tac-toe.board_spec :as test-board]))
 
+(def board-one-remaining
+  [["X" "O" nil]
+   ["O" "O" "X"]
+   ["X" "X" "O"]])
+
+(def state-one-remaining
+  {:board               board-one-remaining
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :computer}
+                         {:character "O" :play-type :human}]})
+(def state-remaining-taken
+  {:board               (assoc-in board-one-remaining [0 2] "X")
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :computer}
+                         {:character "O" :play-type :human}]})
 (def board-o-could-win
   [["X" nil "X"]
    ["O" "X" "X"]
@@ -52,6 +69,13 @@
   (it "gets the possible moves"
     (should= [[0 1] [2 0]] (get-possible-moves board-o-could-win)))
 
+  (it "takes the only available move"
+    (should= state-remaining-taken (turn state-one-remaining)))
+
+  (it "makes the winning move"
+    (should= state-o-took-win (turn state-o-could-win))
+    (should-not= state-o-missed-win (turn state-o-could-win)))
+
   (it "evaluates a board's score, highest for immediate win, lower for distant wins"
     (should= 10 (eval-board test-board/not-full-board-x-column-win 0 "X" "O")))
 
@@ -80,9 +104,6 @@
   (it "scores all possible moves through game end, including opponent's play"
     (should= [[[0 1] -9] [[2 0] 10]] (eval-moves board-o-could-win "O" "X")))
 
-  (it "makes the winning move"
-    (should= state-o-took-win (turn state-o-could-win))
-    (should-not= state-o-missed-win (turn state-o-could-win)))
 
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (turn state-o-about-to-win))))
