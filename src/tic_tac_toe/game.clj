@@ -3,8 +3,6 @@
             [tic-tac-toe.console :as console]
             [tic-tac-toe.computer :as computer]))
 
-
-
 (defn change-player [state]
   (assoc state :active-player-index (if (= (:active-player-index state) 0)
                                       (do (console/announce-player "O") 1)

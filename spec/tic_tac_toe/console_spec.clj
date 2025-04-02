@@ -22,6 +22,10 @@
     (should= false (validate-number 4))
     (should= false (validate-number "c")))
 
+  (it "prints the number prompt"
+    (should= "Which row do you want to play in?\nPlease enter a number (1-3)\n"
+             (with-out-str (print-number-prompt "row"))))
+
   (it "gets input from the user until a valid entry is provided"
     (with-redefs [print-number-prompt (stub :print-prompt)]
       (should= 0 (with-in-str "c\n5\n6\n1\nc" (get-input "")))))
@@ -43,6 +47,4 @@
   (it "asks the user for who should play character O"
     (with-redefs [display-options (stub :display-options)]
       (should= :human (with-in-str ":human\n" (get-player-type "X" [:human :computer])))
-      (should-have-invoked :display-options)))
-
-  )
+      (should-have-invoked :display-options))))

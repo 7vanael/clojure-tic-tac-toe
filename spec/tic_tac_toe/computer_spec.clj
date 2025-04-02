@@ -3,28 +3,7 @@
             [tic-tac-toe.computer :refer :all]
             [tic-tac-toe.board_spec :as test-board]))
 
-(def state-initial
-  {:board               test-board/empty-board
-   :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :computer}
-                         {:character "O" :play-type :human}]})
-
-(def state-center-x
-  {:board               test-board/center-x-board
-   :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :computer}
-                         {:character "O" :play-type :human}]})
-
-(def state-center-x-corner-o
-  {:board               test-board/center-x-corner-o-board
-   :active-player-index 1
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :computer}
-                         {:character "O" :play-type :human}]})
-
-(def board-o-could-win ;if "O" fails to take win, "X" must win the next turn
+(def board-o-could-win
   [["X" nil "X"]
    ["O" "X" "X"]
    [nil "O" "O"]])
@@ -50,7 +29,24 @@
    :players             [{:character "X" :play-type :human}
                          {:character "O" :play-type :computer}]})
 
-;x= row, y=column
+(def board-o-about-to-win
+  [[nil nil "X"]
+   [nil nil "X"]
+   [nil "O" "O"]])
+
+(def state-o-about-to-win
+  {:board               board-o-about-to-win
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :computer}
+                         {:character "O" :play-type :human}]})
+(def state-o-blocked
+  {:board               (assoc-in board-o-about-to-win [2 0] "X")
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :computer}
+                         {:character "O" :play-type :human}]})
+
 (describe "computer"
 
   (it "gets the possible moves"
@@ -87,4 +83,6 @@
   (it "makes the winning move"
     (should= state-o-took-win (turn state-o-could-win))
     (should-not= state-o-missed-win (turn state-o-could-win)))
-  )
+
+  (it "blocks the opponents imminent win"
+    (should= state-o-blocked (turn state-o-about-to-win))))
