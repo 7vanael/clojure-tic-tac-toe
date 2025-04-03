@@ -68,3 +68,39 @@
 
 (defn get-player-type [character options]
   (get-selection character options))
+
+(defn play-again-prompt []
+  (println "Would you like to play again? (y/n)"))
+
+(def valid-yes-no-responses
+  #{"yes" "y" "no" "n"})
+
+(defn validate-play-again [input]
+    (contains? valid-yes-no-responses input))
+
+(defn get-play-again-selection []
+  (play-again-prompt)
+  (let [input (str/trim (str/lower-case (read-line)))]
+    (if (validate-play-again input)
+      input
+      (get-play-again-selection))))
+
+(defn play-again? []
+  (str/includes? (get-play-again-selection) "y"))
+
+(defn format-size-option-display [size]
+  (str size  ") " size "x" size))
+
+(defn board-size-prompt [size-options]
+  (println "What size board do you want to play on?")
+  (doseq [size size-options]
+    (println (format-size-option-display size))))
+
+(defn get-board-size [size-options]
+  (board-size-prompt size-options)
+  (let [size-selection (read-string (read-line))]
+    (if (some #{size-selection} size-options)
+      size-selection
+      (get-board-size size-options)
+    ))
+  )

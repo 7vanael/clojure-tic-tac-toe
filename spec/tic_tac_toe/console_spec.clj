@@ -1,7 +1,8 @@
 (ns tic-tac-toe.console-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.console :refer :all]
-            [tic-tac-toe.board_spec :refer :all :as test-board]))
+            [tic-tac-toe.board_spec :refer :all :as test-board]
+            [clojure.string :refer :all :as str]))
 
 (describe "console"
   (with-stubs)
@@ -47,4 +48,49 @@
   (it "asks the user for who should play character O"
     (with-redefs [display-options (stub :display-options)]
       (should= :human (with-in-str ":human\n" (get-player-type "X" [:human :computer])))
-      (should-have-invoked :display-options))))
+      (should-have-invoked :display-options)))
+
+  (it "asks the player if they want to play again"
+    (should= "Would you like to play again? (y/n)\n"
+             (with-out-str (play-again-prompt))))
+
+  (it "validates a user's selection to play again or not"
+    (should= true (validate-play-again "y"))
+    (should= true (validate-play-again "yes"))
+    (should= true (validate-play-again "no"))
+    (should= true (validate-play-again "n"))
+    (should= false (validate-play-again "1"))
+    (should= false (validate-play-again "g"))
+    (should= false (validate-play-again "ned"))
+    (should= false (validate-play-again "november"))
+    (should= false (validate-play-again "yesterday"))
+    (should= false (validate-play-again "Y4")))
+
+  (it "returns true if the user wants to play again"
+    (with-redefs [play-again-prompt (stub :prompt)]
+      (should= true (with-in-str "Y\n" (play-again?)))
+      (should= true (with-in-str "Yes\n" (play-again?)))
+      (should= true (with-in-str "y\n" (play-again?)))
+      (should= true (with-in-str "yes\n" (play-again?)))
+      (should= true (with-in-str "none\nyes\n" (play-again?)))
+      (should= true (with-in-str "yesterday\nyes\n" (play-again?)))
+      (should= false (with-in-str "N\n" (play-again?)))
+      (should= false (with-in-str "No\n" (play-again?)))
+      (should= false (with-in-str "yesterday\nno\n" (play-again?)))
+      (should= false (with-in-str "yell\nn\n" (play-again?)))
+      (should= false (with-in-str "noise\nn\n" (play-again?)))
+      (should= false (with-in-str "None\nn\n" (play-again?)))
+      (should= false (with-in-str "nonsense\nn\n" (play-again?)))))
+
+  (it "prints the board-size options"
+    (should= "What size board do you want to play on?\n3) 3x3\n4) 4x4\n"
+             (with-out-str (board-size-prompt [3 4]))))
+
+  (it "allows the player to select a board size of 3 or 4"
+    (with-redefs [board-size-prompt (stub :size-prompt)]
+      (should= 3 (with-in-str "3\n" (get-board-size [3 4])))
+      (should= 4 (with-in-str "4\n" (get-board-size [3 4])))
+      (should= 3 (with-in-str "6\ngesf\nhello\n3\n4\n" (get-board-size [3 4])))
+      ))
+
+  )

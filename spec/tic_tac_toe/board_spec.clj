@@ -52,7 +52,7 @@
     (should= [[nil nil nil]
               [nil nil nil]
               [nil nil nil]]
-             (new-board)))
+             (new-board 3)))
 
   (it "checks if a position is available"
     (should= true (available? empty-board [1 1]))

@@ -1,6 +1,6 @@
 (ns tic-tac-toe.board)
 
-(defn new-board []
+(defn new-board [size]
   [[nil nil nil]
    [nil nil nil]
    [nil nil nil]])
