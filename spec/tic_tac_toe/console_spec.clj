@@ -12,28 +12,31 @@
              (with-out-str (welcome))))
 
   (it "prints the board state"
-    (should= "  |   |  \n--|---|---\n  |   |  \n--|---|---\n  |   |  \n"
+    (should= " 1 | 2 | 3 \n---|---|---\n 4 | 5 | 6 \n---|---|---\n 7 | 8 | 9 \n"
              (with-out-str (display-board test-board/empty-board)))
 
-    (should= "  |   |  \n--|---|---\n  | X |  \n--|---|---\n  |   |  \n"
+    (should= " 1 | 2 | 3 \n---|---|---\n 4 | X | 6 \n---|---|---\n 7 | 8 | 9 \n"
              (with-out-str (display-board test-board/center-x-board))))
 
-  (it "validates an entry"
-    (should= true (validate-number 2))
-    (should= false (validate-number 4))
-    (should= false (validate-number "c")))
+  (it "prints the board state for a 4x board"
+    (should= " 1 | 2 | 3 | 4 \n---|---|---|---\n 5 | 6 | 7 | 8 \n---|---|---|---\n 9 | 10 | 11 | 12 \n---|---|---|---\n 13 | 14 | 15 | 16 \n"
+             (with-out-str (display-board test-board/empty-4-board)))
+
+    (should= " 1 | 2 | 3 | 4 \n---|---|---|---\n 5 | X | 7 | 8 \n---|---|---|---\n 9 | 10 | 11 | 12 \n---|---|---|---\n 13 | 14 | 15 | 16 \n"
+             (with-out-str (display-board test-board/first-X-4-board))))
+
 
   (it "prints the number prompt"
-    (should= "Which row do you want to play in?\nPlease enter a number (1-3)\n"
-             (with-out-str (print-number-prompt "row"))))
+    (should= "Please enter the number for the space you'd like to take\n"
+             (with-out-str (print-number-prompt))))
 
   (it "gets input from the user until a valid entry is provided"
     (with-redefs [print-number-prompt (stub :print-prompt)]
-      (should= 0 (with-in-str "c\n5\n6\n1\nc" (get-input "")))))
+      (should= 6 (with-in-str "c\n26\n6\n1\n" (get-next-play [2 6])))))
 
-  (it "notifies the player that a play wasn't valid & returns the same state"
+  (it "notifies the player that a play wasn't valid"
     (should= "That isn't a valid play, please try again\n"
-             (with-out-str (occupied))))
+             (with-out-str (invalid-selection))))
 
   (it "notifies the player that the game is a draw"
     (should= "It's a draw! Good game!\n" (with-out-str (draw))))
@@ -90,7 +93,6 @@
     (with-redefs [board-size-prompt (stub :size-prompt)]
       (should= 3 (with-in-str "3\n" (get-board-size [3 4])))
       (should= 4 (with-in-str "4\n" (get-board-size [3 4])))
-      (should= 3 (with-in-str "6\ngesf\nhello\n3\n4\n" (get-board-size [3 4])))
-      ))
+      (should= 3 (with-in-str "6\ngesf\nhello\n3\n4\n" (get-board-size [3 4])))))
 
   )

@@ -4,7 +4,7 @@
             [tic-tac-toe.board_spec :as test-board]))
 
 (def board-one-remaining
-  [["X" "O" nil]
+  [["X" "O" 3]
    ["O" "O" "X"]
    ["X" "X" "O"]])
 
@@ -21,9 +21,9 @@
    :players             [{:character "X" :play-type :computer}
                          {:character "O" :play-type :human}]})
 (def board-o-could-win
-  [["X" nil "X"]
+  [["X" 2 "X"]
    ["O" "X" "X"]
-   [nil "O" "O"]])
+   [7 "O" "O"]])
 
 (def state-o-could-win
   {:board               board-o-could-win
@@ -47,9 +47,9 @@
                          {:character "O" :play-type :computer}]})
 
 (def board-o-about-to-win
-  [[nil nil "X"]
-   [nil nil "X"]
-   [nil "O" "O"]])
+  [[1 2 "X"]
+   [4 5 "X"]
+   [7 "O" "O"]])
 
 (def state-o-about-to-win
   {:board               board-o-about-to-win

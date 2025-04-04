@@ -14,10 +14,10 @@
         :else state))
 
 (defn human-turn [state]
-  (let [next-play (console/get-next-play)]
-    (if (board/available? (:board state) next-play)
-      (assoc state :board (board/take-square (:board state) next-play (get-in state [:players (:active-player-index state) :character])))
-      (do (console/occupied) (recur state)))))
+  (let [play-options          (board/play-options (:board state))
+        next-play             (console/get-next-play play-options)
+        next-play-coordinates (board/space->coordinates next-play (:board state))]
+    (assoc state :board (board/take-square (:board state) next-play-coordinates (get-in state [:players (:active-player-index state) :character])))))
 
 (defn take-turn [state]
   (let [active-type (get-in state [:players (:active-player-index state) :play-type])]

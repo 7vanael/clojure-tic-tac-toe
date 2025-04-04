@@ -60,6 +60,34 @@
    :players             [{:character "X" :play-type :human}
                          {:character "O" :play-type :human}]})
 
+(def state-4-initial
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-4-first-x
+  {:board               test-board/first-X-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-4-first-x-start-o
+  {:board               test-board/first-X-4-board
+   :active-player-index 1
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-4-first-x-o
+  {:board               test-board/second-X-4-board
+   :active-player-index 1
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
 (describe "game"
   (with-stubs)
 
@@ -104,14 +132,22 @@
   (it "updates status to draw if a board is full and no player has won"
     (should= state-draw-evaluated (evaluate-board state-draw)))
 
-  (it "lets a player take a turn"
-    (with-redefs [console/get-next-play (stub :next-play {:return [1 1]})]
+  (it "lets a player take a turn, repeatedly asks for input until valid play is selected"
+    (with-redefs [console/print-number-prompt (stub :print-dup)]
       (should= state-center-x
-               (take-turn (assoc state-initial :active-player-index 0)))))
+              (with-in-str "0\n45\njunk\n5\n" (take-turn (assoc state-initial :active-player-index 0))))))
+
+  (it "lets a player take a turn on a 4x board, repeatedly asks for input until valid play selected"
+    (with-redefs [console/print-number-prompt (stub :print-dup)]
+      (should= state-4-first-x
+              (with-in-str "0\n45\njunk\n6\n" (take-turn state-4-initial)))))
 
   (it "doesn't let a player play in an occupied space"
-    (with-redefs [console/occupied            (stub :console/occupied)
-                  console/print-number-prompt (stub :print-dup)]
-      (let [result (with-in-str "2\n2\n1\n1\n" (take-turn state-center-x-mid-turn))]
-        (should-have-invoked :console/occupied)
-        (should= state-center-x-corner-o result)))))
+    (with-redefs [console/print-number-prompt (stub :print-dup)]
+      (let [result (with-in-str "12\n1\n" (take-turn state-center-x-mid-turn))]
+        (should= state-center-x-corner-o result))))
+
+  (it "doesn't let a player play in an occupied space in a 4x grid"
+    (with-redefs [console/print-number-prompt (stub :print-dup)]
+      (let [result (with-in-str "junk\n6\n1\n" (take-turn state-4-first-x-start-o))]
+        (should= state-4-first-x-o result)))))

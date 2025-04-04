@@ -4,43 +4,35 @@
 (defn welcome []
   (println "Welcome to tic-tac-toe!"))
 
-(def horizontal-line
-  "\n--|---|---\n")
+(defn horizontal-line [width]
+  (let [line (str "\n" (str/join "|" (repeat width"---")) "\n")]
+  line))
 
 (defn row-string [row]
-  (let [row (str (str/join " | " row))]
-    (str row "\n")))
-
-(defn replace-nils [board]
-  (map (fn [row] (map #(if (nil? %) " " %) row)) board))
+  (let [row (str " " (str/join " | " row))]
+    (str row " \n")))
 
 (defn process-board [board]
-  (apply str (map row-string (replace-nils board))))
+  (apply str (map row-string board)))
 
 (defn display-board [board]
-  (println (str/join horizontal-line (str/split-lines (process-board board)))))
+  (println (str/join (horizontal-line (count board))
+                     (str/split-lines (process-board board)))))
 
-(defn validate-number [n]
-  (and (number? n) (< n 4) (> n 0)))
+(defn validate-number [play-options input]
+  (contains? (set play-options) input))
 
-(defn print-number-prompt [message]
-  (println (str "Which " message " do you want to play in?"))
-  (println "Please enter a number (1-3)"))
+(defn print-number-prompt []
+  (println "Please enter the number for the space you'd like to take"))
 
-(defn get-input [message]
-  (print-number-prompt message)
+(defn get-next-play [play-options]
+  (print-number-prompt)
   (let [input (read-string (read-line))]
-    (if (validate-number input)
-      (- input 1)
-      (get-input message))))
+    (if (validate-number play-options input)
+      input
+      (get-next-play play-options))))
 
-(defn get-next-play []
-  (let [row (get-input "row")
-        col (get-input "column")
-        position [row col]]
-    position))
-
-(defn occupied []
+(defn invalid-selection []
   (println "That isn't a valid play, please try again"))
 
 (defn announce-player [character]
@@ -101,6 +93,4 @@
   (let [size-selection (read-string (read-line))]
     (if (some #{size-selection} size-options)
       size-selection
-      (get-board-size size-options)
-    ))
-  )
+      (get-board-size size-options))))
