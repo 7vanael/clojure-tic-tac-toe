@@ -135,19 +135,23 @@
   (it "lets a player take a turn, repeatedly asks for input until valid play is selected"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
       (should= state-center-x
-              (with-in-str "0\n45\njunk\n5\n" (take-turn (assoc state-initial :active-player-index 0))))))
+              (with-in-str "0\n45\njunk\n5\n" (take-turn (assoc state-initial :active-player-index 0))))
+      (should-have-invoked :print-dup {:times 4})))
 
   (it "lets a player take a turn on a 4x board, repeatedly asks for input until valid play selected"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
       (should= state-4-first-x
-              (with-in-str "0\n45\njunk\n6\n" (take-turn state-4-initial)))))
+              (with-in-str "0\n45\njunk\n6\n" (take-turn state-4-initial)))
+      (should-have-invoked :print-dup {:times 4})))
 
   (it "doesn't let a player play in an occupied space"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
       (let [result (with-in-str "12\n1\n" (take-turn state-center-x-mid-turn))]
+        (should-have-invoked :print-dup {:times 2})
         (should= state-center-x-corner-o result))))
 
   (it "doesn't let a player play in an occupied space in a 4x grid"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
       (let [result (with-in-str "junk\n6\n1\n" (take-turn state-4-first-x-start-o))]
+        (should-have-invoked :print-dup {:times 3})
         (should= state-4-first-x-o result)))))

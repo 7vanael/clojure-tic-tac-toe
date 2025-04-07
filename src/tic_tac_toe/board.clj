@@ -1,7 +1,8 @@
 (ns tic-tac-toe.board)
 
 (defn new-board [size]
-  (vec (partition size (range 1 (inc (* size size))))))
+  (vec (mapv vec (partition size (range 1 (inc (* size size)))))))
+;mapv vec is needed to ensure we get a vector of vectors, not a list
 
 (defn available? [board [x y]]
   (number? (get-in board [x y])))

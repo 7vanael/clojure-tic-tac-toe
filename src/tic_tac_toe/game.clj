@@ -13,11 +13,12 @@
         (not (board/any-space-available? (:board state))) (assoc state :status "draw")
         :else state))
 
-(defn human-turn [state]
-  (let [play-options          (board/play-options (:board state))
+(defn human-turn [{:keys [board active-player-index players] :as state}]
+  (let [play-options          (board/play-options board)
         next-play             (console/get-next-play play-options)
-        next-play-coordinates (board/space->coordinates next-play (:board state))]
-    (assoc state :board (board/take-square (:board state) next-play-coordinates (get-in state [:players (:active-player-index state) :character])))))
+        next-play-coordinates (board/space->coordinates next-play board)
+        player-char (get-in players [active-player-index :character])]
+    (assoc state :board (board/take-square board next-play-coordinates player-char))))
 
 (defn take-turn [state]
   (let [active-type (get-in state [:players (:active-player-index state) :play-type])]
