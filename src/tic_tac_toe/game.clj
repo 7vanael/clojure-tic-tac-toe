@@ -8,9 +8,9 @@
                                       (do (console/announce-player "O") 1)
                                       (do (console/announce-player "X") 0))))
 
-(defn evaluate-board [state]
-  (cond (board/winner? (get state :board) (get-in state [:players (:active-player-index state) :character])) (assoc state :status "winner")
-        (not (board/any-space-available? (:board state))) (assoc state :status "draw")
+(defn evaluate-board [{:keys [board active-player-index players] :as state}]
+  (cond (board/winner? board (get-in players [active-player-index :character])) (assoc state :status "winner")
+        (not (board/any-space-available? board)) (assoc state :status "draw")
         :else state))
 
 (defn human-turn [{:keys [board active-player-index players] :as state}]
@@ -26,10 +26,10 @@
       (human-turn state)
       (computer/turn state))))
 
-(defn play [state]
-  (console/display-board (get state :board))
-  (cond (= (:status state) "draw") (console/draw)
-        (= (:status state) "winner") (console/announce-winner (:active-player-index state))
+(defn play [{:keys [board status active-player-index players] :as state}]
+  (console/display-board board)
+  (cond (= status "draw") (console/draw)
+        (= status "winner") (console/announce-winner (get-in players [active-player-index :character]))
         :else (recur (evaluate-board (take-turn (change-player state))))))
 
 (defn start [state]

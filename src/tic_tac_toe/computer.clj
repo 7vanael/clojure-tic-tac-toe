@@ -27,9 +27,40 @@
           (apply max outcomes)
           (apply min outcomes))))))
 
+(defn open-edges [board]
+  (let [max-index (dec (count board))
+        top-edge (map (fn [x] [0 x]) (range 1 max-index))
+        bottom-edge (map (fn [x] [max-index x]) (range 1 max-index))
+        left-edge (map (fn [x] [x 0]) (range 1 max-index))
+        right-edge (map (fn [x] [x max-index]) (range 1 max-index))
+        edges (concat top-edge bottom-edge left-edge right-edge)]
+    (keep #(when (board/available? board %) %) edges)))
+
+(defn open-corners [board]
+  (let [max-index (dec (count board))
+        corners [[0 0] [0 max-index] [max-index 0] [max-index max-index]]]
+    (keep #(when (board/available? board %) %) corners)))
+
+(defn add-random-score [spaces]
+  (mapv  (fn [space] [space (rand-int 10)]) spaces))
+
+(defn block? [board opp-char]
+  (let [max-index (dec (count board))
+        col ()]))
+
+(defn initial-moves [board char opp-char moves]
+  (let [corners (add-random-score (open-corners board))
+        edges (add-random-score (open-edges board))]
+    (if (empty? corners)
+      edges
+      corners)))
+
 (defn eval-moves [board char opp-char]
-  (let [moves   (get-possible-moves board)]
-    (map #(vector % (minimax (board/take-square board % char) char opp-char opp-char 0)) moves)))
+  (let [moves   (get-possible-moves board)
+        minmax-threshold (if (= 3 (count board)) 9 13)]
+    (if (< (count moves) minmax-threshold)
+      (map #(vector % (minimax (board/take-square board % char) char opp-char opp-char 0)) moves)
+      (initial-moves board char opp-char moves))))
 
 (defn turn [{:keys [board active-player-index] :as state}]
   (let [character (get-in state [:players active-player-index :character])

@@ -14,6 +14,7 @@
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer}
                          {:character "O" :play-type :human}]})
+
 (def state-remaining-taken
   {:board               (assoc-in board-one-remaining [0 2] "X")
    :active-player-index 0
@@ -64,6 +65,18 @@
    :players             [{:character "X" :play-type :computer}
                          {:character "O" :play-type :human}]})
 
+(def occupied-corners-4-board
+  [["O" 2 3 "X"]
+   [5 6 7 8]
+   [9 10 11 12]
+   ["O" 14 15 "X"]])
+
+(def early-block-needed-4-board
+  [["O" 2 3 "X"]
+   [5 6 7 8]
+   [9 10 11 "X"]
+   ["O" 14 15 "X"]])
+
 (describe "computer"
 
   (it "gets the possible moves"
@@ -96,7 +109,7 @@
     (should= 9 (minimax board-o-could-win "O" "X" "O" 0)))
 
   (it "gets the best score for the active player, negative when not computer's turn"
-    (should= -9 (minimax board-o-could-win "O" "X" "X" 0)))
+    (should=   -9 (minimax board-o-could-win "O" "X" "X" 0)))
 
   (it "associates scores with possible moves"
     (should-contain [[2 0] 10] (eval-moves board-o-could-win "O" "X")))
@@ -104,6 +117,19 @@
   (it "scores all possible moves through game end, including opponent's play"
     (should= [[[0 1] -9] [[2 0] 10]] (eval-moves board-o-could-win "O" "X")))
 
-
   (it "blocks the opponents imminent win"
-    (should= state-o-blocked (turn state-o-about-to-win))))
+    (should= state-o-blocked (turn state-o-about-to-win)))
+
+  (it "takes corners as the opening moves to reduce calculation time"
+    (should= [[0 0] [0 3] [3 0] [3 3]] (mapv first (eval-moves test-board/empty-4-board "X" "O")))
+    (should= [[0 0] [0 2] [2 0] [2 2]] (mapv first (eval-moves test-board/empty-board "X" "O"))))
+
+  #_(it "if all corners occupied, it tries to build a winning row/col/diag"
+    (should= [[1 0] [2 0]] (mapv first (eval-moves occupied-corners-4-board "X" "O"))))
+
+  #_(it "identifies an opportunity to block a win prior to min-maxing"
+    (should= true (block? early-block-needed-4-board "X")))
+
+  #_(it "identifies options to block a win prior to min-maxing"
+    (should= [1 3] (blocker early-block-needed-4-board "X")))
+  )
