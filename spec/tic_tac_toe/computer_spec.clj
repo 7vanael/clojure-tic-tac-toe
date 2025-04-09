@@ -133,6 +133,12 @@
     (should= 20 (calculate-line-score occupied-corners-4-board [[0 3] [1 3] [2 3] [3 3]] "X"))
     (should= 1 (calculate-line-score occupied-corners-4-board [[0 2] [1 2] [2 2] [3 2]] "X")))
 
+  (it "creates a map of position and score"
+    (should= {[1 3] 20, [2 3] 20} (update-position-scores {} occupied-corners-4-board [[0 3] [1 3] [2 3] [3 3]] 20)))
+
+  (it "adds the new line score to the score for a position, or adds a new position to the map with the current score"
+    (should= {[0 2] 11, [3 2] 21, [1 2] 1, [2 2] 1} (update-position-scores {[0 2] 10, [3 2] 20} occupied-corners-4-board [[0 2] [1 2] [2 2] [3 2]] 1)))
+
   (it "takes an early winning move if available"
     (should= [1 3] (winning-spaces early-X-3-of-4-col-board [[0 3] [1 3] [2 3] [3 3]] "X"))
     (should= [[1 3]] (mapv first (eval-moves early-X-3-of-4-col-board "X" "O"))))
