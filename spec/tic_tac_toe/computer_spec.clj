@@ -71,7 +71,7 @@
    [9 10 11 12]
    ["O" 14 15 "X"]])
 
-(def early-block-needed-4-board
+(def early-X-3-of-4-col-board
   [["O" 2 3 "X"]
    [5 6 7 8]
    [9 10 11 "X"]
@@ -120,16 +120,30 @@
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (turn state-o-about-to-win)))
 
-  (it "takes corners as the opening moves to reduce calculation time"
-    (should= [[0 0] [0 3] [3 0] [3 3]] (mapv first (eval-moves test-board/empty-4-board "X" "O")))
-    (should= [[0 0] [0 2] [2 0] [2 2]] (mapv first (eval-moves test-board/empty-board "X" "O"))))
+  (it "takes center as the opening moves to reduce calculation time in a 3x board"
+    (should= [[1 1]] (mapv first (eval-moves test-board/empty-board "X" "O"))))
 
-  #_(it "if all corners occupied, it tries to build a winning row/col/diag"
-    (should= [[1 0] [2 0]] (mapv first (eval-moves occupied-corners-4-board "X" "O"))))
+  (it "gets all lines (rows/cols/diags)"
+    (should= [[[0 0] [0 1] [0 2]] [[1 0] [1 1] [1 2]] [[2 0] [2 1] [2 2]]
+              [[0 0] [1 0] [2 0]] [[0 1] [1 1] [2 1]] [[0 2] [1 2] [2 2]]
+              [[0 0] [1 1] [2 2]] [[0 2] [1 1] [2 0]]]
+             (get-all-lines test-board/empty-board)))
 
-  #_(it "identifies an opportunity to block a win prior to min-maxing"
-    (should= true (block? early-block-needed-4-board "X")))
+  (it "calculates a score for a viable line, 1 for an empty line, then 10 points per own space already occupied"
+    (should= 20 (calculate-line-score occupied-corners-4-board [[0 3] [1 3] [2 3] [3 3]] "X"))
+    (should= 1 (calculate-line-score occupied-corners-4-board [[0 2] [1 2] [2 2] [3 2]] "X")))
 
-  #_(it "identifies options to block a win prior to min-maxing"
-    (should= [1 3] (blocker early-block-needed-4-board "X")))
-  )
+  (it "takes an early winning move if available"
+    (should= [1 3] (winning-spaces early-X-3-of-4-col-board [[0 3] [1 3] [2 3] [3 3]] "X"))
+    (should= [[1 3]] (mapv first (eval-moves early-X-3-of-4-col-board "X" "O"))))
+
+  (it "blocks an opponent's early winning move if possible"
+    (should= [[1 3]] (mapv first (eval-moves early-X-3-of-4-col-board "O" "X"))))
+
+  (it "in a 4x board, prioritizes multi-line points as opening move in an empty board (points on diags)"
+    (should= [[2 2] [0 0] [3 3] [1 1] [3 0] [0 3] [2 1] [1 2]] (mapv first (eval-moves test-board/empty-4-board "X" "O")))
+    (should= [[2 2] [0 0] [3 3] [1 1] [3 0] [0 3] [2 1] [1 2]] (mapv first (building-moves test-board/empty-4-board "X" "O"))))
+
+  (it "if no win or block available, it tries to build a winning row/col/diag"
+      (should= [[2 3] [1 3]] (mapv first (eval-moves occupied-corners-4-board "X" "O")))
+      (should= [[1 0] [2 0]] (mapv first (eval-moves occupied-corners-4-board "O" "X")))))
