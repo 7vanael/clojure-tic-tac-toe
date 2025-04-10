@@ -5,11 +5,17 @@
   (println "Welcome to tic-tac-toe!"))
 
 (defn horizontal-line [width]
-  (let [line (str "\n" (str/join "|" (repeat width"---")) "\n")]
-  line))
+  (let [spacer (apply str (repeat 4 "-"))]
+    (str "\n" (str/join "|" (repeat width spacer)) "\n")))
+
+(defn add-space [space]
+  (let [content (str space)]
+    (if (= 1 (count content))
+      (str " " content)
+      content)))
 
 (defn row-string [row]
-  (let [row (str " " (str/join " | " row))]
+  (let [row (str " " (str/join " | " (map add-space row)))]
     (str row " \n")))
 
 (defn process-board [board]
@@ -53,10 +59,10 @@
 
 (defn get-selection [character options]
   (display-options character options)
-    (let [input (keyword (read-string (read-line)))]
-      (if (validate-selection options input)
-        input
-        (get-selection character options))))
+  (let [input (keyword (read-string (read-line)))]
+    (if (validate-selection options input)
+      input
+      (get-selection character options))))
 
 (defn get-player-type [character options]
   (get-selection character options))
@@ -68,7 +74,7 @@
   #{"yes" "y" "no" "n"})
 
 (defn validate-play-again [input]
-    (contains? valid-yes-no-responses input))
+  (contains? valid-yes-no-responses input))
 
 (defn get-play-again-selection []
   (play-again-prompt)
@@ -81,7 +87,7 @@
   (str/includes? (get-play-again-selection) "y"))
 
 (defn format-size-option-display [size]
-  (str size  ") " size "x" size))
+  (str size ") " size "x" size))
 
 (defn board-size-prompt [size-options]
   (println "What size board do you want to play on?")

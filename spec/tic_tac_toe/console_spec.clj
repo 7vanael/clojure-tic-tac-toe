@@ -12,17 +12,17 @@
              (with-out-str (welcome))))
 
   (it "prints the board state"
-    (should= " 1 | 2 | 3 \n---|---|---\n 4 | 5 | 6 \n---|---|---\n 7 | 8 | 9 \n"
+    (should= "  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n"
              (with-out-str (display-board test-board/empty-board)))
 
-    (should= " 1 | 2 | 3 \n---|---|---\n 4 | X | 6 \n---|---|---\n 7 | 8 | 9 \n"
+    (should= "  1 |  2 |  3 \n----|----|----\n  4 |  X |  6 \n----|----|----\n  7 |  8 |  9 \n"
              (with-out-str (display-board test-board/center-x-board))))
 
   (it "prints the board state for a 4x board"
-    (should= " 1 | 2 | 3 | 4 \n---|---|---|---\n 5 | 6 | 7 | 8 \n---|---|---|---\n 9 | 10 | 11 | 12 \n---|---|---|---\n 13 | 14 | 15 | 16 \n"
+    (should= "  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  6 |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n"
              (with-out-str (display-board test-board/empty-4-board)))
 
-    (should= " 1 | 2 | 3 | 4 \n---|---|---|---\n 5 | X | 7 | 8 \n---|---|---|---\n 9 | 10 | 11 | 12 \n---|---|---|---\n 13 | 14 | 15 | 16 \n"
+    (should= "  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  X |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n"
              (with-out-str (display-board test-board/first-X-4-board))))
 
 

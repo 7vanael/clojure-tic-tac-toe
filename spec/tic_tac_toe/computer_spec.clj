@@ -65,6 +65,13 @@
    :players             [{:character "X" :play-type :computer}
                          {:character "O" :play-type :human}]})
 
+(def state-empty-4
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :computer}
+                         {:character "O" :play-type :human}]})
+
 (def occupied-corners-4-board
   [["O" 2 3 "X"]
    [5 6 7 8]
@@ -106,50 +113,29 @@
     (should= 0 (eval-board test-board/full-board-draw 3 "O" "X")))
 
   (it "gets the best score for the active player, positive when computer's turn"
-    (should= 9 (minimax board-o-could-win "O" "X" "O" 0)))
+    (should= 9 (minimax board-o-could-win {:char "O" :opp-char "X" :current-player "O" :depth 0 :max-depth 3})))
 
   (it "gets the best score for the active player, negative when not computer's turn"
-    (should=   -9 (minimax board-o-could-win "O" "X" "X" 0)))
+    (should=   -9 (minimax board-o-could-win {:char "O" :opp-char "X" :current-player "X" :depth 0 :max-depth 3})))
 
   (it "associates scores with possible moves"
-    (should-contain [[2 0] 10] (eval-moves board-o-could-win "O" "X")))
+    (should-contain [[2 0] 10] (eval-moves state-o-could-win)))
 
   (it "scores all possible moves through game end, including opponent's play"
-    (should= [[[0 1] -9] [[2 0] 10]] (eval-moves board-o-could-win "O" "X")))
+    (should= [[[0 1] -9] [[2 0] 10]] (eval-moves state-o-could-win)))
+
+  (it "randomizes the selected move when all are equally scored"
+    (let [first-result (turn state-empty-4)
+          second-result (turn state-empty-4)]
+      (should-not= first-result second-result)))
+
+  (it "scales max-depth to board size"
+    (should= 4 (calc-max-depth 4 4))
+    (should= 2 (calc-max-depth 2 4))
+    (should= 8 (calc-max-depth 4 3))
+    (should= 6 (calc-max-depth 2 3)))
 
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (turn state-o-about-to-win)))
 
-  (it "takes center as the opening moves to reduce calculation time in a 3x board"
-    (should= [[1 1]] (mapv first (eval-moves test-board/empty-board "X" "O"))))
-
-  (it "gets all lines (rows/cols/diags)"
-    (should= [[[0 0] [0 1] [0 2]] [[1 0] [1 1] [1 2]] [[2 0] [2 1] [2 2]]
-              [[0 0] [1 0] [2 0]] [[0 1] [1 1] [2 1]] [[0 2] [1 2] [2 2]]
-              [[0 0] [1 1] [2 2]] [[0 2] [1 1] [2 0]]]
-             (get-all-lines test-board/empty-board)))
-
-  (it "calculates a score for a viable line, 1 for an empty line, then 10 points per own space already occupied"
-    (should= 20 (calculate-line-score occupied-corners-4-board [[0 3] [1 3] [2 3] [3 3]] "X"))
-    (should= 1 (calculate-line-score occupied-corners-4-board [[0 2] [1 2] [2 2] [3 2]] "X")))
-
-  (it "creates a map of position and score"
-    (should= {[1 3] 20, [2 3] 20} (update-position-scores {} occupied-corners-4-board [[0 3] [1 3] [2 3] [3 3]] 20)))
-
-  (it "adds the new line score to the score for a position, or adds a new position to the map with the current score"
-    (should= {[0 2] 11, [3 2] 21, [1 2] 1, [2 2] 1} (update-position-scores {[0 2] 10, [3 2] 20} occupied-corners-4-board [[0 2] [1 2] [2 2] [3 2]] 1)))
-
-  (it "takes an early winning move if available"
-    (should= [1 3] (winning-spaces early-X-3-of-4-col-board [[0 3] [1 3] [2 3] [3 3]] "X"))
-    (should= [[1 3]] (mapv first (eval-moves early-X-3-of-4-col-board "X" "O"))))
-
-  (it "blocks an opponent's early winning move if possible"
-    (should= [[1 3]] (mapv first (eval-moves early-X-3-of-4-col-board "O" "X"))))
-
-  (it "in a 4x board, prioritizes multi-line points as opening move in an empty board (points on diags)"
-    (should= [[2 2] [0 0] [3 3] [1 1] [3 0] [0 3] [2 1] [1 2]] (mapv first (eval-moves test-board/empty-4-board "X" "O")))
-    (should= [[2 2] [0 0] [3 3] [1 1] [3 0] [0 3] [2 1] [1 2]] (mapv first (building-moves test-board/empty-4-board "X" "O"))))
-
-  (it "if no win or block available, it tries to build a winning row/col/diag"
-      (should= [[2 3] [1 3]] (mapv first (eval-moves occupied-corners-4-board "X" "O")))
-      (should= [[1 0] [2 0]] (mapv first (eval-moves occupied-corners-4-board "O" "X")))))
+  )
