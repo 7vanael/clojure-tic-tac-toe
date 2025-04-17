@@ -71,6 +71,12 @@
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer}
                          {:character "O" :play-type :human}]})
+(def state-easy-empty-4
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :easy}
+                         {:character "O" :play-type :human}]})
 
 (def occupied-corners-4-board
   [["O" 2 3 "X"]
@@ -84,7 +90,15 @@
    [9 10 11 "X"]
    ["O" 14 15 "X"]])
 
+(def state-medium-initial-4
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :medium}
+                         {:character "O" :play-type :easy}]})
+
 (describe "computer"
+  (with-stubs)
 
   (it "gets the possible moves"
     (should= [[0 1] [2 0]] (get-possible-moves board-o-could-win)))
@@ -130,12 +144,31 @@
       (should-not= first-result second-result)))
 
   (it "scales max-depth to board size"
-    (should= 4 (calc-max-depth 4 4))
-    (should= 2 (calc-max-depth 2 4))
-    (should= 8 (calc-max-depth 4 3))
-    (should= 6 (calc-max-depth 2 3)))
+    (should= 3 (calc-max-depth 4))
+    (should= 8 (calc-max-depth 3)))
 
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (turn state-o-about-to-win)))
 
+  (it "for easy, takes a random space"
+    (let [result1 (easy state-easy-empty-4)
+          result2 (easy state-easy-empty-4)
+          result3 (easy state-easy-empty-4)]
+      (should-not (= result1 result2 result3))))
+
+  (it "for medium, calls easy if random number is 0"
+    (with-redefs [rand-int (stub :rand-int {:return 0})
+                  easy (stub :easy)
+                  turn (stub :turn)]
+      (medium state-medium-initial-4)
+      (should-have-invoked :easy)
+      (should-not-have-invoked :turn)))
+
+  (it "for medium, calls turn if random number is anything but 0"
+    (with-redefs [rand-int (stub :rand-int {:return 1})
+                  easy (stub :easy)
+                  turn (stub :turn)]
+      (medium state-medium-initial-4)
+      (should-have-invoked :turn)
+      (should-not-have-invoked :easy)))
   )

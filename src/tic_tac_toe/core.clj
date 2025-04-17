@@ -13,6 +13,9 @@
 (def player-options
   [:human :computer])
 
+(def difficulty-options
+  [:easy :medium :hard])
+
 (defn -main []
   (console/welcome)
   (let [type-x (console/get-player-type "X" player-options)

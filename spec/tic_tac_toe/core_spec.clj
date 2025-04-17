@@ -33,4 +33,6 @@
       (should-have-invoked :play-again? {:times 2})))
 
 
+  (it "gets the difficulty level if a player selects computer"
+    (with-redefs []))
   )

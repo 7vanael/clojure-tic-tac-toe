@@ -2,7 +2,8 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.console :as console]
             [tic-tac-toe.game :refer :all]
-            [tic-tac-toe.board_spec :as test-board]))
+            [tic-tac-toe.board_spec :as test-board]
+            [tic-tac-toe.computer :as computer]))
 
 (def state-draw-evaluated
   {:board               test-board/full-board-draw
@@ -88,6 +89,27 @@
    :players             [{:character "X" :play-type :human}
                          {:character "O" :play-type :human}]})
 
+(def state-computer-2-4-empty
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :computer}
+                         {:character "O" :play-type :computer}]})
+
+(def state-medium-initial-4
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :medium}
+                         {:character "O" :play-type :easy}]})
+
+(def state-easy-initial-4
+  {:board               test-board/empty-4-board
+   :active-player-index 1
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :medium}
+                         {:character "O" :play-type :easy}]})
+
 (describe "game"
   (with-stubs)
 
@@ -154,4 +176,30 @@
     (with-redefs [console/print-number-prompt (stub :print-dup)]
       (let [result (with-in-str "junk\n6\n1\n" (take-turn state-4-first-x-start-o))]
         (should-have-invoked :print-dup {:times 3})
-        (should= state-4-first-x-o result)))))
+        (should= state-4-first-x-o result))))
+
+  (it "can tell what type of turn it is"
+    (should= :human (get-turn-type state-center-x-mid-turn))
+    (should= :computer (get-turn-type state-computer-2-4-empty)))
+
+  (it "Calls the human turn method if the active player is human"
+    (with-redefs [console/get-next-play (stub :human-turn {:return 1})
+                  computer/turn (stub :computer-turn)]
+      (should= state-center-x-corner-o (take-turn state-center-x-mid-turn))
+      (should-have-invoked :human-turn)))
+
+  (it "Calls the computer turn method if the active player is computer"
+    (with-redefs [computer/turn (stub :computer-turn)]
+      (take-turn state-computer-2-4-empty)
+      (should-have-invoked :computer-turn)))
+
+  (it "Calls the easy computer method if the active player is easy"
+    (with-redefs [computer/easy (stub :computer-easy)]
+      (take-turn state-easy-initial-4)
+      (should-have-invoked :computer-easy)))
+
+  (it "Calls the medium computer method if the active player is medium"
+    (with-redefs [computer/medium (stub :computer-medium)]
+                  (take-turn state-medium-initial-4)
+                  (should-have-invoked :computer-medium)))
+  )

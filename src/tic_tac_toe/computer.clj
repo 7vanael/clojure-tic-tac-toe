@@ -18,8 +18,8 @@
       (board/winner? board char)
       (board/winner? board opp-char)))
 
-(defn calc-max-depth [difficulty size]
-  (if (= 3 size) (min 8 (* difficulty size)) difficulty))
+(defn calc-max-depth [size]
+  (if (= 3 size) 8 3))
 
 (defn minimax [board {:keys [char opp-char current-player depth max-depth] :as config}]
   (let [open-spaces (get-possible-moves board)]
@@ -32,11 +32,11 @@
           (apply max outcomes)
           (apply min outcomes))))))
 
-(defn eval-moves [{:keys [board active-player-index players computer] :or {computer {:difficulty 3}}}]
+(defn eval-moves [{:keys [board active-player-index players]}]
   (let [moves     (get-possible-moves board)
         char      (get-in players [active-player-index :character])
         opp-char  (if (= "X" char) "O" "X")
-        max-depth (calc-max-depth (get-in computer [:difficulty]) (count board))
+        max-depth (calc-max-depth (count board))
         config {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}]
     (map #(vector % (minimax (board/take-square board % char) config)) moves)))
 
@@ -44,3 +44,12 @@
   (let [character (get-in players [active-player-index :character])
         next-play (first (apply max-key second (shuffle (eval-moves state))))]
     (assoc state :board (board/take-square board next-play character))))
+
+(defn easy [{:keys [board active-player-index players] :as state}]
+  (let [move     (first (shuffle (get-possible-moves board)))
+        char      (get-in players [active-player-index :character])]
+    (assoc state :board (board/take-square board move char))))
+
+(defn medium [state]
+  (let [tenth-percent (rand-int 10)]
+    (if (zero? tenth-percent) (easy state) (turn state))))
