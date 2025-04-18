@@ -31,8 +31,4 @@
       (should-have-invoked :console/welcome {:times 2})
       (should-have-invoked :print-dup {:times 4})
       (should-have-invoked :play-again? {:times 2})))
-
-
-  (it "gets the difficulty level if a player selects computer"
-    (with-redefs []))
   )

@@ -3,7 +3,63 @@
             [tic-tac-toe.console :as console]
             [tic-tac-toe.game :refer :all]
             [tic-tac-toe.board_spec :as test-board]
-            [tic-tac-toe.computer :as computer]))
+            [tic-tac-toe.turn :as turn]))
+
+(def state-initial
+  {:board               test-board/empty-board
+   :active-player-index 1
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-4-initial
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-4-first-x
+  {:board               test-board/first-X-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-4-first-x-start-o
+  {:board               test-board/first-X-4-board
+   :active-player-index 1
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-4-first-x-o
+  {:board               test-board/second-X-4-board
+   :active-player-index 1
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :human}
+                         {:character "O" :play-type :human}]})
+
+(def state-computer-2-4-empty
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :hard}
+                         {:character "O" :play-type :hard}]})
+
+(def state-medium-initial-4
+  {:board               test-board/empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :medium}
+                         {:character "O" :play-type :easy}]})
+
+(def state-easy-initial-4
+  {:board               test-board/empty-4-board
+   :active-player-index 1
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :medium}
+                         {:character "O" :play-type :easy}]})
 
 (def state-draw-evaluated
   {:board               test-board/full-board-draw
@@ -54,65 +110,8 @@
    :players             [{:character "X" :play-type :human}
                          {:character "O" :play-type :human}]})
 
-(def state-initial
-  {:board               test-board/empty-board
-   :active-player-index 1
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :human}]})
-
-(def state-4-initial
-  {:board               test-board/empty-4-board
-   :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :human}]})
-
-(def state-4-first-x
-  {:board               test-board/first-X-4-board
-   :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :human}]})
-
-(def state-4-first-x-start-o
-  {:board               test-board/first-X-4-board
-   :active-player-index 1
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :human}]})
-
-(def state-4-first-x-o
-  {:board               test-board/second-X-4-board
-   :active-player-index 1
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :human}]})
-
-(def state-computer-2-4-empty
-  {:board               test-board/empty-4-board
-   :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :computer}
-                         {:character "O" :play-type :computer}]})
-
-(def state-medium-initial-4
-  {:board               test-board/empty-4-board
-   :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :medium}
-                         {:character "O" :play-type :easy}]})
-
-(def state-easy-initial-4
-  {:board               test-board/empty-4-board
-   :active-player-index 1
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :medium}
-                         {:character "O" :play-type :easy}]})
-
 (describe "game"
   (with-stubs)
-
 
   (it "starts a new game"
     (with-redefs [console/welcome  (stub :console/welcome)
@@ -157,49 +156,24 @@
   (it "lets a player take a turn, repeatedly asks for input until valid play is selected"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
       (should= state-center-x
-              (with-in-str "0\n45\njunk\n5\n" (take-turn (assoc state-initial :active-player-index 0))))
+              (with-in-str "0\n45\njunk\n5\n" (turn/take-turn (assoc state-initial :active-player-index 0))))
       (should-have-invoked :print-dup {:times 4})))
 
   (it "lets a player take a turn on a 4x board, repeatedly asks for input until valid play selected"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
       (should= state-4-first-x
-              (with-in-str "0\n45\njunk\n6\n" (take-turn state-4-initial)))
+              (with-in-str "0\n45\njunk\n6\n" (turn/take-turn state-4-initial)))
       (should-have-invoked :print-dup {:times 4})))
 
   (it "doesn't let a player play in an occupied space"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
-      (let [result (with-in-str "12\n1\n" (take-turn state-center-x-mid-turn))]
+      (let [result (with-in-str "12\n1\n" (turn/take-turn state-center-x-mid-turn))]
         (should-have-invoked :print-dup {:times 2})
         (should= state-center-x-corner-o result))))
 
   (it "doesn't let a player play in an occupied space in a 4x grid"
     (with-redefs [console/print-number-prompt (stub :print-dup)]
-      (let [result (with-in-str "junk\n6\n1\n" (take-turn state-4-first-x-start-o))]
+      (let [result (with-in-str "junk\n6\n1\n" (turn/take-turn state-4-first-x-start-o))]
         (should-have-invoked :print-dup {:times 3})
         (should= state-4-first-x-o result))))
-
-  (it "can tell what type of turn it is"
-    (should= :human (get-turn-type state-center-x-mid-turn))
-    (should= :computer (get-turn-type state-computer-2-4-empty)))
-
-  (it "Calls the human turn method if the active player is human"
-    (with-redefs [console/get-next-play (stub :human-turn {:return 1})
-                  computer/turn (stub :computer-turn)]
-      (should= state-center-x-corner-o (take-turn state-center-x-mid-turn))
-      (should-have-invoked :human-turn)))
-
-  (it "Calls the computer turn method if the active player is computer"
-    (with-redefs [computer/turn (stub :computer-turn)]
-      (take-turn state-computer-2-4-empty)
-      (should-have-invoked :computer-turn)))
-
-  (it "Calls the easy computer method if the active player is easy"
-    (with-redefs [computer/easy (stub :computer-easy)]
-      (take-turn state-easy-initial-4)
-      (should-have-invoked :computer-easy)))
-
-  (it "Calls the medium computer method if the active player is medium"
-    (with-redefs [computer/medium (stub :computer-medium)]
-                  (take-turn state-medium-initial-4)
-                  (should-have-invoked :computer-medium)))
   )

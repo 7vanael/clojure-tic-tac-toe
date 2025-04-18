@@ -13,14 +13,11 @@
 (def player-options
   [:human :computer])
 
-(def difficulty-options
-  [:easy :medium :hard])
 
 (defn -main []
   (console/welcome)
   (let [type-x (console/get-player-type "X" player-options)
         type-o (console/get-player-type "O" player-options)
-        board-size (console/get-board-size [3 4])
-        ]
+        board-size (console/get-board-size [3 4])]
     (game/start (initialize-state type-x type-o board-size)))
   (if (console/play-again?) (-main)))

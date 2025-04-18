@@ -1,8 +1,7 @@
 (ns tic-tac-toe.console-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.console :refer :all]
-            [tic-tac-toe.board_spec :refer :all :as test-board]
-            [clojure.string :refer :all :as str]))
+            [tic-tac-toe.board_spec :refer :all :as test-board]))
 
 (describe "console"
   (with-stubs)
@@ -50,7 +49,7 @@
 
   (it "asks the user for who should play character O"
     (with-redefs [display-options (stub :display-options)]
-      (should= :human (with-in-str ":human\n" (get-player-type "X" [:human :computer])))
+      (should= :human (with-in-str ":human\n" (get-player-type "X" [:human :hard])))
       (should-have-invoked :display-options)))
 
   (it "asks the player if they want to play again"
