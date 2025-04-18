@@ -7,6 +7,7 @@
 
 
 (describe "medium"
+  (with-stubs)
 
   (it "for medium, calls easy if random number is 0"
     (with-redefs [rand-int       (stub :rand-int {:return 0})

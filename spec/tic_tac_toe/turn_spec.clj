@@ -9,6 +9,7 @@
 
 
 (describe "turn"
+  (with-stubs)
 
           (it "can tell what type of turn it is"
               (should= :human (get-turn-type test-game/state-center-x-mid-turn))
