@@ -13,14 +13,14 @@
   {:board               board-one-remaining
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :hard}
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 
 (def state-remaining-taken
   {:board               (assoc-in board-one-remaining [0 2] "X")
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :hard}
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 (def board-o-could-win
   [["X" 2 "X"]
@@ -32,21 +32,21 @@
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :hard}]})
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-o-took-win
   {:board               (assoc-in board-o-could-win [2 0] "O")
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :hard}]})
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-o-missed-win
   {:board               (assoc-in board-o-could-win [0 1] "O")
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :hard}]})
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def board-o-about-to-win
   [[1 2 "X"]
@@ -57,46 +57,34 @@
   {:board               board-o-about-to-win
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :hard}
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 (def state-o-blocked
   {:board               (assoc-in board-o-about-to-win [2 0] "X")
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :hard}
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 
 (def state-empty-4
   {:board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :hard}
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 (def state-easy-empty-4
   {:board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :easy}
-                         {:character "O" :play-type :human}]})
-
-#_(def occupied-corners-4-board
-  [["O" 2 3 "X"]
-   [5 6 7 8]
-   [9 10 11 12]
-   ["O" 14 15 "X"]])
-
-#_(def early-X-3-of-4-col-board
-  [["O" 2 3 "X"]
-   [5 6 7 8]
-   [9 10 11 "X"]
-   ["O" 14 15 "X"]])
+   :players             [{:character "X" :play-type :computer :difficulty :easy}
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-medium-initial-4
   {:board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :medium}
-                         {:character "O" :play-type :easy}]})
+   :players             [{:character "X" :play-type :computer :difficulty :medium}
+                         {:character "O" :play-type :computer :difficulty :easy}]})
 
 (describe "computer"
   (with-stubs)
@@ -138,8 +126,9 @@
 
   (it "randomizes the selected move when all are equally scored"
     (let [first-result  (turn/take-turn state-empty-4)
-          second-result (turn/take-turn state-empty-4)]
-      (should-not= first-result second-result)))
+          second-result (turn/take-turn state-empty-4)
+          third-result (turn/take-turn state-empty-4)]
+      (should-not (= first-result second-result third-result))))
 
   (it "scales max-depth to board size"
     (should= 3 (calc-max-depth 4))

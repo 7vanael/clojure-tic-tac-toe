@@ -10,5 +10,4 @@
           result2 (turn/take-turn test-computer/state-easy-empty-4)
           result3 (turn/take-turn test-computer/state-easy-empty-4)]
       (should-not (= result1 result2 result3))))
-
   )

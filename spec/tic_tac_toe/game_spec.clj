@@ -44,22 +44,22 @@
   {:board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :hard}
-                         {:character "O" :play-type :hard}]})
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-medium-initial-4
   {:board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
-   :players             [{:character "X" :play-type :medium}
-                         {:character "O" :play-type :easy}]})
+   :players             [{:character "X" :play-type :computer :difficulty :medium}
+                         {:character "O" :play-type :computer :difficulty :easy}]})
 
 (def state-easy-initial-4
   {:board               test-board/empty-4-board
    :active-player-index 1
    :status              "in-progress"
-   :players             [{:character "X" :play-type :medium}
-                         {:character "O" :play-type :easy}]})
+   :players             [{:character "X" :play-type :computer :difficulty :medium}
+                         {:character "O" :play-type :computer :difficulty :easy}]})
 
 (def state-draw-evaluated
   {:board               test-board/full-board-draw

@@ -30,7 +30,19 @@
                 (take-turn test-game/state-easy-initial-4)
                 (should-have-invoked :computer-easy)))
 
-          (xit "Calls the medium computer method if the active player is medium"
-              #_(with-redefs [medium/medium (stub :computer-medium)]
-                (turn/take-turn test-game/state-medium-initial-4)
-                (should-have-invoked :computer-medium))))
+          (it "Calls the medium computer method if the active player is medium, then easy on a 0/10"
+              (with-redefs [rand-int (stub :rand-int {:return 0})
+                            easy/easy (stub :computer-easy)
+                            computer/hard (stub :computer-hard)]
+                (take-turn test-game/state-medium-initial-4)
+                (should-have-invoked :computer-easy)
+                (should-not-have-invoked :computer-hard)))
+
+          (it "Calls the medium computer method if the active player is medium, then hard on a 1/10"
+              (with-redefs [rand-int (stub :rand-int {:return 1})
+                            easy/easy (stub :computer-easy)
+                            computer/hard (stub :computer-hard)]
+                (take-turn test-game/state-medium-initial-4)
+                (should-not-have-invoked :computer-easy)
+                (should-have-invoked :computer-hard)))
+  )
