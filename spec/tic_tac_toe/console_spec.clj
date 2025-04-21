@@ -45,11 +45,11 @@
 
   (it "displays the options for players to choose from"
     (should= "Who will play  X ?\nhuman\ncomputer\n"
-             (with-out-str (display-options "X" [:human :computer]))))
+             (with-out-str (display-play-type-options "X" [:human :computer]))))
 
   (it "asks the user for who should play character O"
-    (with-redefs [display-options (stub :display-options)]
-      (should= :human (with-in-str ":human\n" (get-player-type "X" [:human :hard])))
+    (with-redefs [display-play-type-options (stub :display-options)]
+      (should= :human (with-in-str "human\n" (get-player-type "X" [:human :computer])))
       (should-have-invoked :display-options)))
 
   (it "asks the player if they want to play again"
@@ -94,4 +94,12 @@
       (should= 4 (with-in-str "4\n" (get-board-size [3 4])))
       (should= 3 (with-in-str "6\ngesf\nhello\n3\n4\n" (get-board-size [3 4])))))
 
+  (it "prints the difficulty options"
+    (should= "What difficulty setting should X use?\neasy\nmedium\nhard\n"
+             (with-out-str (display-difficulty-options "X" [:easy :medium :hard]))))
+
+  (it "asks the user for the difficulty selection for character X"
+    (with-redefs [display-difficulty-options (stub :display-options)]
+      (should= :hard (with-in-str "hard\n" (get-difficulty "X" [:easy :medium :hard])))
+      (should-have-invoked :display-options)))
   )

@@ -50,7 +50,7 @@
 (defn announce-winner [character]
   (println (str (str/capitalize character) " wins! Good game!")))
 
-(defn display-options [character options]
+(defn display-play-type-options [character options]
   (println "Who will play " character "?")
   (run! println (map name options)))
 
@@ -58,13 +58,13 @@
   (contains? (set options) (keyword selection)))
 
 (defn get-selection [character options]
-  (display-options character options)
   (let [input (keyword (read-string (read-line)))]
     (if (validate-selection options input)
       input
       (get-selection character options))))
 
 (defn get-player-type [character options]
+  (display-play-type-options character options)
   (get-selection character options))
 
 (defn play-again-prompt []
@@ -100,3 +100,11 @@
     (if (some #{size-selection} size-options)
       size-selection
       (get-board-size size-options))))
+
+(defn display-difficulty-options [char options]
+  (println "What difficulty setting should" char "use?")
+  (run! println (map name options)))
+
+(defn get-difficulty [character options]
+  (display-difficulty-options character options)
+  (get-selection character options))
