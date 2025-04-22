@@ -10,14 +10,16 @@
    ["X" "X" "O"]])
 
 (def state-one-remaining
-  {:board               board-one-remaining
+  {:interface :tui
+   :board               board-one-remaining
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 
 (def state-remaining-taken
-  {:board               (assoc-in board-one-remaining [0 2] "X")
+  {:interface :tui
+   :board               (assoc-in board-one-remaining [0 2] "X")
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
@@ -28,21 +30,24 @@
    [7 "O" "O"]])
 
 (def state-o-could-win
-  {:board               board-o-could-win
+  {:interface :tui
+   :board               board-o-could-win
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
                          {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-o-took-win
-  {:board               (assoc-in board-o-could-win [2 0] "O")
+  {:interface :tui
+   :board               (assoc-in board-o-could-win [2 0] "O")
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
                          {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-o-missed-win
-  {:board               (assoc-in board-o-could-win [0 1] "O")
+  {:interface :tui
+   :board               (assoc-in board-o-could-win [0 1] "O")
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
@@ -54,33 +59,38 @@
    [7 "O" "O"]])
 
 (def state-o-about-to-win
-  {:board               board-o-about-to-win
+  {:interface :tui
+   :board               board-o-about-to-win
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 (def state-o-blocked
-  {:board               (assoc-in board-o-about-to-win [2 0] "X")
+  {:interface :tui
+   :board               (assoc-in board-o-about-to-win [2 0] "X")
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 
 (def state-empty-4
-  {:board               test-board/empty-4-board
+  {:interface :tui
+   :board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 (def state-easy-empty-4
-  {:board               test-board/empty-4-board
+  {:interface :tui
+   :board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :easy}
                          {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-medium-initial-4
-  {:board               test-board/empty-4-board
+  {:interface :tui
+   :board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :medium}

@@ -6,7 +6,8 @@
   (let [player-type (get-in players [active-player-index :play-type])
         turn-type   (if (human? player-type)
                       :human
-                      (get-in players [active-player-index :difficulty]))]
-    turn-type))
+                      (get-in players [active-player-index :difficulty]))
+        interface ()]
+   turn-type))
 
 (defmulti take-turn get-turn-type)

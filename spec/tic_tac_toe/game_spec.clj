@@ -6,105 +6,120 @@
             [tic-tac-toe.turn :as turn]))
 
 (def state-initial
-  {:board               test-board/empty-board
+  {:interface :tui
+   :board               test-board/empty-board
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-4-initial
-  {:board               test-board/empty-4-board
+  {:interface :tui
+   :board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-4-first-x
-  {:board               test-board/first-X-4-board
+  {:interface :tui
+   :board               test-board/first-X-4-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-4-first-x-start-o
-  {:board               test-board/first-X-4-board
+  {:interface :tui
+   :board               test-board/first-X-4-board
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-4-first-x-o
-  {:board               test-board/second-X-4-board
+  {:interface :tui
+   :board               test-board/second-X-4-board
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-computer-2-4-empty
-  {:board               test-board/empty-4-board
+  {:interface :tui
+   :board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-medium-initial-4
-  {:board               test-board/empty-4-board
+  {:interface :tui
+   :board               test-board/empty-4-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :medium}
                          {:character "O" :play-type :computer :difficulty :easy}]})
 
 (def state-easy-initial-4
-  {:board               test-board/empty-4-board
+  {:interface :tui
+   :board               test-board/empty-4-board
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :medium}
                          {:character "O" :play-type :computer :difficulty :easy}]})
 
 (def state-draw-evaluated
-  {:board               test-board/full-board-draw
+  {:interface :tui
+   :board               test-board/full-board-draw
    :active-player-index 0
    :status              "draw"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-draw
-  {:board               test-board/full-board-draw
+  {:interface :tui
+   :board               test-board/full-board-draw
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-win-x-row-evaluated
-  {:board               test-board/not-full-board-x-row-win
+  {:interface :tui
+   :board               test-board/not-full-board-x-row-win
    :active-player-index 0
    :status              "winner"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-win-x-row
-  {:board               test-board/not-full-board-x-row-win
+  {:interface :tui
+   :board               test-board/not-full-board-x-row-win
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-center-x
-  {:board               test-board/center-x-board
+  {:interface :tui
+   :board               test-board/center-x-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-center-x-mid-turn
-  {:board               test-board/center-x-board
+  {:interface :tui
+   :board               test-board/center-x-board
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-center-x-corner-o
-  {:board               test-board/center-x-corner-o-board
+  {:interface :tui
+   :board               test-board/center-x-corner-o-board
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human :difficulty nil}
@@ -131,7 +146,8 @@
 
   (it "changes the active player O"
     (with-out-str
-      (should= {:board               test-board/center-x-board
+      (should= {:interface :tui
+                :board               test-board/center-x-board
                 :active-player-index 1
                 :status              "in-progress"
                 :players             [{:character "X" :play-type :human :difficulty nil}
@@ -140,7 +156,8 @@
 
   (it "changes the active player X"
     (with-out-str
-      (should= {:board               test-board/empty-board
+      (should= {:interface :tui
+                :board               test-board/empty-board
                 :active-player-index 0
                 :status              "in-progress"
                 :players             [{:character "X" :play-type :human :difficulty nil}

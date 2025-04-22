@@ -16,13 +16,16 @@
 
 (defn setup []
   {:current-screen      (:config screens)
-   :board-size          nil
    :board               nil
    :active-player-index 0
    :status              "config"
    :players             [{:character "X" :play-type nil :difficulty nil}
                          {:character "O" :play-type nil :difficulty nil}]})
 
+;Can I work this into actually just being a call to game/play?
+;I don't think so, that's already a loop. All I need is for the board to listen
+;for a mouse-click on the human player's turn, then check the validity on the board
+;then take it if it's valid and return the new state.
 (defn update-state [state]
   )
 
@@ -31,15 +34,13 @@
 
 (defn draw-board-size [state]
   )
-
-(defn draw-game [state]
+(defn draw-play-again [state]
   )
 
+;defmulti here? route to different draw functions
+;based on status?
 (defn draw-state [state]
-  (case (:current-screen state)
-    0 (draw-player-config state)
-    1 (draw-board-size state)
-    2 (draw-game state)))
+  )
 
 
 (defn create-sketch []

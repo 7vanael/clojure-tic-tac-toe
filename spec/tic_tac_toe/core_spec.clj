@@ -11,7 +11,8 @@
   (with-stubs)
 
   (it "initializes an empty board, and starting player O"
-    (should= test-game/state-initial (initialize-state :human :human nil nil 3)))
+    (should= test-game/state-initial (initialize-state {:type-x :human :type-o :human :difficulty-x nil
+                                                        :difficulty-o nil :board-size 3 :interface :tui})))
 
   (it "starts a new game"
     (with-redefs [game/start                        (stub :game/start)
@@ -58,7 +59,8 @@
                   console/play-again-prompt          (stub :play-again?)
                   game/start                         (stub :start)]
       (with-in-str "human\ncomputer\nmedium\n4\nn\n" (-main "tui"))
-      (should-have-invoked :start {:with [{:board               [[1 2 3 4]
+      (should-have-invoked :start {:with [{:interface :tui
+                                           :board               [[1 2 3 4]
                                                                  [5 6 7 8]
                                                                  [9 10 11 12]
                                                                  [13 14 15 16]]
@@ -68,18 +70,17 @@
                                                                  {:character "O" :play-type :computer :difficulty :medium}]}]})))
 
   (it "uses the console interface if launched with tui"
-    (with-redefs [launch-cli                (stub :launch-cli)
+    (with-redefs [start-game                (stub :launch-cli)
                   console/play-again-prompt (stub :play-again?)
                   game/start                (stub :start)]
       (with-in-str "human\ncomputer\nmedium\n3\nn\n" (-main "tui"))
-      (should-have-invoked :launch-cli)))
+      (should-have-invoked :launch-cli {:with [{:interface :tui}]})))
 
   (it "uses the quil interface if launched with gui"
-    (with-redefs [launch-quil               (stub :launch-quil)
-                  launch-cli                (stub :launch-cli)
+    (with-redefs [start-game               (stub :launch-quil)
                   console/play-again-prompt (stub :play-again?)
                   game/start                (stub :start)]
       (-main "gui")
-      (should-have-invoked :launch-quil)
-      (should-not-have-invoked :launch-cli)))
+      (should-have-invoked :launch-quil {:with [{:interface :gui}]})
+      ))
   )

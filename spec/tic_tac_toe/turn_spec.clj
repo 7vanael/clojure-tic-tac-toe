@@ -3,7 +3,6 @@
             [tic-tac-toe.turn :refer :all]
             [tic-tac-toe.game-spec :as test-game]
             [tic-tac-toe.easy :as easy]
-            [tic-tac-toe.medium :as medium]
             [tic-tac-toe.computer :as computer]
             [tic-tac-toe.console :as console]))
 
