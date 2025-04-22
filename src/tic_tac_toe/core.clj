@@ -1,6 +1,6 @@
 (ns tic-tac-toe.core
   (:require [tic-tac-toe.game :as game]
-            [tic-tac-toe.console :as console]
+            [tic-tac-toe.user-prompt :as user-prompt]
             [tic-tac-toe.board :as board]
             [tic-tac-toe.gui :as gui]))
 
@@ -18,26 +18,27 @@
 (def difficulty-options
   [:easy :medium :hard])
 
-(defn get-player-config [char]
-  (let [play-type  (console/get-player-type char player-options)
-        difficulty (if (= play-type :computer) (console/get-difficulty char difficulty-options))]
+(defn get-player-config [interface char]
+  (let [play-type  (user-prompt/get-player-type interface char player-options)
+        difficulty (if (= play-type :computer) (user-prompt/get-difficulty interface char difficulty-options))]
     {:play-type play-type :difficulty difficulty}))
 
 (defmulti start-game :interface)
 
 (defmethod start-game :tui [_]
-  (console/welcome)
-  (let [player-x      (get-player-config "X")
+  (user-prompt/welcome-message)
+  (let [interface-tag {:interface :tui}
+        player-x      (get-player-config interface-tag "X")
         type-x        (:play-type player-x)
         difficulty-x  (:difficulty player-x)
-        player-o      (get-player-config "O")
+        player-o      (get-player-config interface-tag "O")
         type-o        (:play-type player-o)
         difficulty-o  (:difficulty player-o)
-        board-size    (console/get-board-size [3 4])
+        board-size    (user-prompt/get-board-size interface-tag [3 4])
         configuration {:type-x     type-x :type-o type-o :difficulty-x difficulty-x :difficulty-o difficulty-o
                        :board-size board-size :interface :tui}]
     (game/start (initialize-state configuration)))
-  (if (console/play-again?) (recur :tui)))
+  (if (user-prompt/play-again? {:interface :tui}) (recur {:interface :tui})))
 
 (defmethod start-game :gui [_] (gui/create-sketch))
 

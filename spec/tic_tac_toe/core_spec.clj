@@ -3,6 +3,7 @@
             [tic-tac-toe.core :refer :all]
             [tic-tac-toe.game :as game]
             [tic-tac-toe.game-spec :as test-game]
+            [tic-tac-toe.user-prompt :as user-prompt]
             [tic-tac-toe.console :as console]))
 
 
@@ -16,7 +17,7 @@
 
   (it "starts a new game"
     (with-redefs [game/start                        (stub :game/start)
-                  console/welcome                   (stub :console/welcome)
+                  user-prompt/welcome-message       (stub :console/welcome)
                   console/display-play-type-options (stub :print-dup-play-type)
                   console/play-again-prompt         (stub :play-again?)
                   console/board-size-prompt         (stub :board-size-prompt {:return 3})]
@@ -26,7 +27,7 @@
 
   (it "allows the user to choose to play again"
     (with-redefs [game/start                         (stub :game/start)
-                  console/welcome                    (stub :console/welcome)
+                  user-prompt/welcome-message        (stub :console/welcome)
                   console/display-play-type-options  (stub :print-dup-play-type)
                   console/display-difficulty-options (stub :print-dup-difficulty)
                   console/play-again-prompt          (stub :play-again?)
@@ -40,26 +41,26 @@
   (it "assigns a difficulty of nil if player type is human"
     (with-redefs [console/display-play-type-options (stub :print-dup-play-type)]
       (should= {:play-type :human :difficulty nil}
-               (with-in-str "human\n" (get-player-config "X")))))
+               (with-in-str "human\n" (get-player-config {:interface :tui} "X")))))
 
   (it "obtains a difficulty level if the play-type chosen is computer"
     (with-redefs [console/display-play-type-options  (stub :print-dup-play-type)
                   console/display-difficulty-options (stub :print-dup-difficulty)]
       (should= {:play-type :computer :difficulty :hard}
-               (with-in-str "1\njumbo\ncomputer\n1\nhangry\nhard\n" (get-player-config "X")))
+               (with-in-str "1\njumbo\ncomputer\n1\nhangry\nhard\n" (get-player-config {:interface :tui} "X")))
       (should-have-invoked :print-dup-difficulty)
       (should-have-invoked :print-dup-play-type)))
 
   (it "initializes a new game with computer player and human player"
     (with-redefs [game/start                         (stub :game/start)
-                  console/welcome                    (stub :console/welcome)
+                  user-prompt/welcome-message        (stub :console/welcome)
                   console/display-play-type-options  (stub :print-dup-play-type)
                   console/display-difficulty-options (stub :print-dup-difficulty)
                   console/board-size-prompt          (stub :board-size-prompt)
                   console/play-again-prompt          (stub :play-again?)
                   game/start                         (stub :start)]
       (with-in-str "human\ncomputer\nmedium\n4\nn\n" (-main "tui"))
-      (should-have-invoked :start {:with [{:interface :tui
+      (should-have-invoked :start {:with [{:interface           :tui
                                            :board               [[1 2 3 4]
                                                                  [5 6 7 8]
                                                                  [9 10 11 12]
@@ -77,7 +78,7 @@
       (should-have-invoked :launch-cli {:with [{:interface :tui}]})))
 
   (it "uses the quil interface if launched with gui"
-    (with-redefs [start-game               (stub :launch-quil)
+    (with-redefs [start-game                (stub :launch-quil)
                   console/play-again-prompt (stub :play-again?)
                   game/start                (stub :start)]
       (-main "gui")

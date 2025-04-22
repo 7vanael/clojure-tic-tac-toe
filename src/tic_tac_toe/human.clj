@@ -1,7 +1,7 @@
 (ns tic-tac-toe.human
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.turn :as turn]
-            [tic-tac-toe.next-play :as next-play]))
+            [tic-tac-toe.user-prompt :as next-play]))
 
 
 (defmethod turn/take-turn :human [{:keys [board active-player-index players] :as state}]

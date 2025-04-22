@@ -1,8 +1,9 @@
 (ns tic-tac-toe.game-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.console :as console]
+            [tic-tac-toe.user-prompt :as user-prompt]
             [tic-tac-toe.game :refer :all]
             [tic-tac-toe.board_spec :as test-board]
+            [tic-tac-toe.console :as console]
             [tic-tac-toe.turn :as turn]))
 
 (def state-initial
@@ -129,18 +130,18 @@
   (with-stubs)
 
   (it "starts a new game"
-    (with-redefs [console/welcome  (stub :console/welcome)
-                  play             (stub :play)]
+    (with-redefs [user-prompt/welcome-message (stub :console/welcome)
+                  play                (stub :play)]
       (start state-initial)
       (should-have-invoked :play {:with [state-initial]})))
 
   (it "ends the game in a draw"
-    (with-redefs [console/draw (stub :console/draw)]
+    (with-redefs [user-prompt/announce-draw (stub :console/draw)]
       (with-out-str (play state-draw-evaluated))
       (should-have-invoked :console/draw)))
 
   (it "ends the game in a win"
-    (with-redefs [console/announce-winner (stub :console/announce-winner)]
+    (with-redefs [user-prompt/announce-winner (stub :console/announce-winner)]
       (with-out-str (play state-win-x-row-evaluated))
       (should-have-invoked :console/announce-winner)))
 

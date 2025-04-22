@@ -2,7 +2,7 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [tic-tac-toe.board :as board]
-            [tic-tac-toe.next-play :as next-play]
+            [tic-tac-toe.user-prompt :as next-play]
             ))
 
 
@@ -31,7 +31,7 @@
 
 (defn update-state [state]
   )
-;; Future GUI implementation
+
 (defmethod next-play/get-next-play :gui [state play-options]
   ;; GUI implementation here
   )

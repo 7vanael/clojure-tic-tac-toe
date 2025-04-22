@@ -1,8 +1,8 @@
 (ns tic-tac-toe.console
   (:require [clojure.string :as str]
-            [tic-tac-toe.next-play :as next-play]))
+            [tic-tac-toe.user-prompt :as user-prompt]))
 
-(defn welcome []
+(defmethod user-prompt/welcome-message :tui [_]
   (println "Welcome to tic-tac-toe!"))
 
 (defn horizontal-line [width]
@@ -22,7 +22,7 @@
 (defn process-board [board]
   (apply str (map row-string board)))
 
-(defn display-board [board]
+(defmethod user-prompt/display-board :tui [_ board]
   (println (str/join (horizontal-line (count board))
                      (str/split-lines (process-board board)))))
 
@@ -32,23 +32,23 @@
 (defn print-number-prompt []
   (println "Please enter the number for the space you'd like to take"))
 
-(defmethod next-play/get-next-play :tui [state play-options]
+(defmethod user-prompt/get-next-play :tui [state play-options]
   (print-number-prompt)
   (let [input (read-string (read-line))]
     (if (validate-number play-options input)
       input
-      (next-play/get-next-play state play-options))))
+      (user-prompt/get-next-play state play-options))))
 
 (defn invalid-selection []
   (println "That isn't a valid play, please try again"))
 
-(defn announce-player [character]
+(defmethod user-prompt/announce-player :tui [_ character]
   (println (str "Player " character "'s turn")))
 
-(defn draw []
+(defmethod user-prompt/announce-draw :tui [_]
   (println "It's a draw! Good game!"))
 
-(defn announce-winner [character]
+(defmethod user-prompt/announce-winner :tui [_ character]
   (println (str (str/capitalize character) " wins! Good game!")))
 
 (defn display-play-type-options [character options]
@@ -64,7 +64,7 @@
       input
       (get-selection character options))))
 
-(defn get-player-type [character options]
+(defmethod user-prompt/get-player-type :tui [_ character options]
   (display-play-type-options character options)
   (get-selection character options))
 
@@ -84,7 +84,7 @@
       input
       (get-play-again-selection))))
 
-(defn play-again? []
+(defmethod user-prompt/play-again? :tui [_]
   (str/includes? (get-play-again-selection) "y"))
 
 (defn format-size-option-display [size]
@@ -95,17 +95,17 @@
   (doseq [size size-options]
     (println (format-size-option-display size))))
 
-(defn get-board-size [size-options]
+(defmethod user-prompt/get-board-size :tui [_ size-options]
   (board-size-prompt size-options)
   (let [size-selection (read-string (read-line))]
     (if (some #{size-selection} size-options)
       size-selection
-      (get-board-size size-options))))
+      (user-prompt/get-board-size {:interface :tui} size-options))))
 
 (defn display-difficulty-options [char options]
   (println "What difficulty setting should" char "use?")
   (run! println (map name options)))
 
-(defn get-difficulty [character options]
+(defmethod user-prompt/get-difficulty :tui [_ character options]
   (display-difficulty-options character options)
   (get-selection character options))

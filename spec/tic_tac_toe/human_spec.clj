@@ -4,7 +4,7 @@
             [tic-tac-toe.console :as console]
             [tic-tac-toe.game-spec :as test-game]
             [tic-tac-toe.turn :as turn]
-            [tic-tac-toe.next-play :as next-play]))
+            [tic-tac-toe.user-prompt :as next-play]))
 
 (describe "human turn"
   (with-stubs)
