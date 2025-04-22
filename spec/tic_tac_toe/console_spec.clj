@@ -1,7 +1,8 @@
 (ns tic-tac-toe.console-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.console :refer :all]
-            [tic-tac-toe.board_spec :refer :all :as test-board]))
+            [tic-tac-toe.board_spec :refer :all :as test-board]
+            [tic-tac-toe.next-play :as next-play]))
 
 (describe "console"
   (with-stubs)
@@ -31,7 +32,7 @@
 
   (it "gets input from the user until a valid entry is provided"
     (with-redefs [print-number-prompt (stub :print-prompt)]
-      (should= 6 (with-in-str "c\n26\n6\n1\n" (get-next-play [2 6])))))
+      (should= 6 (with-in-str "c\n26\n6\n1\n" (next-play/get-next-play {:interface :tui} [2 6])))))
 
   (it "notifies the player that a play wasn't valid"
     (should= "That isn't a valid play, please try again\n"

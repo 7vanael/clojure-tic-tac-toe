@@ -2,7 +2,8 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.computer :refer :all]
             [tic-tac-toe.board_spec :as test-board]
-            [tic-tac-toe.turn :as turn]))
+            [tic-tac-toe.turn :as turn]
+            [tic-tac-toe.game-spec :as test-game]))
 
 (def board-one-remaining
   [["X" "O" 3]
@@ -98,6 +99,12 @@
 
 (describe "computer"
   (with-stubs)
+
+
+  (it "The computer hard turn method is called if the active player is computer"
+    (with-redefs [hard (stub :computer-turn)]
+      (turn/take-turn test-game/state-computer-2-4-empty)
+      (should-have-invoked :computer-turn)))
 
   (it "takes the only available move"
     (should= state-remaining-taken (turn/take-turn state-one-remaining)))

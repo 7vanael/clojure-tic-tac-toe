@@ -1,7 +1,9 @@
 (ns tic-tac-toe.gui
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [tic-tac-toe.board :as board]))
+            [tic-tac-toe.board :as board]
+            [tic-tac-toe.next-play :as next-play]
+            ))
 
 
 (def screens
@@ -26,7 +28,12 @@
 ;I don't think so, that's already a loop. All I need is for the board to listen
 ;for a mouse-click on the human player's turn, then check the validity on the board
 ;then take it if it's valid and return the new state.
+
 (defn update-state [state]
+  )
+;; Future GUI implementation
+(defmethod next-play/get-next-play :gui [state play-options]
+  ;; GUI implementation here
   )
 
 (defn draw-player-config [state]

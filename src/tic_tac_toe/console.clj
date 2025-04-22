@@ -1,5 +1,6 @@
 (ns tic-tac-toe.console
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [tic-tac-toe.next-play :as next-play]))
 
 (defn welcome []
   (println "Welcome to tic-tac-toe!"))
@@ -31,12 +32,12 @@
 (defn print-number-prompt []
   (println "Please enter the number for the space you'd like to take"))
 
-(defn get-next-play [play-options]
+(defmethod next-play/get-next-play :tui [state play-options]
   (print-number-prompt)
   (let [input (read-string (read-line))]
     (if (validate-number play-options input)
       input
-      (get-next-play play-options))))
+      (next-play/get-next-play state play-options))))
 
 (defn invalid-selection []
   (println "That isn't a valid play, please try again"))

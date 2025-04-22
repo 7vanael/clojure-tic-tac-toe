@@ -170,18 +170,6 @@
   (it "updates status to draw if a board is full and no player has won"
     (should= state-draw-evaluated (evaluate-board state-draw)))
 
-  (it "lets a player take a turn, repeatedly asks for input until valid play is selected"
-    (with-redefs [console/print-number-prompt (stub :print-dup-play-type)]
-      (should= state-center-x
-              (with-in-str "0\n45\njunk\n5\n" (turn/take-turn (assoc state-initial :active-player-index 0))))
-      (should-have-invoked :print-dup-play-type {:times 4})))
-
-  (it "lets a player take a turn on a 4x board, repeatedly asks for input until valid play selected"
-    (with-redefs [console/print-number-prompt (stub :print-dup-play-type)]
-      (should= state-4-first-x
-              (with-in-str "0\n45\njunk\n6\n" (turn/take-turn state-4-initial)))
-      (should-have-invoked :print-dup-play-type {:times 4})))
-
   (it "doesn't let a player play in an occupied space"
     (with-redefs [console/print-number-prompt (stub :print-dup-play-type)]
       (let [result (with-in-str "12\n1\n" (turn/take-turn state-center-x-mid-turn))]

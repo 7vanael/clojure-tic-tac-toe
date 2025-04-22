@@ -4,7 +4,8 @@
             [tic-tac-toe.turn :as turn]
             [tic-tac-toe.easy]
             [tic-tac-toe.medium]
-            [tic-tac-toe.computer]))
+            [tic-tac-toe.computer]
+            [tic-tac-toe.human]))
 
 (defn change-player [state]
   (assoc state :active-player-index (if (= (:active-player-index state) 0)
@@ -16,12 +17,6 @@
         (not (board/any-space-available? board)) (assoc state :status "draw")
         :else state))
 
-(defmethod turn/take-turn :human [{:keys [board active-player-index players] :as state}]
-  (let [play-options          (board/play-options board)
-        next-play             (console/get-next-play play-options)
-        next-play-coordinates (board/space->coordinates next-play board)
-        player-char (get-in players [active-player-index :character])]
-    (assoc state :board (board/take-square board next-play-coordinates player-char))))
 
 (defn play [{:keys [board status active-player-index players] :as state}]
   (console/display-board board)
