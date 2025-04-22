@@ -1,6 +1,6 @@
-(ns tic-tac-toe.computer-spec
+(ns tic-tac-toe.hard-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.computer :refer :all]
+            [tic-tac-toe.hard :refer :all]
             [tic-tac-toe.board_spec :as test-board]
             [tic-tac-toe.turn :as turn]
             [tic-tac-toe.game-spec :as test-game]))
@@ -97,7 +97,7 @@
    :players             [{:character "X" :play-type :computer :difficulty :medium}
                          {:character "O" :play-type :computer :difficulty :easy}]})
 
-(describe "computer"
+(describe "computer- hard mode"
   (with-stubs)
 
 

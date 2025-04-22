@@ -1,4 +1,4 @@
-(ns tic-tac-toe.computer
+(ns tic-tac-toe.hard
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.turn :as turn]
             [tic-tac-toe.computer-util :as util]))

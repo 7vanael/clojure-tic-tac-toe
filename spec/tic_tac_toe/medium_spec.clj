@@ -1,9 +1,9 @@
 (ns tic-tac-toe.medium-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.turn :as turn]
-            [tic-tac-toe.computer-spec :as test-computer]
+            [tic-tac-toe.hard-spec :as test-computer]
             [tic-tac-toe.easy :as easy]
-            [tic-tac-toe.computer :as hard]))
+            [tic-tac-toe.hard :as hard]))
 
 
 (describe "medium"

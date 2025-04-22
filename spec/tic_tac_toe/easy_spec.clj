@@ -2,7 +2,7 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.easy :refer :all]
             [tic-tac-toe.turn :as turn]
-            [tic-tac-toe.computer-spec :as test-computer]
+            [tic-tac-toe.hard-spec :as test-computer]
             [tic-tac-toe.game-spec :as test-game]))
 
 (describe "easy"

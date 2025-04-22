@@ -4,7 +4,7 @@
             [tic-tac-toe.turn :as turn]
             [tic-tac-toe.easy]
             [tic-tac-toe.medium]
-            [tic-tac-toe.computer]
+            [tic-tac-toe.hard]
             [tic-tac-toe.human]))
 
 (defn change-player [state]
