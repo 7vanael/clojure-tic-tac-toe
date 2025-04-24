@@ -13,16 +13,23 @@
                                       (do (user-prompt/announce-player state "X") 0))))
 
 (defn evaluate-board [{:keys [board active-player-index players] :as state}]
-  (cond (board/winner? board (get-in players [active-player-index :character])) (assoc state :status "winner")
-        (not (board/any-space-available? board)) (assoc state :status "draw")
+  (cond (board/winner? board (get-in players [active-player-index :character])) (assoc state :status :winner)
+        (not (board/any-space-available? board)) (assoc state :status :draw)
         :else state))
 
 
 (defn play [{:keys [board status active-player-index players] :as state}]
   (user-prompt/display-board state board)
-  (cond (= status "draw") (user-prompt/announce-draw state)
-        (= status "winner") (user-prompt/announce-winner state (get-in players [active-player-index :character]))
+  (cond (= status :draw) (user-prompt/announce-draw state)
+        (= status :winner) (user-prompt/announce-winner state (get-in players [active-player-index :character]))
         :else (recur (evaluate-board (turn/take-turn (change-player state))))))
+
+
+#_(defn update-state [state]
+  (-> state
+      setup
+      maybe-make-computer-move
+      play-again))
 
 (defn start [state]
   (user-prompt/welcome-message state)

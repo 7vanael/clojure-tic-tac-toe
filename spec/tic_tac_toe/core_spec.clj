@@ -66,7 +66,7 @@
                                                                  [9 10 11 12]
                                                                  [13 14 15 16]]
                                            :active-player-index 1
-                                           :status              "in-progress"
+                                           :status              :in-progress
                                            :players             [{:character "X" :play-type :human :difficulty nil}
                                                                  {:character "O" :play-type :computer :difficulty :medium}]}]})))
 
@@ -75,13 +75,12 @@
                   console/play-again-prompt (stub :play-again?)
                   game/start                (stub :start)]
       (with-in-str "human\ncomputer\nmedium\n3\nn\n" (-main "tui"))
-      (should-have-invoked :launch-cli {:with [{:interface :tui}]})))
+      (should-have-invoked :launch-cli {:with [{:status :config :interface :tui}]})))
 
   (it "uses the quil interface if launched with gui"
     (with-redefs [start-game                (stub :launch-quil)
                   console/play-again-prompt (stub :play-again?)
                   game/start                (stub :start)]
       (-main "gui")
-      (should-have-invoked :launch-quil {:with [{:interface :gui}]})
-      ))
+      (should-have-invoked :launch-quil {:with [{:status :config :interface :gui}]})))
   )
