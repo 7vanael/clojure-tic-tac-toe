@@ -49,7 +49,7 @@
 (def state-computer-2-4-empty
   {:interface           :tui
    :board               test-board/empty-4-board
-   :active-player-index 0
+   :active-player-index 1
    :status              :in-progress
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :computer :difficulty :hard}]})

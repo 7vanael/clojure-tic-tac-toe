@@ -12,7 +12,7 @@
   (with-stubs)
 
   (it "initializes an empty board, and starting player O"
-    (should= test-game/state-initial (initialize-state {:type-x :human :type-o :human :difficulty-x nil
+    (should= test-game/state-initial (initialize-state {:type-x       :human :type-o :human :difficulty-x nil
                                                         :difficulty-o nil :board-size 3 :interface :tui})))
 
   (it "starts a new game"
@@ -39,17 +39,25 @@
       (should-have-invoked :play-again? {:times 2})))
 
   (it "assigns a difficulty of nil if player type is human"
-    (with-redefs [console/display-play-type-options (stub :print-dup-play-type)]
-      (should= {:play-type :human :difficulty nil}
-               (with-in-str "human\n" (get-player-config {:interface :tui} "X")))))
+    (with-redefs [console/display-play-type-options (stub :print-dup-play-type)
+                  user-prompt/welcome-message       (stub :console/welcome)
+                  console/get-selection             (stub :get-selection {:return :human})
+                  user-prompt/get-board-size        (stub :board-size {:return 3})
+                  user-prompt/play-again?           (stub :play-again {:return false})
+                  game/start                        (stub :game/start)]
+      (start-game {:interface :tui})
+      (should-have-invoked :game/start {:with [test-game/state-initial]})))
 
   (it "obtains a difficulty level if the play-type chosen is computer"
-    (with-redefs [console/display-play-type-options  (stub :print-dup-play-type)
-                  console/display-difficulty-options (stub :print-dup-difficulty)]
-      (should= {:play-type :computer :difficulty :hard}
-               (with-in-str "1\njumbo\ncomputer\n1\nhangry\nhard\n" (get-player-config {:interface :tui} "X")))
-      (should-have-invoked :print-dup-difficulty)
-      (should-have-invoked :print-dup-play-type)))
+    (with-redefs [console/display-play-type-options (stub :print-dup-play-type)
+                  user-prompt/welcome-message       (stub :console/welcome)
+                  console/get-selection             (stub :get-selection {:return :computer})
+                  user-prompt/get-difficulty        (stub :get-difficulty {:return :hard})
+                  user-prompt/get-board-size        (stub :board-size {:return 4})
+                  user-prompt/play-again?           (stub :play-again {:return false})
+                  game/start                        (stub :game/start)]
+      (start-game {:interface :tui})
+      (should-have-invoked :game/start {:with [test-game/state-computer-2-4-empty]})))
 
   (it "initializes a new game with computer player and human player"
     (with-redefs [game/start                         (stub :game/start)
