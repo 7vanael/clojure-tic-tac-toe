@@ -3,10 +3,9 @@
 
 
 (def screen-size 720)
+(def title-offset-y 72)
 
 (defn button-clicked? [[click-x click-y] [center-x center-y rect-width rect-height]]
-  (prn "[click-x click-y]:" [click-x click-y])
-  (prn "[center-x center-y rect-width rect-height]:" [center-x center-y rect-width rect-height])
   (let [min-x (- center-x (/ rect-width 2))
         max-x (+ center-x (/ rect-width 2))
         min-y (- center-y (/ rect-height 2))
@@ -24,3 +23,20 @@
   (q/text-align :center :center)
   (q/text-size 10)
   (q/text label x y))
+
+
+(def button-width 120)
+(def button-height 50)
+(def center-x (/ screen-size 2))
+(def button-type-y 350)
+
+(def opt1-of-2-x-center (/ center-x 2))
+(def opt2-of-2-x-center (+ center-x opt1-of-2-x-center))
+
+(def opt1-of-2-rect [opt1-of-2-x-center button-type-y button-width button-height])
+(def opt2-of-2-rect [opt2-of-2-x-center button-type-y button-width button-height])
+
+
+(defn draw-type-buttons [labels]
+  (draw-button (first labels) opt1-of-2-rect)
+  (draw-button (second labels) opt2-of-2-rect))

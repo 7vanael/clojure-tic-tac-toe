@@ -3,58 +3,46 @@
             [tic-tac-toe.gui.multis :as multis]
             [tic-tac-toe.gui.gui-util :as util]))
 
-(def button-width 120)
-(def button-height 50)
-(def button-type-y 350)
 
-(def title-offset-y 72)
 
 (def center-x (/ util/screen-size 2))
-(def human-x-center (/ center-x 2))
-(def computer-x-center (+ center-x human-x-center))
 
-(def remaining-y-range (- util/screen-size title-offset-y))
+(def remaining-y-range (- util/screen-size util/title-offset-y))
 (def button-offsets-y (/ remaining-y-range 4))
 
-(def button-easy-y-center (+ title-offset-y button-offsets-y))
+(def button-easy-y-center (+ util/title-offset-y button-offsets-y))
 (def button-medium-y-center (+ button-easy-y-center button-offsets-y))
 (def button-hard-y-center (+ button-medium-y-center button-offsets-y))
 
-(def human-rect [human-x-center button-type-y button-width button-height])
-(def computer-rect [computer-x-center button-type-y button-width button-height])
-(def easy-rect [center-x button-easy-y-center button-width button-height])
-(def medium-rect [center-x button-medium-y-center button-width button-height])
-(def hard-rect [center-x button-hard-y-center button-width button-height])
+(def easy-rect [center-x button-easy-y-center util/button-width util/button-height])
+(def medium-rect [center-x button-medium-y-center util/button-width util/button-height])
+(def hard-rect [center-x button-hard-y-center util/button-width util/button-height])
 
 (defn draw-difficulty-buttons []
   (util/draw-button "Easy" easy-rect)
   (util/draw-button "Medium" medium-rect)
   (util/draw-button "Hard" hard-rect))
 
-(defn draw-type-buttons []
-  (util/draw-button "Human" human-rect)
-  (util/draw-button "Computer" computer-rect))
+(def type-labels ["Human" "Computer"])
+
 
 (defmethod multis/draw-state :config-x-type [state]
   (q/background 240)
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player X Type" (/ util/screen-size 2) title-offset-y)
-  (draw-type-buttons))
+  (q/text "Choose Player X Type" (/ util/screen-size 2) util/title-offset-y)
+  (util/draw-type-buttons type-labels))
 
 (defmethod multis/update-state :config-x-type [state]
   state)
 
 (defmethod multis/mouse-clicked :config-x-type [state {:keys [x y] :as event}]
-  (println "config-x-type")
-  (prn "human-rect:" human-rect)
-  (prn "computer-rect:" computer-rect)
-  (cond (util/button-clicked? [x y] human-rect)
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect)
         (-> state
             (assoc-in [:players 0 :play-type] :human)
             (assoc :status :config-o-type))
-        (util/button-clicked? [x y] computer-rect)
+        (util/button-clicked? [x y] util/opt2-of-2-rect)
         (-> state
             (assoc-in [:players 0 :play-type] :computer)
             (assoc :status :config-x-difficulty))
@@ -65,7 +53,7 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player X Computer Difficulty" (/ util/screen-size 2) title-offset-y)
+  (q/text "Choose Player X Computer Difficulty" (/ util/screen-size 2) util/title-offset-y)
   (draw-difficulty-buttons))
 
 (defmethod multis/update-state :config-x-difficulty [state]
@@ -91,18 +79,18 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player O Type" (/ util/screen-size 2) title-offset-y)
-  (draw-type-buttons))
+  (q/text "Choose Player O Type" (/ util/screen-size 2) util/title-offset-y)
+  (util/draw-type-buttons type-labels))
 
 (defmethod multis/update-state :config-o-type [state]
   state)
 
 (defmethod multis/mouse-clicked :config-o-type [state {:keys [x y] :as event}]
-  (cond (util/button-clicked? [x y] human-rect)
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect)
         (-> state
             (assoc-in [:players 1 :play-type] :human)
             (assoc :status :select-board))
-        (util/button-clicked? [x y] computer-rect)
+        (util/button-clicked? [x y] util/opt2-of-2-rect)
         (-> state
             (assoc-in [:players 1 :play-type] :computer)
             (assoc :status :config-o-difficulty))
@@ -113,7 +101,7 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player O Computer Difficulty" (/ util/screen-size 2) title-offset-y)
+  (q/text "Choose Player O Computer Difficulty" (/ util/screen-size 2) util/title-offset-y)
   (draw-difficulty-buttons))
 
 (defmethod multis/update-state :config-o-difficulty [state]

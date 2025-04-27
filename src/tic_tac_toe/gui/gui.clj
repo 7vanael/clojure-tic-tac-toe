@@ -6,7 +6,9 @@
             [tic-tac-toe.gui.multis :as multis]
             [tic-tac-toe.gui.config-players]
             [tic-tac-toe.gui.welcome]
-            [tic-tac-toe.gui.gui-util :as util]))
+            [tic-tac-toe.gui.gui-util :as util]
+            [tic-tac-toe.gui.select-board]
+            [tic-tac-toe.gui.game-over]))
 
 #_(def x-img (ref nil))
 #_(def o-img (ref-nil))
@@ -30,7 +32,8 @@
    :active-player-index 0
    :status              :welcome
    :players             [{:character "X" :play-type nil :difficulty nil}
-                         {:character "O" :play-type nil :difficulty nil}]})
+                         {:character "O" :play-type nil :difficulty nil}]
+   :board-size          nil})
 
 #_(defmethod next-play/get-next-play :gui [state play-options]
     ;; GUI implementation here
