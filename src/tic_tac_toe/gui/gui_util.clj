@@ -4,12 +4,18 @@
 
 (def screen-size 720)
 
-(defn button-clicked? [[x y] [x1 y1 width height]]
-  (and (> x x1) (< x (+ x1 width))
-       (> y y1) (< y (+ y1 height))))
+(defn button-clicked? [[click-x click-y] [center-x center-y rect-width rect-height]]
+  (prn "[click-x click-y]:" [click-x click-y])
+  (prn "[center-x center-y rect-width rect-height]:" [center-x center-y rect-width rect-height])
+  (let [min-x (- center-x (/ rect-width 2))
+        max-x (+ center-x (/ rect-width 2))
+        min-y (- center-y (/ rect-height 2))
+        max-y (+ center-y (/ rect-height 2))]
+    (and (>= click-x min-x) (<= click-x max-x)
+       (>= click-y min-y) (<= click-y max-y))))
 
 
-(defn draw-button [label x y width height]
+(defn draw-button [label [x y width height]]
   (q/rect-mode :center)
   (q/no-stroke)
   (q/fill 200 200 250)                                      ;;background color of button

@@ -7,39 +7,33 @@
 (def button-height 50)
 (def button-type-y 350)
 
+(def title-offset-y 72)
+
 (def center-x (/ util/screen-size 2))
 (def human-x-center (/ center-x 2))
 (def computer-x-center (+ center-x human-x-center))
 
-;Top left corners of the buttons
-(def human-rect-corner-x (- human-x-center (/ button-width 2)))
-(def human-rect-corner-y (- button-type-y (/ button-height 2)))
-(def computer-rect-corner-x (* 3 (/ util/screen-size 4)))
-(def computer-rect-corner-y (- button-type-y (/ button-height 2)))
-
-(def title-offset-y 72)
 (def remaining-y-range (- util/screen-size title-offset-y))
-(def button-offsets-y (/ remaining-y-range 3))
+(def button-offsets-y (/ remaining-y-range 4))
 
-(def difficulty-rect-corner-x (- center-x (/ button-width 2)))
 (def button-easy-y-center (+ title-offset-y button-offsets-y))
 (def button-medium-y-center (+ button-easy-y-center button-offsets-y))
 (def button-hard-y-center (+ button-medium-y-center button-offsets-y))
 
-(def human-rect [human-rect-corner-x human-rect-corner-y button-width button-height])
-(def computer-rect [computer-rect-corner-x computer-rect-corner-y button-width button-height])
-(def easy-rect [difficulty-rect-corner-x (- button-easy-y-center (/ button-height 2)) button-width button-height])
-(def medium-rect [difficulty-rect-corner-x (- button-medium-y-center (/ button-height 2)) button-width button-height])
-(def hard-rect [difficulty-rect-corner-x (- button-hard-y-center (/ button-height 2)) button-width button-height])
+(def human-rect [human-x-center button-type-y button-width button-height])
+(def computer-rect [computer-x-center button-type-y button-width button-height])
+(def easy-rect [center-x button-easy-y-center button-width button-height])
+(def medium-rect [center-x button-medium-y-center button-width button-height])
+(def hard-rect [center-x button-hard-y-center button-width button-height])
 
 (defn draw-difficulty-buttons []
-  (util/draw-button "Easy" difficulty-rect-corner-x (- button-easy-y-center (/ button-height 2)) button-width button-height)
-  (util/draw-button "Medium" difficulty-rect-corner-x (- button-medium-y-center (/ button-height 2)) button-width button-height)
-  (util/draw-button "Hard" difficulty-rect-corner-x (- button-hard-y-center (/ button-height 2)) button-width button-height))
+  (util/draw-button "Easy" easy-rect)
+  (util/draw-button "Medium" medium-rect)
+  (util/draw-button "Hard" hard-rect))
 
 (defn draw-type-buttons []
-  (util/draw-button "Human" human-x-center button-type-y button-width button-height)
-  (util/draw-button "Computer" computer-x-center button-type-y button-width button-height))
+  (util/draw-button "Human" human-rect)
+  (util/draw-button "Computer" computer-rect))
 
 (defmethod multis/draw-state :config-x-type [state]
   (q/background 240)
@@ -53,6 +47,9 @@
   state)
 
 (defmethod multis/mouse-clicked :config-x-type [state {:keys [x y] :as event}]
+  (println "config-x-type")
+  (prn "human-rect:" human-rect)
+  (prn "computer-rect:" computer-rect)
   (cond (util/button-clicked? [x y] human-rect)
         (-> state
             (assoc-in [:players 0 :play-type] :human)

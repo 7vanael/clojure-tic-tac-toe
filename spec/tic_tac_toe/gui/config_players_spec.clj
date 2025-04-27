@@ -18,17 +18,17 @@
                (should= (test-gui/state-create {:status :config-x-difficulty :x-type :computer}) new-state)))
 
            (it "moves to config o type if x-difficulty is set to easy"
-             (let [event     {:x 360 :y 300}
+             (let [event     {:x 360 :y 250}
                    new-state (multis/mouse-clicked (test-gui/state-create {:status :config-x-difficulty :x-type :computer}) event)]
                (should= (test-gui/state-create {:status :config-o-type :x-type :computer :x-difficulty :easy}) new-state)))
 
            (it "moves to config o type if x-difficulty is set to medium"
-             (let [event     {:x 360 :y 500}
+             (let [event     {:x 360 :y 400}
                    new-state (multis/mouse-clicked (test-gui/state-create {:status :config-x-difficulty :x-type :computer}) event)]
                (should= (test-gui/state-create {:status :config-o-type :x-type :computer :x-difficulty :medium}) new-state)))
 
            (it "moves to config o type if x-difficulty is set to hard"
-             (let [event     {:x 360 :y 710}
+             (let [event     {:x 360 :y 550}
                    new-state (multis/mouse-clicked (test-gui/state-create {:status :config-x-difficulty :x-type :computer}) event)]
                (should= (test-gui/state-create {:status :config-o-type :x-type :computer :x-difficulty :hard}) new-state)))
            )
@@ -45,17 +45,17 @@
                (should= (test-gui/state-create {:status :config-o-difficulty :o-type :computer}) new-state)))
 
            (it "moves to select-board after o-difficulty is set to easy"
-             (let [event     {:x 360 :y 300}
+             (let [event     {:x 360 :y 250}
                    new-state (multis/mouse-clicked (test-gui/state-create {:status :config-o-difficulty :o-type :computer}) event)]
                (should= (test-gui/state-create {:status :select-board :o-type :computer :o-difficulty :easy}) new-state)))
 
            (it "moves to select-board after o-difficulty is set to medium"
-             (let [event     {:x 360 :y 500}
+             (let [event     {:x 360 :y 400}
                    new-state (multis/mouse-clicked (test-gui/state-create {:status :config-o-difficulty :o-type :computer}) event)]
                (should= (test-gui/state-create {:status :select-board :o-type :computer :o-difficulty :medium}) new-state)))
 
            (it "moves to select-board after o-difficulty is set to hard"
-             (let [event     {:x 360 :y 710}
+             (let [event     {:x 360 :y 550}
                    new-state (multis/mouse-clicked (test-gui/state-create {:status :config-o-difficulty :o-type :computer}) event)]
                (should= (test-gui/state-create {:status :select-board :o-type :computer :o-difficulty :hard}) new-state)))
            )

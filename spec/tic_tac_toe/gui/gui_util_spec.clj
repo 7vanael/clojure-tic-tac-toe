@@ -6,8 +6,8 @@
 (describe "gui util"
 
   (it "can tell if a button is clicked"
-    (should-not (button-clicked? [3 3] [4 4 2 2]))
-    (should (button-clicked? [5 5] [4 4 2 2]))
+    (should-not (button-clicked? [1 1] [4 4 2 2]))
+    (should (button-clicked? [4 4] [4 4 2 2]))
     )
 
 
