@@ -2,29 +2,34 @@
   (:require [quil.core :as q]
             [tic-tac-toe.gui.multis :as multis]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.board :as board]
-            [clojure.string :as str]))
+            [tic-tac-toe.board :as board]))
 
 (defn ->horiz-line-points [start-y start-x end-x cell-size i]
   (let [y (+ start-y (* i cell-size))]
     [start-x y end-x y]))
 
-(defn ->vert-line-points [ cell-size start-y end-y i]
+(defn get-horizontal-lines [start-y start-x end-x cell-size count]
+  (map #(->horiz-line-points start-y start-x end-x cell-size %)
+       (range (inc count))))
+
+(defn ->vert-line-points [cell-size start-y end-y i]
   (let [x (* i cell-size)]
     [x start-y x end-y]))
 
+
+(defn get-vertical-lines [start-y end-y cell-size count]
+  (map #(->vert-line-points cell-size start-y end-y %)
+       (range (inc count))))
+
 (defn get-lines [board]
-  (let [vert-start-y    (* util/title-offset-y 2)
-        vert-end-y      util/screen-height
+  (let [start-y         (* util/title-offset-y 2)
+        end-y           util/screen-height
         board-dimension util/screen-width
-        ;padding         (/ (- util/screen-height board-dimension) 2)
-        horiz-start-x   0
-        horiz-end-x     board-dimension
+        start-x         0
+        end-x           board-dimension
         cell-size       (/ board-dimension (count board))
-        horiz-lines     (map #(->horiz-line-points vert-start-y horiz-start-x horiz-end-x cell-size %)
-                             (range (count board)))
-        vert-lines      (map #(->vert-line-points cell-size vert-start-y vert-end-y %)
-                             (range (count board)))]
+        horiz-lines     (get-horizontal-lines start-y start-x end-x cell-size (count board))
+        vert-lines      (get-vertical-lines start-y end-y cell-size (count board))]
     (concat horiz-lines vert-lines)))
 
 (defn generate-cells [board cell-size [origin-x origin-y]]
@@ -34,11 +39,11 @@
           col (range board-size)]
       {:x     (+ first-x (* col cell-size))
        :y     (+ first-y (* row cell-size))
-       :size  cell-size
+       ;:size  cell-size
        :value (get-in board [row col])})))
 
 (defn draw-grid [cells]
-  (doseq [{:keys [x y _ value]} cells]
+  (doseq [{:keys [x y value]} cells]
     (when (or (= value "X") (= value "O"))
       (q/text value x y))))
 
@@ -53,7 +58,7 @@
         title-text    (str character "'s turn")
         lines         (get-lines board)
         usable-screen util/screen-width
-        grid-origin-x  0
+        grid-origin-x 0
         grid-origin-y (- util/screen-height usable-screen)
         cell-size     (/ usable-screen (count board))
         cells         (generate-cells board cell-size [grid-origin-x grid-origin-y])]
@@ -61,28 +66,14 @@
     (q/fill 0)
     (q/text-align :center :center)
     (q/text-size 28)
-    (q/text title-text (/ util/screen-width  2) util/title-offset-y)
+    (q/text title-text (/ util/screen-width 2) util/title-offset-y)
     (draw-lines lines)
     (q/text-size (/ cell-size 2))
     (draw-grid cells)))
 
-(defmethod multis/update-state :in-progress [state]
-  ;;Can I import the board here to get the list of available moves? That's
-  ;;what I did in the tui, but I feel like that's not the dependency I want to
-  ;;have to support.
-
-  ;;This is where I'll have to ping back to the main game? Check if the space is
-  ;;available, take it if it is, display the new state and await the next
-  ;;turn (computer or human again).
+(defmethod multis/update-state :in-progress [{:keys [board] :as state}]
+  (let [play-options (board/play-options board)])
   state)
 
 (defmethod multis/mouse-clicked :in-progress [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect)
-        (-> state
-            (assoc-in [:board-size] 3)
-            (assoc :status :initialize-board))
-        (util/button-clicked? [x y] util/opt2-of-2-rect)
-        (-> state
-            (assoc-in [:board-size] 4)
-            (assoc :status :initialize-board))
-        :else state))
+  state)
