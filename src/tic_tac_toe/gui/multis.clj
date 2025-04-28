@@ -5,7 +5,6 @@
 ;based on status?
 #_(defmulti draw-state :interface)
 
-
 (defmulti draw-state :status)
 
 (defmulti update-state :status)

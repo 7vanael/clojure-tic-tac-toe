@@ -10,8 +10,8 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Board Size" (/ util/screen-size 2) util/title-offset-y)
-  (util/draw-type-buttons type-labels))
+  (q/text "Choose Board Size" (/ util/screen-height 2) util/title-offset-y)
+  (util/draw-2-options-buttons type-labels))
 
 (defmethod multis/update-state :game-over [state]
   state)

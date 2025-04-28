@@ -2,19 +2,20 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.gui.select-board :refer :all]
             [tic-tac-toe.gui.multis :as multis]
-            [tic-tac-toe.gui.gui-spec :as test-gui]))
+            [tic-tac-toe.gui.gui-spec :as test-gui]
+            [tic-tac-toe.board_spec :as test-board]))
 
 (describe "select board"
 
   (it "sets the board-size to 3 and changes state to initialize-board if 3x3 button is pressed"
-    (let [event     {:x 200 :y 350}
+    (let [event     {:x 144 :y 350}
           new-state (multis/mouse-clicked (test-gui/state-create {:status :select-board}) event)]
-      (should= (test-gui/state-create {:status :initialize-board :board-size 3})
+      (should= (test-gui/state-create {:status :in-progress :board test-board/empty-board})
                new-state)))
 
   (it "sets the board-size to 4 and changes state to initialize-board if 4x4 button is pressed"
-    (let [event     {:x 600 :y 350}
+    (let [event     {:x 432 :y 350}
           new-state (multis/mouse-clicked (test-gui/state-create {:status :select-board}) event)]
-      (should= (test-gui/state-create {:status :initialize-board :board-size 4})
+      (should= (test-gui/state-create {:status :in-progress :board test-board/empty-4-board})
                new-state)))
   )

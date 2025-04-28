@@ -5,12 +5,11 @@
 
 
 
-(def center-x (/ util/screen-size 2))
+(def center-x (/ util/screen-width 2))
+(def start-y (- util/screen-height util/screen-width))
+(def button-offsets-y (/ util/screen-width 4))
 
-(def remaining-y-range (- util/screen-size util/title-offset-y))
-(def button-offsets-y (/ remaining-y-range 4))
-
-(def button-easy-y-center (+ util/title-offset-y button-offsets-y))
+(def button-easy-y-center (+ start-y button-offsets-y))
 (def button-medium-y-center (+ button-easy-y-center button-offsets-y))
 (def button-hard-y-center (+ button-medium-y-center button-offsets-y))
 
@@ -31,8 +30,8 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player X Type" (/ util/screen-size 2) util/title-offset-y)
-  (util/draw-type-buttons type-labels))
+  (q/text "Choose Player X Type" center-x util/title-offset-y)
+  (util/draw-2-options-buttons type-labels))
 
 (defmethod multis/update-state :config-x-type [state]
   state)
@@ -53,7 +52,7 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player X Computer Difficulty" (/ util/screen-size 2) util/title-offset-y)
+  (q/text "Choose Player X Computer Difficulty" center-x util/title-offset-y)
   (draw-difficulty-buttons))
 
 (defmethod multis/update-state :config-x-difficulty [state]
@@ -79,8 +78,8 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player O Type" (/ util/screen-size 2) util/title-offset-y)
-  (util/draw-type-buttons type-labels))
+  (q/text "Choose Player O Type" center-x util/title-offset-y)
+  (util/draw-2-options-buttons type-labels))
 
 (defmethod multis/update-state :config-o-type [state]
   state)
@@ -101,7 +100,7 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player O Computer Difficulty" (/ util/screen-size 2) util/title-offset-y)
+  (q/text "Choose Player O Computer Difficulty" center-x util/title-offset-y)
   (draw-difficulty-buttons))
 
 (defmethod multis/update-state :config-o-difficulty [state]

@@ -2,8 +2,13 @@
   (:require [quil.core :as q]))
 
 
-(def screen-size 720)
+(def screen-height 720)
 (def title-offset-y 72)
+(def screen-width (- screen-height (* title-offset-y 2))) ;576
+;288 center
+;144 first of 2
+;432 second of 2
+; 864
 
 (defn button-clicked? [[click-x click-y] [center-x center-y rect-width rect-height]]
   (let [min-x (- center-x (/ rect-width 2))
@@ -27,7 +32,7 @@
 
 (def button-width 120)
 (def button-height 50)
-(def center-x (/ screen-size 2))
+(def center-x (/ screen-width 2))
 (def button-type-y 350)
 
 (def opt1-of-2-x-center (/ center-x 2))
@@ -37,6 +42,6 @@
 (def opt2-of-2-rect [opt2-of-2-x-center button-type-y button-width button-height])
 
 
-(defn draw-type-buttons [labels]
+(defn draw-2-options-buttons [labels]
   (draw-button (first labels) opt1-of-2-rect)
   (draw-button (second labels) opt2-of-2-rect))
