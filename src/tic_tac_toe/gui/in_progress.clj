@@ -4,6 +4,11 @@
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]))
 
+
+(def usable-screen util/screen-width)
+(def grid-origin-x 0)
+(def grid-origin-y (- util/screen-height usable-screen))
+
 (defn ->horiz-line-points [start-y start-x end-x cell-size i]
   (let [y (+ start-y (* i cell-size))]
     [start-x y end-x y]))
@@ -32,16 +37,6 @@
         vert-lines      (get-vertical-lines start-y end-y cell-size (count board))]
     (concat horiz-lines vert-lines)))
 
-(defn generate-cells [board cell-size [origin-x origin-y]]
-  (let [board-size (count board)
-        [first-x first-y] [(+ origin-x (/ cell-size 2)) (+ origin-y (/ cell-size 2))]] ;shifts from corner to center
-    (for [row (range board-size)
-          col (range board-size)]
-      {:x     (+ first-x (* col cell-size))
-       :y     (+ first-y (* row cell-size))
-       ;:size  cell-size
-       :value (get-in board [row col])})))
-
 (defn draw-grid [cells]
   (doseq [{:keys [x y value]} cells]
     (when (or (= value "X") (= value "O"))
@@ -53,15 +48,23 @@
   (doseq [[x1 y1 x2 y2] lines]
     (q/line x1 y1 x2 y2)))
 
+(defn generate-cells [board cell-size [origin-x origin-y]]
+  (let [board-size (count board)
+        [first-x first-y] [(+ origin-x (/ cell-size 2)) (+ origin-y (/ cell-size 2))]] ;shifts from corner to center
+    (for [row (range board-size)
+          col (range board-size)]
+      {:x     (+ first-x (* col cell-size))
+       :y     (+ first-y (* row cell-size))
+       ;:size  cell-size
+       :value (get-in board [row col])})))
+
 (defmethod multis/draw-state :in-progress [{:keys [board active-player-index players] :as state}]
   (let [character     (get-in players [active-player-index :character])
         title-text    (str character "'s turn")
         lines         (get-lines board)
-        usable-screen util/screen-width
-        grid-origin-x 0
-        grid-origin-y (- util/screen-height usable-screen)
         cell-size     (/ usable-screen (count board))
-        cells         (generate-cells board cell-size [grid-origin-x grid-origin-y])]
+        cells         (generate-cells board cell-size [grid-origin-x grid-origin-y])
+        updated-state (assoc state :cells cells)]
     (q/background 240)
     (q/fill 0)
     (q/text-align :center :center)
@@ -69,11 +72,22 @@
     (q/text title-text (/ util/screen-width 2) util/title-offset-y)
     (draw-lines lines)
     (q/text-size (/ cell-size 2))
-    (draw-grid cells)))
+    (draw-grid cells)
+    updated-state))
 
-(defmethod multis/update-state :in-progress [{:keys [board] :as state}]
-  (let [play-options (board/play-options board)])
+(defmethod multis/update-state :in-progress [{:keys [board cells] :as state}]
+
   state)
 
-(defmethod multis/mouse-clicked :in-progress [state {:keys [x y]}]
-  state)
+(defmethod multis/mouse-clicked :in-progress [{:keys [board cells active-player-index players] :as state} {:keys [x y]}]
+  (let [play-options (set (board/play-options board))
+        cell-size    (/ usable-screen (count board))
+        relative-x   (- x grid-origin-x)
+        relative-y   (- y grid-origin-y)
+        clicked-col  (int (/ relative-x cell-size))
+        clicked-row  (int (/ relative-y cell-size))
+        value        (get-in board [clicked-row clicked-col])
+        player-char (get-in players [active-player-index :character])]
+  (if (contains? play-options value)
+    (assoc state :board (board/take-square board (board/space->coordinates value board) player-char))
+    state)))
