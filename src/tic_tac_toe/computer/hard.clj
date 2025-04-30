@@ -1,7 +1,7 @@
-(ns tic-tac-toe.hard
+(ns tic-tac-toe.computer.hard
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.computer-util :as util]))
+            [tic-tac-toe.computer.computer-util :as util]))
 
 (defn eval-board [board depth comp-char opp-char]
   (cond (board/winner? board comp-char) (- 10 depth)

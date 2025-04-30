@@ -1,4 +1,4 @@
-(ns tic-tac-toe.computer-util
+(ns tic-tac-toe.computer.computer-util
   (:require [tic-tac-toe.board :as board]))
 
 (defn get-possible-moves [board]

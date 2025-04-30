@@ -5,7 +5,7 @@
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-spec :as test-gui]
             [tic-tac-toe.board_spec :as test-board]
-            [tic-tac-toe.game-spec :as test-game]))
+            [tic-tac-toe.tui.game-spec :as test-game]))
 
 (describe "in-progress"
   (with-stubs)
@@ -45,7 +45,7 @@
 
   (context "update selects based on turn-phase"
            (it "if turn-phase is nil, initializes to awaiting-input and initializes a turn"
-             (with-redefs [core/take-turn (stub :take-turn)
+             (with-redefs [core/take-turn        (stub :take-turn)
                            multis/update-in-turn (stub :update-in-turn)]
                (multis/update-state (test-gui/state-create {:status :in-progress}))
                (should-have-invoked :take-turn {:with [(test-gui/state-create {:status :in-progress :turn-phase :awaiting-input})]})))
@@ -57,7 +57,7 @@
            (it "if turn-phase is input-received, the board is evaluated and the turn is marked complete"
              (with-redefs [eval-board (stub :eval-board {:return (test-gui/state-create {:status :in-progress :turn-phase :input-received :board [[1 2 3]]})})]
                (should= (test-gui/state-create {:status :in-progress :turn-phase :turn-complete :board [[1 2 3]]})
-                      (multis/update-state (test-gui/state-create {:status :in-progress :turn-phase :input-received :board [[1 2 3]]})))))
+                        (multis/update-state (test-gui/state-create {:status :in-progress :turn-phase :input-received :board [[1 2 3]]})))))
 
            (it "if turn-phase is turn-complete, it changes the active player, changes turn-phase to awaiting input and initiates the next turn"
              (with-redefs [core/take-turn (stub :take-turn)]
@@ -65,6 +65,56 @@
                (should-have-invoked :take-turn {:with [(test-gui/state-create {:status :in-progress :turn-phase :awaiting-input :active-player-index 1 :x-type :human :o-type :human})]})))
 
            )
+  (context "mouse-click"
+           (it "does not update if invalid play clicked"
+             (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
+                                                          :active-player-index 0
+                                                          :status              :in-progress
+                                                          :x-type              :human
+                                                          :o-type              :computer
+                                                          :turn-phase          :awaiting-input})
+                   event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
+                                   :y (+ grid-origin-y (/ usable-screen 2))}]
+               (should= starting-state (multis/mouse-clicked starting-state event)))
+             )
+           (it "does not update if turn phase is not awaiting input"
+             (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
+                                                          :active-player-index 0
+                                                          :status              :in-progress
+                                                          :x-type              :human
+                                                          :o-type              :computer
+                                                          :turn-phase          :turn-complete})
+                   event          {:x grid-origin-x         ;space [0 2]
+                                   :y (+ grid-origin-y (/ (* 2 usable-screen) 3))}]
+               (should= starting-state (multis/mouse-clicked starting-state event)))
+             )
+           (it "does not update if active player is not human"
+             (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
+                                                          :active-player-index 0
+                                                          :status              :in-progress
+                                                          :x-type              :computer
+                                                          :o-type              :computer
+                                                          :turn-phase          :awaiting-input})
+                   event          {:x grid-origin-x         ;space [0 2]
+                                   :y (+ grid-origin-y (/ (* 2 usable-screen) 3))}]
+               (should= starting-state (multis/mouse-clicked starting-state event)))
+             )
 
+           (it "does update if valid play is selected, player is human and turn phase is awaiting input"
+             (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
+                                                          :active-player-index 0
+                                                          :status              :in-progress
+                                                          :x-type              :human
+                                                          :o-type              :computer
+                                                          :turn-phase          :awaiting-input})
+                   event          {:x grid-origin-x         ;space [0 2]
+                                   :y (+ grid-origin-y (/ (* 2 usable-screen) 3))}
+                   new-state      (test-gui/state-create {:board               test-board/center-x-corner-xo-board
+                                                          :active-player-index 0
+                                                          :status              :in-progress
+                                                          :x-type              :human
+                                                          :o-type              :computer
+                                                          :turn-phase          :input-received})]
+               (should= new-state (multis/mouse-clicked starting-state event))))
+           )
   )
-

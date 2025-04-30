@@ -2,10 +2,10 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.main :refer :all]
-            [tic-tac-toe.game :as game]
-            [tic-tac-toe.game-spec :as test-game]
+            [tic-tac-toe.tui.game :as game]
+            [tic-tac-toe.tui.game-spec :as test-game]
             [tic-tac-toe.core :as user-prompt]
-            [tic-tac-toe.console :as console]))
+            [tic-tac-toe.tui.console :as console]))
 
 
 

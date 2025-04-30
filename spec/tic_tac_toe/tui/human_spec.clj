@@ -1,8 +1,8 @@
-(ns tic-tac-toe.human-spec
+(ns tic-tac-toe.tui.human-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.human :refer :all]
-            [tic-tac-toe.console :as console]
-            [tic-tac-toe.game-spec :as test-game]
+            [tic-tac-toe.tui.human :refer :all]
+            [tic-tac-toe.tui.console :as console]
+            [tic-tac-toe.tui.game-spec :as test-game]
             [tic-tac-toe.core :as core]))
 
 (describe "human turn"

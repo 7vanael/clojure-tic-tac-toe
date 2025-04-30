@@ -1,6 +1,6 @@
-(ns tic-tac-toe.medium
-  (:require [tic-tac-toe.easy :as easy]
-            [tic-tac-toe.hard :as hard]
+(ns tic-tac-toe.computer.medium
+  (:require [tic-tac-toe.computer.easy :as easy]
+            [tic-tac-toe.computer.hard :as hard]
             [tic-tac-toe.core :as core]))
 
 (defmethod core/take-computer-turn :medium [state]

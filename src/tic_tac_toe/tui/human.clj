@@ -1,4 +1,4 @@
-(ns tic-tac-toe.human
+(ns tic-tac-toe.tui.human
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]))
 

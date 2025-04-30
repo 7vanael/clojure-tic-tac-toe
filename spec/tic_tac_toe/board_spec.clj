@@ -59,6 +59,11 @@
    [4 "X" 6]
    [7 8 9]])
 
+(def center-x-corner-xo-board
+  [["O" 2 3]
+   [4 "X" 6]
+   ["X" 8 9]])
+
 (def full-board-draw
   [["X" "X" "O"]
    ["O" "O" "X"]

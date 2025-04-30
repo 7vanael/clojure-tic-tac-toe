@@ -1,6 +1,6 @@
-(ns tic-tac-toe.computer-util-spec
+(ns tic-tac-toe.computer.computer-util-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.computer-util :as sut]))
+            [tic-tac-toe.computer.computer-util :as sut]))
 
 (def board-o-could-win
   [["X" 2 "X"]

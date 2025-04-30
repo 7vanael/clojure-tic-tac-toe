@@ -1,9 +1,9 @@
-(ns tic-tac-toe.console-spec
+(ns tic-tac-toe.tui.console-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.console :refer :all]
+            [tic-tac-toe.tui.console :refer :all]
             [tic-tac-toe.board_spec :refer :all :as test-board]
             [tic-tac-toe.core :as user-prompt]
-            [tic-tac-toe.game-spec :as test-game]))
+            [tic-tac-toe.tui.game-spec :as test-game]))
 
 (describe "console"
   (with-stubs)

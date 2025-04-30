@@ -114,12 +114,10 @@
         clicked-col     (int (/ relative-x cell-size))
         clicked-row     (int (/ relative-y cell-size))
         value           (get-in board [clicked-row clicked-col])
-        coordinates     (board/space->coordinates value board)
         player-char     (get-in players [active-player-index :character])
-        potential-board (board/take-square board coordinates player-char)
         player-type     (get-in players [active-player-index :play-type])]
     (if (and (contains? play-options value) (= turn-phase :awaiting-input) (= :human player-type))
       (-> state
-          (assoc :board potential-board)
+          (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           (assoc :turn-phase :input-received))
       state)))

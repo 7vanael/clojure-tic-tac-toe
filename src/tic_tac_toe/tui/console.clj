@@ -1,8 +1,8 @@
-(ns tic-tac-toe.console
+(ns tic-tac-toe.tui.console
   (:require [clojure.string :as str]
             [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.game :as game]))
+            [tic-tac-toe.tui.game :as game]))
 
 (defmethod core/welcome-message :tui [_]
   (println "Welcome to tic-tac-toe!"))

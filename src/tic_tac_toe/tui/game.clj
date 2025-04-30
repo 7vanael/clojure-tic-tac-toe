@@ -1,10 +1,10 @@
-(ns tic-tac-toe.game
+(ns tic-tac-toe.tui.game
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.easy]
-            [tic-tac-toe.medium]
-            [tic-tac-toe.hard]
-            [tic-tac-toe.human]))
+            [tic-tac-toe.computer.easy]
+            [tic-tac-toe.computer.medium]
+            [tic-tac-toe.computer.hard]
+            [tic-tac-toe.tui.human]))
 
 (defn change-player [state]
   (assoc state :active-player-index (if (= (:active-player-index state) 0)

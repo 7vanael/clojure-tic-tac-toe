@@ -1,9 +1,9 @@
-(ns tic-tac-toe.game-spec
+(ns tic-tac-toe.tui.game-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :as user-prompt]
-            [tic-tac-toe.game :refer :all]
+            [tic-tac-toe.tui.game :refer :all]
             [tic-tac-toe.board_spec :as test-board]
-            [tic-tac-toe.console :as console]
+            [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.core :as core]))
 
 (def state-initial

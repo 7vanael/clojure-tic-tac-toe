@@ -1,5 +1,5 @@
 (ns tic-tac-toe.main
-  (:require [tic-tac-toe.console]
+  (:require [tic-tac-toe.tui.console]
             [tic-tac-toe.gui.gui]
             [tic-tac-toe.core :as core]))
 
