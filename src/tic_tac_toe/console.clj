@@ -99,7 +99,10 @@
 
 (defmethod core/get-board-size :tui [_ size-options]
   (board-size-prompt size-options)
-  (let [size-selection (read-string (read-line))]
+  (let [input (read-line)
+        size-selection (try (read-string input)
+                            (catch Exception _
+                              nil))]
     (if (some #{size-selection} size-options)
       size-selection
       (core/get-board-size {:interface :tui} size-options))))

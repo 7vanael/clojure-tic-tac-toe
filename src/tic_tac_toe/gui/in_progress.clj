@@ -102,7 +102,8 @@
   (if (nil? (:turn-phase state))
     (-> state
         (assoc :turn-phase :awaiting-input)
-        core/take-turn)
+        core/take-turn
+        multis/update-in-turn)
     (multis/update-in-turn state)))
 
 (defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players turn-phase] :as state} {:keys [x y]}]

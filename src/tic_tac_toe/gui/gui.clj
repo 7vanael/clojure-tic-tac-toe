@@ -3,14 +3,13 @@
             [quil.middleware :as m]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.gui.gui_core :as multis]
-            [tic-tac-toe.gui.config-players]
-            [tic-tac-toe.gui.welcome]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.gui.select-board]
-            [tic-tac-toe.gui.in-progress]
+            [tic-tac-toe.gui.config-players]
             [tic-tac-toe.gui.draw]
-            [tic-tac-toe.gui.winner]
-            [tic-tac-toe.core :as core]))
+            [tic-tac-toe.gui.in-progress]
+            [tic-tac-toe.gui.select-board]
+            [tic-tac-toe.gui.welcome]
+            [tic-tac-toe.gui.winner]))
 
 (defn setup []
   util/initial-state)

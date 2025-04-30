@@ -27,13 +27,3 @@
 (defn start [state]
   (core/welcome-message state)
   (play state))
-
-
-
-
-
-#_(defn update-state [state]
-    (-> state
-        setup
-        maybe-make-computer-move
-        play-again))

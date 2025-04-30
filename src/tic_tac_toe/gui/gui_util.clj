@@ -13,11 +13,7 @@
 
 (def screen-height 720)
 (def title-offset-y 72)
-(def screen-width (- screen-height (* title-offset-y 2))) ;576
-;288 center
-;144 first of 2
-;432 second of 2
-; 864
+(def screen-width (- screen-height (* title-offset-y 2)))
 
 (defn button-clicked? [[click-x click-y] [center-x center-y rect-width rect-height]]
   (let [min-x (- center-x (/ rect-width 2))
@@ -31,7 +27,7 @@
 (defn draw-button [label [x y width height]]
   (q/rect-mode :center)
   (q/no-stroke)
-  (q/fill 200 200 250)                                      ;;background color of button
+  (q/fill 200 200 250)
   (q/rect x y width height)
   (q/fill 0)
   (q/text-align :center :center)
