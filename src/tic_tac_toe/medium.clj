@@ -5,4 +5,6 @@
 
 (defmethod core/take-computer-turn :medium [state]
   (let [tenth-percent (rand-int 10)]
-    (if (zero? tenth-percent) (easy/easy state) (hard/hard state))))
+    (if (zero? tenth-percent)
+      (assoc (easy/easy state) :turn-phase :input-received)
+      (assoc (hard/hard state) :turn-phase :input-received))))
