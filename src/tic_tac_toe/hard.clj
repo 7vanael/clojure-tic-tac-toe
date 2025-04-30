@@ -1,6 +1,6 @@
 (ns tic-tac-toe.hard
   (:require [tic-tac-toe.board :as board]
-            [tic-tac-toe.turn :as turn]
+            [tic-tac-toe.core :as core]
             [tic-tac-toe.computer-util :as util]))
 
 (defn eval-board [board depth comp-char opp-char]
@@ -42,7 +42,7 @@
         next-play (first (apply max-key second (shuffle (eval-moves state))))]
     (assoc state :board (board/take-square board next-play character))))
 
-(defmethod turn/take-turn :hard [state]
-  (hard state))
+(defmethod core/take-computer-turn :hard [state]
+  (assoc (hard state) :turn-phase :input-received))
 
 

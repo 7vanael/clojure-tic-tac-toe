@@ -1,6 +1,6 @@
 (ns tic-tac-toe.medium-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.turn :as turn]
+            [tic-tac-toe.core :as core]
             [tic-tac-toe.hard-spec :as test-computer]
             [tic-tac-toe.easy :as easy]
             [tic-tac-toe.hard :as hard]))
@@ -13,7 +13,7 @@
     (with-redefs [rand-int       (stub :rand-int {:return 0})
                   easy/easy      (stub :easy)
                   hard/hard (stub :hard)]
-      (turn/take-turn test-computer/state-medium-initial-4)
+      (core/take-turn test-computer/state-medium-initial-4)
       (should-have-invoked :easy)
       (should-not-have-invoked :hard)))
 
@@ -21,6 +21,6 @@
     (with-redefs [rand-int       (stub :rand-int {:return 1})
                   easy/easy           (stub :easy)
                   hard/hard (stub :hard)]
-      (turn/take-turn test-computer/state-medium-initial-4)
+      (core/take-turn test-computer/state-medium-initial-4)
       (should-have-invoked :hard)
       (should-not-have-invoked :easy))))

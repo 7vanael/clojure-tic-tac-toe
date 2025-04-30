@@ -1,7 +1,7 @@
 (ns tic-tac-toe.easy-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.easy :refer :all]
-            [tic-tac-toe.turn :as turn]
+            [tic-tac-toe.core :as core]
             [tic-tac-toe.hard-spec :as test-computer]
             [tic-tac-toe.game-spec :as test-game]))
 
@@ -10,12 +10,12 @@
 
   (it "Calls the easy computer turn method if the active player is easy"
     (with-redefs [easy (stub :computer-easy)]
-      (turn/take-turn test-game/state-easy-initial-4)
+      (core/take-turn test-game/state-easy-initial-4)
       (should-have-invoked :computer-easy)))
 
   (it "for easy, takes a random space"
-    (let [result1 (turn/take-turn test-computer/state-easy-empty-4)
-          result2 (turn/take-turn test-computer/state-easy-empty-4)
-          result3 (turn/take-turn test-computer/state-easy-empty-4)]
+    (let [result1 (core/take-turn test-computer/state-easy-empty-4)
+          result2 (core/take-turn test-computer/state-easy-empty-4)
+          result3 (core/take-turn test-computer/state-easy-empty-4)]
       (should-not (= result1 result2 result3))))
   )

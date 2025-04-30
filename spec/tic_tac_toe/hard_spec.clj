@@ -2,7 +2,7 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.hard :refer :all]
             [tic-tac-toe.board_spec :as test-board]
-            [tic-tac-toe.turn :as turn]
+            [tic-tac-toe.core :as core]
             [tic-tac-toe.game-spec :as test-game]))
 
 (def board-one-remaining
@@ -24,7 +24,8 @@
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
-                         {:character "O" :play-type :human}]})
+                         {:character "O" :play-type :human}]
+   :turn-phase :input-received})
 (def board-o-could-win
   [["X" 2 "X"]
    ["O" "X" "X"]
@@ -44,7 +45,8 @@
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :computer :difficulty :hard}]})
+                         {:character "O" :play-type :computer :difficulty :hard}]
+   :turn-phase :input-received})
 
 (def state-o-missed-win
   {:interface :tui
@@ -52,7 +54,8 @@
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :computer :difficulty :hard}]})
+                         {:character "O" :play-type :computer :difficulty :hard}]
+   :turn-phase :input-received})
 
 (def board-o-about-to-win
   [[1 2 "X"]
@@ -72,7 +75,8 @@
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
-                         {:character "O" :play-type :human}]})
+                         {:character "O" :play-type :human}]
+   :turn-phase :input-received})
 
 (def state-empty-4
   {:interface :tui
@@ -103,15 +107,15 @@
 
   (it "The computer hard turn method is called if the active player is computer"
     (with-redefs [hard (stub :computer-turn)]
-      (turn/take-turn test-game/state-computer-2-4-empty)
+      (core/take-turn test-game/state-computer-2-4-empty)
       (should-have-invoked :computer-turn)))
 
   (it "takes the only available move"
-    (should= state-remaining-taken (turn/take-turn state-one-remaining)))
+    (should= state-remaining-taken (core/take-turn state-one-remaining)))
 
   (it "makes the winning move"
-    (should= state-o-took-win (turn/take-turn state-o-could-win))
-    (should-not= state-o-missed-win (turn/take-turn state-o-could-win)))
+    (should= state-o-took-win (core/take-turn state-o-could-win))
+    (should-not= state-o-missed-win (core/take-turn state-o-could-win)))
 
   (it "evaluates a board's score, highest for immediate win, lower for distant wins"
     (should= 10 (eval-board test-board/not-full-board-x-column-win 0 "X" "O")))
@@ -142,9 +146,9 @@
     (should= [[[0 1] -9] [[2 0] 10]] (eval-moves state-o-could-win)))
 
   (it "randomizes the selected move when all are equally scored"
-    (let [first-result  (turn/take-turn state-empty-4)
-          second-result (turn/take-turn state-empty-4)
-          third-result (turn/take-turn state-empty-4)]
+    (let [first-result  (core/take-turn state-empty-4)
+          second-result (core/take-turn state-empty-4)
+          third-result (core/take-turn state-empty-4)]
       (should-not (= first-result second-result third-result))))
 
   (it "scales max-depth to board size"
@@ -152,5 +156,5 @@
     (should= 8 (calc-max-depth 3)))
 
   (it "blocks the opponents imminent win"
-    (should= state-o-blocked (turn/take-turn state-o-about-to-win)))
+    (should= state-o-blocked (core/take-turn state-o-about-to-win)))
   )

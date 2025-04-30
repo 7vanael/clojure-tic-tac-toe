@@ -1,7 +1,7 @@
 (ns tic-tac-toe.gui.config-players-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.gui.config-players :refer :all]
-            [tic-tac-toe.gui.multis :as multis]
+            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-spec :as test-gui]))
 
 (describe "configure players"

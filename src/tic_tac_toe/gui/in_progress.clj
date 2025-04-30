@@ -1,8 +1,9 @@
 (ns tic-tac-toe.gui.in-progress
   (:require [quil.core :as q]
-            [tic-tac-toe.gui.multis :as multis]
+            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.board :as board]))
+            [tic-tac-toe.board :as board]
+            [tic-tac-toe.core :as core]))
 
 
 (def usable-screen util/screen-width)
@@ -55,7 +56,6 @@
           col (range board-size)]
       {:x     (+ first-x (* col cell-size))
        :y     (+ first-y (* row cell-size))
-       ;:size  cell-size
        :value (get-in board [row col])})))
 
 (defmethod multis/draw-state :in-progress [{:keys [board active-player-index players] :as state}]
@@ -75,19 +75,50 @@
     (draw-grid cells)
     updated-state))
 
-(defmethod multis/update-state :in-progress [{:keys [board cells] :as state}]
 
+(defn change-player [state]
+  (assoc state :active-player-index (if (= (:active-player-index state) 0) 1 0)))
+
+(defn eval-board [{:keys [board active-player-index players] :as state}]
+  (cond (board/winner? board (get-in players [active-player-index :character])) (assoc state :status :winner)
+        (not (board/any-space-available? board)) (assoc state :status :draw)
+        :else state))
+
+(defmethod multis/update-in-turn :awaiting-input [state]
   state)
 
-(defmethod multis/mouse-clicked :in-progress [{:keys [board cells active-player-index players] :as state} {:keys [x y]}]
-  (let [play-options (set (board/play-options board))
-        cell-size    (/ usable-screen (count board))
-        relative-x   (- x grid-origin-x)
-        relative-y   (- y grid-origin-y)
-        clicked-col  (int (/ relative-x cell-size))
-        clicked-row  (int (/ relative-y cell-size))
-        value        (get-in board [clicked-row clicked-col])
-        player-char (get-in players [active-player-index :character])]
-  (if (contains? play-options value)
-    (assoc state :board (board/take-square board (board/space->coordinates value board) player-char))
-    state)))
+(defmethod multis/update-in-turn :input-received [state]
+  (-> state
+      eval-board
+      (assoc :turn-phase :turn-complete)))
+
+(defmethod multis/update-in-turn :turn-complete [state]
+  (-> state
+      change-player
+      (assoc :turn-phase :awaiting-input)
+      core/take-turn))
+
+(defmethod multis/update-state :in-progress [state]
+  (if (nil? (:turn-phase state))
+    (-> state
+        (assoc :turn-phase :awaiting-input)
+        core/take-turn)
+    (multis/update-in-turn state)))
+
+(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players turn-phase] :as state} {:keys [x y]}]
+  (let [play-options    (set (board/play-options board))
+        cell-size       (/ usable-screen (count board))
+        relative-x      (- x grid-origin-x)
+        relative-y      (- y grid-origin-y)
+        clicked-col     (int (/ relative-x cell-size))
+        clicked-row     (int (/ relative-y cell-size))
+        value           (get-in board [clicked-row clicked-col])
+        coordinates     (board/space->coordinates value board)
+        player-char     (get-in players [active-player-index :character])
+        potential-board (board/take-square board coordinates player-char)
+        player-type     (get-in players [active-player-index :play-type])]
+    (if (and (contains? play-options value) (= turn-phase :awaiting-input) (= :human player-type))
+      (-> state
+          (assoc :board potential-board)
+          (assoc :turn-phase :input-received))
+      state)))

@@ -2,10 +2,15 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.console :refer :all]
             [tic-tac-toe.board_spec :refer :all :as test-board]
-            [tic-tac-toe.user-prompt :as user-prompt]))
+            [tic-tac-toe.core :as user-prompt]
+            [tic-tac-toe.game-spec :as test-game]))
 
 (describe "console"
   (with-stubs)
+
+  (it "initializes an empty board, and starting player O"
+    (should= test-game/state-initial (initialize-state {:type-x       :human :type-o :human :difficulty-x nil
+                                                        :difficulty-o nil :board-size 3 :interface :tui :turn-phase nil})))
 
   (it "prints a welcome message"
     (should= "Welcome to tic-tac-toe!\n"

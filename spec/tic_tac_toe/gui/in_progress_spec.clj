@@ -1,7 +1,7 @@
 (ns tic-tac-toe.gui.in-progress-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.gui.in-progress :refer :all]
-            [tic-tac-toe.gui.multis :as multis]
+            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-spec :as test-gui]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board_spec :as test-board]))

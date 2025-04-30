@@ -2,6 +2,15 @@
   (:require [quil.core :as q]))
 
 
+(def initial-state
+  {:interface           :gui
+   :board               nil
+   :active-player-index 0
+   :status              :welcome
+   :players             [{:character "X" :play-type nil :difficulty nil}
+                         {:character "O" :play-type nil :difficulty nil}]
+   :turn-phase nil})
+
 (def screen-height 720)
 (def title-offset-y 72)
 (def screen-width (- screen-height (* title-offset-y 2))) ;576

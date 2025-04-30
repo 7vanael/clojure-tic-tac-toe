@@ -1,6 +1,6 @@
 (ns tic-tac-toe.gui.config-players
   (:require [quil.core :as q]
-            [tic-tac-toe.gui.multis :as multis]
+            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]))
 
 

@@ -1,10 +1,10 @@
 (ns tic-tac-toe.game-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.user-prompt :as user-prompt]
+            [tic-tac-toe.core :as user-prompt]
             [tic-tac-toe.game :refer :all]
             [tic-tac-toe.board_spec :as test-board]
             [tic-tac-toe.console :as console]
-            [tic-tac-toe.turn :as turn]))
+            [tic-tac-toe.core :as core]))
 
 (def state-initial
   {:interface           :tui
@@ -12,7 +12,8 @@
    :active-player-index 1
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :turn-phase          nil})
 
 (def state-4-initial
   {:interface           :tui
@@ -20,7 +21,8 @@
    :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :turn-phase          :input-received})
 
 (def state-4-first-x
   {:interface           :tui
@@ -28,7 +30,8 @@
    :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :turn-phase          :input-received})
 
 (def state-4-first-x-start-o
   {:interface           :tui
@@ -44,7 +47,8 @@
    :active-player-index 1
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :turn-phase          :input-received})
 
 (def state-computer-2-4-empty
   {:interface           :tui
@@ -52,7 +56,8 @@
    :active-player-index 1
    :status              :in-progress
    :players             [{:character "X" :play-type :computer :difficulty :hard}
-                         {:character "O" :play-type :computer :difficulty :hard}]})
+                         {:character "O" :play-type :computer :difficulty :hard}]
+   :turn-phase          nil})
 
 (def state-medium-initial-4
   {:interface           :tui
@@ -108,7 +113,8 @@
    :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :turn-phase          :input-received})
 
 (def state-center-x-mid-turn
   {:interface           :tui
@@ -116,7 +122,8 @@
    :active-player-index 1
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :turn-phase          :input-received})
 
 (def state-center-x-corner-o
   {:interface           :tui
@@ -124,7 +131,8 @@
    :active-player-index 1
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :turn-phase          :input-received})
 
 (describe "game"
   (with-stubs)
@@ -152,8 +160,9 @@
                 :active-player-index 1
                 :status              :in-progress
                 :players             [{:character "X" :play-type :human :difficulty nil}
-                                      {:character "O" :play-type :human :difficulty nil}]}
-               (change-player state-center-x))))
+                                      {:character "O" :play-type :human :difficulty nil}]
+                :turn-phase          nil}
+               (change-player (assoc state-center-x :turn-phase nil)))))
 
   (it "changes the active player X"
     (with-out-str
@@ -162,7 +171,8 @@
                 :active-player-index 0
                 :status              :in-progress
                 :players             [{:character "X" :play-type :human :difficulty nil}
-                                      {:character "O" :play-type :human :difficulty nil}]}
+                                      {:character "O" :play-type :human :difficulty nil}]
+                :turn-phase          nil}
                (change-player state-initial))))
 
   (it "updates status to winner if a player has won"
@@ -173,13 +183,13 @@
 
   (it "doesn't let a player play in an occupied space"
     (with-redefs [console/print-number-prompt (stub :print-dup-play-type)]
-      (let [result (with-in-str "12\n1\n" (turn/take-turn state-center-x-mid-turn))]
+      (let [result (with-in-str "12\n1\n" (core/take-turn state-center-x-mid-turn))]
         (should-have-invoked :print-dup-play-type {:times 2})
         (should= state-center-x-corner-o result))))
 
   (it "doesn't let a player play in an occupied space in a 4x grid"
     (with-redefs [console/print-number-prompt (stub :print-dup-play-type)]
-      (let [result (with-in-str "junk\n6\n1\n" (turn/take-turn state-4-first-x-start-o))]
+      (let [result (with-in-str "junk\n6\n1\n" (core/take-turn state-4-first-x-start-o))]
         (should-have-invoked :print-dup-play-type {:times 3})
         (should= state-4-first-x-o result))))
   )

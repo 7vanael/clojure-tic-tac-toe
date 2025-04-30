@@ -1,6 +1,6 @@
 (ns tic-tac-toe.gui.select-board
   (:require [quil.core :as q]
-            [tic-tac-toe.gui.multis :as multis]
+            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]))
 

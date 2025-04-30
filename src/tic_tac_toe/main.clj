@@ -1,0 +1,9 @@
+(ns tic-tac-toe.main
+  (:require [tic-tac-toe.console]
+            [tic-tac-toe.gui.gui]
+            [tic-tac-toe.core :as core]))
+
+(defn -main [& args]
+  (let [interface-type (keyword (first args))
+        initial-state  {:status :config :interface (or interface-type :tui)}]
+    (core/start-game initial-state)))

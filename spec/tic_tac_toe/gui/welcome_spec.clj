@@ -1,6 +1,6 @@
 (ns tic-tac-toe.gui.welcome-spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.gui.multis :as multis]
+            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-spec :as test-gui]))
 
 
