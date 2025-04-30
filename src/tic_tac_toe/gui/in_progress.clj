@@ -3,7 +3,8 @@
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]
-            [tic-tac-toe.core :as core]))
+            [tic-tac-toe.core :as core]
+            [tic-tac-toe.common :as common]))
 
 
 (def usable-screen util/screen-width)
@@ -75,36 +76,16 @@
     (draw-grid cells)
     updated-state))
 
-
-(defn change-player [state]
-  (assoc state :active-player-index (if (= (:active-player-index state) 0) 1 0)))
-
 (defn eval-board [{:keys [board active-player-index players] :as state}]
   (cond (board/winner? board (get-in players [active-player-index :character])) (assoc state :status :winner)
-        (not (board/any-space-available? board)) (assoc state :status :draw)
+        (not (board/any-space-available? board)) (assoc state :status :tie)
         :else state))
 
-(defmethod multis/update-in-turn :awaiting-input [state]
-  state)
-
-(defmethod multis/update-in-turn :input-received [state]
-  (-> state
-      eval-board
-      (assoc :turn-phase :turn-complete)))
-
-(defmethod multis/update-in-turn :turn-complete [state]
-  (-> state
-      change-player
-      (assoc :turn-phase :awaiting-input)
-      core/take-turn))
-
 (defmethod multis/update-state :in-progress [state]
-  (if (nil? (:turn-phase state))
     (-> state
-        (assoc :turn-phase :awaiting-input)
-        core/take-turn
-        multis/update-in-turn)
-    (multis/update-in-turn state)))
+        board/evaluate-board
+        common/change-player
+        core/take-turn))
 
 (defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players turn-phase] :as state} {:keys [x y]}]
   (let [play-options    (set (board/play-options board))
@@ -116,8 +97,7 @@
         value           (get-in board [clicked-row clicked-col])
         player-char     (get-in players [active-player-index :character])
         player-type     (get-in players [active-player-index :play-type])]
-    (if (and (contains? play-options value) (= turn-phase :awaiting-input) (= :human player-type))
+    (if (and (contains? play-options value) (= :human player-type))
       (-> state
-          (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
-          (assoc :turn-phase :input-received))
+          (assoc :board (board/take-square board (board/space->coordinates value board) player-char)))
       state)))

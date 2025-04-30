@@ -35,6 +35,7 @@
   (println "Please enter the number for the space you'd like to take"))
 
 (defmethod core/get-next-play :tui [state play-options]
+  (core/announce-player state)
   (print-number-prompt)
   (let [input (read-string (read-line))]
     (if (validate-number play-options input)
@@ -44,8 +45,9 @@
 (defn invalid-selection []
   (println "That isn't a valid play, please try again"))
 
-(defmethod core/announce-player :tui [_ character]
-  (println (str "Player " character "'s turn")))
+(defmethod core/announce-player :tui [{:keys [active-player-index players]}]
+  (let [character (get-in players [active-player-index :character])]
+    (println (str "Player " character "'s turn"))))
 
 (defmethod core/announce-draw :tui [_]
   (println "It's a draw! Good game!"))
@@ -121,8 +123,7 @@
    :active-player-index 1
    :status              :in-progress
    :players             [{:character "X" :play-type type-x :difficulty difficulty-x}
-                         {:character "O" :play-type type-o :difficulty difficulty-o}]
-   :turn-phase          nil})
+                         {:character "O" :play-type type-o :difficulty difficulty-o}]})
 
 (def player-options
   [:human :computer])

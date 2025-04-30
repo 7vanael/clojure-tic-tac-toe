@@ -5,7 +5,7 @@
 (defmulti welcome-message :interface)
 (defmulti display-board get-interface)
 (defmulti get-next-play get-interface)
-(defmulti announce-player get-interface)
+(defmulti announce-player :interface)
 (defmulti announce-draw :interface)
 (defmulti announce-winner get-interface)
 (defmulti get-player-type (fn [state & _] (:interface state)))

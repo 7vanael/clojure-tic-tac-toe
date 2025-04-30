@@ -73,8 +73,7 @@
                                            :active-player-index 1
                                            :status              :in-progress
                                            :players             [{:character "X" :play-type :human :difficulty nil}
-                                                                 {:character "O" :play-type :computer :difficulty :medium}]
-                                           :turn-phase          nil}]})))
+                                                                 {:character "O" :play-type :computer :difficulty :medium}]}]})))
 
   (it "uses the console interface if launched with tui"
     (with-redefs [core/start-game           (stub :launch-cli)

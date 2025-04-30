@@ -8,5 +8,4 @@
         next-play-coordinates (board/space->coordinates next-play board)
         player-char (get-in players [active-player-index :character])]
     (-> state
-        (assoc :board (board/take-square board next-play-coordinates player-char))
-        (assoc :turn-phase :input-received))))
+        (assoc :board (board/take-square board next-play-coordinates player-char)))))

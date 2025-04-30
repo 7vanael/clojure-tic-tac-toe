@@ -4,24 +4,15 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]
             [tic-tac-toe.computer.hard]
-            [tic-tac-toe.tui.human]))
-
-(defn change-player [state]
-  (assoc state :active-player-index (if (= (:active-player-index state) 0)
-                                      (do (core/announce-player state "O") 1)
-                                      (do (core/announce-player state "X") 0))))
-
-(defn evaluate-board [{:keys [board active-player-index players] :as state}]
-  (cond (board/winner? board (get-in players [active-player-index :character])) (assoc state :status :winner)
-        (not (board/any-space-available? board)) (assoc state :status :draw)
-        :else state))
+            [tic-tac-toe.tui.human]
+            [tic-tac-toe.common :as common]))
 
 
 (defn play [{:keys [board status active-player-index players] :as state}]
   (core/display-board state board)
-  (cond (= status :draw) (core/announce-draw state)
+  (cond (= status :tie) (core/announce-draw state)
         (= status :winner) (core/announce-winner state (get-in players [active-player-index :character]))
-        :else (recur (evaluate-board (core/take-turn (change-player state))))))
+        :else (recur (board/evaluate-board (core/take-turn (common/change-player state))))))
 
 
 (defn start [state]

@@ -43,6 +43,4 @@
     (assoc state :board (board/take-square board next-play character))))
 
 (defmethod core/take-computer-turn :hard [state]
-  (assoc (hard state) :turn-phase :input-received))
-
-
+  (hard state))

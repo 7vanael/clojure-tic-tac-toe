@@ -5,5 +5,3 @@
 (defmulti update-state :status)
 
 (defmulti mouse-clicked (fn [state & _] (:status state)))
-
-(defmulti update-in-turn :turn-phase)

@@ -12,34 +12,39 @@
 
 (defn space->coordinates [number board]
   (let [width (count board)
-        x (quot (dec number) width)
-        y (rem (dec number) width)]
+        x     (quot (dec number) width)
+        y     (rem (dec number) width)]
     [x y]))
 
-  (defn take-square [board [x y] character]
-    (if (available? board [x y])
-      (assoc-in board [x y] character)
-      board))
+(defn take-square [board [x y] character]
+  (if (available? board [x y])
+    (assoc-in board [x y] character)
+    board))
 
-  (defn any-space-available? [board]
-    (some number? (flatten board)))
+(defn any-space-available? [board]
+  (some number? (flatten board)))
 
-  (defn win-row? [board character]
-    (some (partial every? #(= % character)) board))
+(defn win-row? [board character]
+  (some (partial every? #(= % character)) board))
 
-  (defn win-column? [board character]
-    (win-row? (apply mapv vector board) character))
+(defn win-column? [board character]
+  (win-row? (apply mapv vector board) character))
 
-  (defn next-location [location step]
-    [(+ (first location) (first step)) (+ (second location) (second step))])
+(defn next-location [location step]
+  [(+ (first location) (first step)) (+ (second location) (second step))])
 
-  (defn win-diag? [board character]
-    (let [diag       (take (count board) (iterate (partial next-location [1 1]) [0 0]))
-          ortho-diag (take (count board) (iterate (partial next-location [1 -1]) [0 (dec (count board))]))]
-      (or (every? #(= character (get-in board %)) diag)
-          (every? #(= character (get-in board %)) ortho-diag))))
+(defn win-diag? [board character]
+  (let [diag       (take (count board) (iterate (partial next-location [1 1]) [0 0]))
+        ortho-diag (take (count board) (iterate (partial next-location [1 -1]) [0 (dec (count board))]))]
+    (or (every? #(= character (get-in board %)) diag)
+        (every? #(= character (get-in board %)) ortho-diag))))
 
-  (defn winner? [board character]
-    (or (win-row? board character)
-        (win-column? board character)
-        (win-diag? board character)))
+(defn winner? [board character]
+  (or (win-row? board character)
+      (win-column? board character)
+      (win-diag? board character)))
+
+  (defn evaluate-board [{:keys [board active-player-index players] :as state}]
+    (cond (winner? board (get-in players [active-player-index :character])) (assoc state :status :winner)
+          (not (any-space-available? board)) (assoc state :status :tie)
+          :else state))

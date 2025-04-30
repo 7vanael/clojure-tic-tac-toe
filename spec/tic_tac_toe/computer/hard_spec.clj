@@ -24,8 +24,7 @@
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
-                         {:character "O" :play-type :human}]
-   :turn-phase :input-received})
+                         {:character "O" :play-type :human}]})
 (def board-o-could-win
   [["X" 2 "X"]
    ["O" "X" "X"]
@@ -45,8 +44,7 @@
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :computer :difficulty :hard}]
-   :turn-phase :input-received})
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def state-o-missed-win
   {:interface :tui
@@ -54,8 +52,7 @@
    :active-player-index 1
    :status              "in-progress"
    :players             [{:character "X" :play-type :human}
-                         {:character "O" :play-type :computer :difficulty :hard}]
-   :turn-phase :input-received})
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def board-o-about-to-win
   [[1 2 "X"]
@@ -75,8 +72,7 @@
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
-                         {:character "O" :play-type :human}]
-   :turn-phase :input-received})
+                         {:character "O" :play-type :human}]})
 
 (def state-empty-4
   {:interface :tui

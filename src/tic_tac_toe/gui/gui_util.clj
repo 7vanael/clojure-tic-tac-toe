@@ -8,8 +8,7 @@
    :active-player-index 0
    :status              :welcome
    :players             [{:character "X" :play-type nil :difficulty nil}
-                         {:character "O" :play-type nil :difficulty nil}]
-   :turn-phase nil})
+                         {:character "O" :play-type nil :difficulty nil}]})
 
 (def screen-height 720)
 (def title-offset-y 72)

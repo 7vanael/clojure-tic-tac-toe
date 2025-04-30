@@ -9,4 +9,4 @@
     (assoc state :board (board/take-square board move char))))
 
 (defmethod core/take-computer-turn :easy [state]
-  (assoc (easy state) :turn-phase :input-received))
+  (easy state))
