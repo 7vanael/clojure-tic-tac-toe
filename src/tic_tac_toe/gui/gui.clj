@@ -11,11 +11,23 @@
             [tic-tac-toe.gui.welcome]
             [tic-tac-toe.gui.winner]))
 
+
+(defn debug-overlay [options]
+  (let [debugging false
+        original-draw (:draw options)]
+    (assoc options :draw
+                   (fn [state]
+                     (original-draw state)
+                     (when debugging
+                       (q/push-style)
+                       (q/text-size 8)
+                       (doseq [[ind capt fn] [[0 "mouse-pressed?" q/mouse-pressed?]
+                                              [1 "mouse-x" q/mouse-x] [2 "mouse-y" q/mouse-y]]]
+                         (q/text (str capt " " (fn)) 20 (+ (* 20 ind) 20)))
+                       (q/pop-style))))))
+
 (defn setup []
   util/initial-state)
-
-(defmethod core/take-human-turn :gui [state]
-  (multis/update-state state))
 
 (defmethod core/start-game :gui [state]
   (q/defsketch tic-tac-toe
@@ -24,5 +36,5 @@
     :setup setup
     :update multis/update-state
     :draw multis/draw-state
-    :mouse-clicked multis/mouse-clicked
-    :middleware [m/fun-mode]))
+    :mouse-pressed multis/mouse-clicked
+    :middleware [m/fun-mode debug-overlay]))

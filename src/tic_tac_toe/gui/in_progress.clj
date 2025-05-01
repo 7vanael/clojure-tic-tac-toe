@@ -1,5 +1,5 @@
 (ns tic-tac-toe.gui.in-progress
-  (:require [quil.core :as q]
+  (:require [quil.core :as q :include-macros true]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]
@@ -76,28 +76,39 @@
     (draw-grid cells)
     updated-state))
 
-(defn eval-board [{:keys [board active-player-index players] :as state}]
-  (cond (board/winner? board (get-in players [active-player-index :character])) (assoc state :status :winner)
-        (not (board/any-space-available? board)) (assoc state :status :tie)
-        :else state))
 
-(defmethod multis/update-state :in-progress [state]
-    (-> state
-        board/evaluate-board
-        common/change-player
-        core/take-turn))
-
-(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players turn-phase] :as state} {:keys [x y]}]
-  (let [play-options    (set (board/play-options board))
-        cell-size       (/ usable-screen (count board))
-        relative-x      (- x grid-origin-x)
-        relative-y      (- y grid-origin-y)
-        clicked-col     (int (/ relative-x cell-size))
-        clicked-row     (int (/ relative-y cell-size))
-        value           (get-in board [clicked-row clicked-col])
-        player-char     (get-in players [active-player-index :character])
-        player-type     (get-in players [active-player-index :play-type])]
+(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players] :as state} {:keys [x y]}]
+  (let [play-options (set (board/play-options board))
+        cell-size    (/ usable-screen (count board))
+        relative-x   (- x grid-origin-x)
+        relative-y   (- y grid-origin-y)
+        clicked-col  (int (/ relative-x cell-size))
+        clicked-row  (int (/ relative-y cell-size))
+        value        (get-in board [clicked-row clicked-col])
+        player-char  (get-in players [active-player-index :character])
+        player-type  (get-in players [active-player-index :play-type])]
+    ;(prn "x:" x)
+    ;(prn "y:" y)
+    ;(prn "relative-x:" relative-x)
+    ;(prn "relative-y:" relative-y)
+    ;(prn "clicked-col:" clicked-col)
+    ;(prn "clicked-row:" clicked-row)
+    ;(prn "val:" val)
+    ;(prn "play-options:" play-options)
     (if (and (contains? play-options value) (= :human player-type))
       (-> state
-          (assoc :board (board/take-square board (board/space->coordinates value board) player-char)))
+          (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
+          board/evaluate-board
+          common/change-player)
       state)))
+
+(defmethod core/take-human-turn :gui [state]
+  (multis/update-state state))
+
+(defmethod multis/update-state :in-progress [state]
+  (if (core/human? state)
+    state
+    (-> state
+        core/take-turn
+        board/evaluate-board
+        common/change-player)))

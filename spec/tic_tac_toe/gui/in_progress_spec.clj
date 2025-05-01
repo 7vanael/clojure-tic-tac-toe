@@ -35,13 +35,6 @@
                 {:x 96, :y 624, :value 7} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}]
                (generate-cells test-board/empty-board 192 [0 144])))
     )
-  (context "eval-board"
-
-    (it "updates status to winner if a player has won"
-      (should= test-game/state-win-x-row-evaluated (eval-board test-game/state-win-x-row)))
-
-    (it "updates status to draw if a board is full and no player has won"
-      (should= test-game/state-draw-evaluated (eval-board test-game/state-draw))))
 
   #_(context "update selects based on turn-phase"
     (it "if turn-phase is nil, initializes to awaiting-input and initializes a turn"
@@ -87,7 +80,7 @@
         (should= starting-state (multis/mouse-clicked starting-state event)))
       )
 
-    (it "does update if valid play is selected & player is human"
+    (it "does update the board, evaluate it and change players if valid play is selected & player is human"
       (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
                                                    :active-player-index 0
                                                    :status              :in-progress
@@ -96,7 +89,7 @@
             event          {:x grid-origin-x                ;space [0 2]
                             :y (+ grid-origin-y (/ (* 2 usable-screen) 3))}
             new-state      (test-gui/state-create {:board               test-board/center-x-corner-xo-board
-                                                   :active-player-index 0
+                                                   :active-player-index 1
                                                    :status              :in-progress
                                                    :x-type              :human
                                                    :o-type              :computer})]
