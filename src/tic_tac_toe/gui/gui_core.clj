@@ -1,9 +1,4 @@
-(ns tic-tac-toe.gui.gui_core
-  (:require [quil.core :as q]))
+(ns tic-tac-toe.gui.gui_core)
 
 (defmulti draw-state :status)
-
-(defmulti update-state :status)
-
 (defmulti mouse-clicked (fn [state & _] (:status state)))
-

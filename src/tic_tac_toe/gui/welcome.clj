@@ -1,12 +1,13 @@
 (ns tic-tac-toe.gui.welcome
   (:require [quil.core :as q]
-            [tic-tac-toe.gui.gui_core :as multis]))
+            [tic-tac-toe.gui.gui_core :as multis]
+            [tic-tac-toe.core :as core]))
 
 
 (defmethod multis/mouse-clicked :welcome [state event]
   (assoc state :status :config-x-type))
 
-(defmethod multis/update-state :welcome [state]
+(defmethod core/update-state [:gui :welcome] [state]
   state)
 
 (defmethod multis/draw-state :welcome [state]

@@ -1,7 +1,8 @@
 (ns tic-tac-toe.gui.config-players
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui_core :as multis]
-            [tic-tac-toe.gui.gui-util :as util]))
+            [tic-tac-toe.gui.gui-util :as util]
+            [tic-tac-toe.core :as core]))
 
 
 
@@ -33,7 +34,7 @@
   (q/text "Choose Player X Type" center-x util/title-offset-y)
   (util/draw-2-options-buttons type-labels))
 
-(defmethod multis/update-state :config-x-type [state]
+(defmethod core/update-state [:gui :config-x-type] [state]
   state)
 
 (defmethod multis/mouse-clicked :config-x-type [state {:keys [x y] :as event}]
@@ -55,7 +56,7 @@
   (q/text "Choose Player X Computer Difficulty" center-x util/title-offset-y)
   (draw-difficulty-buttons))
 
-(defmethod multis/update-state :config-x-difficulty [state]
+(defmethod core/update-state [:gui :config-x-difficulty] [state]
   state)
 
 (defmethod multis/mouse-clicked :config-x-difficulty [state {:keys [x y]}]
@@ -81,7 +82,7 @@
   (q/text "Choose Player O Type" center-x util/title-offset-y)
   (util/draw-2-options-buttons type-labels))
 
-(defmethod multis/update-state :config-o-type [state]
+(defmethod core/update-state [:gui :config-o-type] [state]
   state)
 
 (defmethod multis/mouse-clicked :config-o-type [state {:keys [x y] :as event}]
@@ -103,7 +104,7 @@
   (q/text "Choose Player O Computer Difficulty" center-x util/title-offset-y)
   (draw-difficulty-buttons))
 
-(defmethod multis/update-state :config-o-difficulty [state]
+(defmethod core/update-state [:gui :config-o-difficulty] [state]
   state)
 
 (defmethod multis/mouse-clicked :config-o-difficulty [state {:keys [x y]}]

@@ -1,7 +1,8 @@
 (ns tic-tac-toe.gui.winner
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui_core :as multis]
-            [tic-tac-toe.gui.gui-util :as util]))
+            [tic-tac-toe.gui.gui-util :as util]
+            [tic-tac-toe.core :as core]))
 
 (def type-labels ["Play Again" "Exit"])
 
@@ -15,7 +16,7 @@
     (q/text title-text (/ util/screen-width 2) util/title-offset-y)
     (util/draw-2-options-buttons type-labels)))
 
-(defmethod multis/update-state :winner [state]
+(defmethod core/update-state [:gui :winner] [state]
   state)
 
 (defmethod multis/mouse-clicked :winner [state {:keys [x y]}]

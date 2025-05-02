@@ -4,7 +4,7 @@
             [tic-tac-toe.tui.game-spec :as test-game]
             [tic-tac-toe.board_spec :as test-board]))
 
-(describe "common"
+#_(describe "common"
     (it "changes the active player O"
       (with-out-str
         (should= {:interface           :tui

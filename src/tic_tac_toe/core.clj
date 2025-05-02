@@ -1,19 +1,13 @@
 (ns tic-tac-toe.core)
 
-(defn get-interface [state _] (:interface state))
-
-(defmulti welcome-message :interface)
-(defmulti display-board get-interface)
-(defmulti get-next-play get-interface)
-(defmulti announce-player :interface)
-(defmulti announce-draw :interface)
-(defmulti announce-winner get-interface)
-(defmulti get-player-type (fn [state & _] (:interface state)))
-(defmulti play-again? :interface)
-(defmulti get-board-size get-interface)
 (defmulti get-difficulty (fn [state & _] (:interface state)))
 
 (defmulti start-game :interface)
+
+(defn get-update-state [state]
+  [(:interface state) (:status state)])
+
+(defmulti update-state get-update-state)
 
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
@@ -30,3 +24,9 @@
   (if (human? state)
     (take-human-turn state)
     (take-computer-turn state)))
+
+
+(defn change-player [state]
+  (assoc state :active-player-index
+               (if (= (:active-player-index state) 0)
+                 1 0)))

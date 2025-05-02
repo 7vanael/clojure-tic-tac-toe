@@ -2,7 +2,8 @@
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.board :as board]))
+            [tic-tac-toe.board :as board]
+            [tic-tac-toe.core :as core]))
 
 (def type-labels ["3 X 3" "4 X 4"])
 
@@ -14,7 +15,7 @@
   (q/text "Choose Board Size" (/ util/screen-width 2) util/title-offset-y)
   (util/draw-2-options-buttons type-labels))
 
-(defmethod multis/update-state :select-board [state]
+(defmethod core/update-state [:gui :select-board] [state]
   state)
 
 (defmethod multis/mouse-clicked :select-board [state {:keys [x y]}]

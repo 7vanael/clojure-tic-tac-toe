@@ -34,7 +34,7 @@
     :title "Tic-Tac-Toe"
     :size [util/screen-width util/screen-height]
     :setup setup
-    :update multis/update-state
+    :update core/update-state
     :draw multis/draw-state
     :mouse-pressed multis/mouse-clicked
     :middleware [m/fun-mode debug-overlay]))

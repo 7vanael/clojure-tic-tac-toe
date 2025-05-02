@@ -1,10 +1,8 @@
 (ns tic-tac-toe.tui.console
   (:require [clojure.string :as str]
-            [tic-tac-toe.board :as board]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.tui.game :as game]))
+            [tic-tac-toe.core :as core]))
 
-(defmethod core/welcome-message :tui [_]
+(defn welcome-message []
   (println "Welcome to tic-tac-toe!"))
 
 (defn horizontal-line [width]
@@ -24,7 +22,7 @@
 (defn process-board [board]
   (apply str (map row-string board)))
 
-(defmethod core/display-board :tui [_ board]
+(defn display-board [board]
   (println (str/join (horizontal-line (count board))
                      (str/split-lines (process-board board)))))
 
@@ -34,26 +32,31 @@
 (defn print-number-prompt []
   (println "Please enter the number for the space you'd like to take"))
 
-(defmethod core/get-next-play :tui [state play-options]
-  (core/announce-player state)
+(defn announce-player [{:keys [active-player-index players]}]
+  (let [character (get-in players [active-player-index :character])]
+    (println (str "Player " character "'s turn"))))
+
+(defn get-next-play [state play-options]
+  (announce-player state)
   (print-number-prompt)
   (let [input (read-string (read-line))]
     (if (validate-number play-options input)
       input
-      (core/get-next-play state play-options))))
+      (recur state play-options))))
 
 (defn invalid-selection []
   (println "That isn't a valid play, please try again"))
 
-(defmethod core/announce-player :tui [{:keys [active-player-index players]}]
+(defmethod core/update-state [:tui :winner] [{:keys [active-player-index players]}]
   (let [character (get-in players [active-player-index :character])]
-    (println (str "Player " character "'s turn"))))
+    (println (str (str/capitalize character) " wins! Good game!"))))
 
-(defmethod core/announce-draw :tui [_]
+(defmethod core/update-state [:tui :tie] [{:keys [active-player-index players]}]
+  (let [character (get-in players [active-player-index :character])]
+    (println (str (str/capitalize character) " wins! Good game!"))))
+
+(defmethod core/update-state [:tui :tie] [_]
   (println "It's a draw! Good game!"))
-
-(defmethod core/announce-winner :tui [_ character]
-  (println (str (str/capitalize character) " wins! Good game!")))
 
 (defn display-play-type-options [character options]
   (println "Who will play " character "?")
@@ -68,7 +71,7 @@
       input
       (get-selection character options))))
 
-(defmethod core/get-player-type :tui [_ character options]
+(defn get-player-type [character options]
   (display-play-type-options character options)
   (get-selection character options))
 
@@ -88,7 +91,7 @@
       input
       (get-play-again-selection))))
 
-(defmethod core/play-again? :tui [_]
+(defn play-again? []
   (str/includes? (get-play-again-selection) "y"))
 
 (defn format-size-option-display [size]
@@ -99,7 +102,7 @@
   (doseq [size size-options]
     (println (format-size-option-display size))))
 
-(defmethod core/get-board-size :tui [_ size-options]
+(defn get-board-size  [size-options]
   (board-size-prompt size-options)
   (let [input (read-line)
         size-selection (try (read-string input)
@@ -107,7 +110,7 @@
                               nil))]
     (if (some #{size-selection} size-options)
       size-selection
-      (core/get-board-size {:interface :tui} size-options))))
+      (get-board-size size-options))))
 
 (defn display-difficulty-options [char options]
   (println "What difficulty setting should" char "use?")
@@ -117,28 +120,3 @@
   (display-difficulty-options character options)
   (get-selection character options))
 
-(defn initialize-state [{:keys [type-x type-o difficulty-x difficulty-o board-size interface]}]
-  {:interface           interface
-   :board               (board/new-board board-size)
-   :active-player-index 1
-   :status              :in-progress
-   :players             [{:character "X" :play-type type-x :difficulty difficulty-x}
-                         {:character "O" :play-type type-o :difficulty difficulty-o}]})
-
-(def player-options
-  [:human :computer])
-
-(def difficulty-options
-  [:easy :medium :hard])
-
-(defmethod core/start-game :tui [state]
-  (core/welcome-message state)
-  (let [player-x      (core/get-player-type state "X" player-options)
-        difficulty-x  (when (= :computer player-x) (core/get-difficulty state "X" difficulty-options))
-        player-o      (core/get-player-type state "O" player-options)
-        difficulty-o  (when (= :computer player-o) (core/get-difficulty state "O" difficulty-options))
-        board-size    (core/get-board-size state [3 4])
-        configuration {:type-x     player-x :type-o player-o :difficulty-x difficulty-x :difficulty-o difficulty-o
-                       :board-size board-size :interface :tui}]
-    (game/start (initialize-state configuration))
-    (when (core/play-again? state) (recur state))))

@@ -3,8 +3,7 @@
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.common :as common]))
+            [tic-tac-toe.core :as core]))
 
 
 (def usable-screen util/screen-width)
@@ -87,28 +86,20 @@
         value        (get-in board [clicked-row clicked-col])
         player-char  (get-in players [active-player-index :character])
         player-type  (get-in players [active-player-index :play-type])]
-    ;(prn "x:" x)
-    ;(prn "y:" y)
-    ;(prn "relative-x:" relative-x)
-    ;(prn "relative-y:" relative-y)
-    ;(prn "clicked-col:" clicked-col)
-    ;(prn "clicked-row:" clicked-row)
-    ;(prn "val:" val)
-    ;(prn "play-options:" play-options)
     (if (and (contains? play-options value) (= :human player-type))
       (-> state
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           board/evaluate-board
-          common/change-player)
+          core/change-player)
       state)))
 
 (defmethod core/take-human-turn :gui [state]
-  (multis/update-state state))
+  (core/update-state state))
 
-(defmethod multis/update-state :in-progress [state]
+(defmethod core/update-state [:gui :in-progress] [state]
   (if (core/human? state)
     state
     (-> state
         core/take-turn
         board/evaluate-board
-        common/change-player)))
+        core/change-player)))
