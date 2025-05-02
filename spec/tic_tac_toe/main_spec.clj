@@ -13,14 +13,13 @@
   (with-stubs)
 
   (it "starts a new game"
-    (with-redefs [game/play                         (stub :game/start)
+    (with-redefs [core/start-game                   (stub :core/start)
                   console/welcome-message           (stub :console/welcome)
                   console/display-play-type-options (stub :print-dup-play-type)
                   console/play-again-prompt         (stub :play-again?)
                   console/board-size-prompt         (stub :board-size-prompt {:return 3})]
       (with-in-str "human\nhuman\n3\nno\n" (-main "tui"))
-      (should-have-invoked :console/welcome)
-      (should-have-invoked :game/start)))
+      (should-have-invoked :core/start)))
 
   (it "allows the user to choose to play again"
     (with-redefs [game/play                          (stub :game/start)
@@ -28,33 +27,13 @@
                   console/display-play-type-options  (stub :print-dup-play-type)
                   console/display-difficulty-options (stub :print-dup-difficulty)
                   console/play-again-prompt          (stub :play-again?)
-                  console/board-size-prompt          (stub :board-size-prompt)]
+                  console/board-size-prompt          (stub :board-size-prompt)
+                  core/save-game                     (stub :save-dup)]
       (with-in-str "computer\neasy\ncomputer\neasy\n4\ny\ncomputer\neasy\ncomputer\nmedium\n3\nn\n" (-main "tui"))
       (should-have-invoked :console/welcome {:times 2})
       (should-have-invoked :print-dup-play-type {:times 4})
       (should-have-invoked :print-dup-difficulty {:times 4})
       (should-have-invoked :play-again? {:times 2})))
-
-  (it "assigns a difficulty of nil if player type is human"
-    (with-redefs [console/display-play-type-options (stub :print-dup-play-type)
-                  console/welcome-message           (stub :console/welcome)
-                  console/get-selection             (stub :get-selection {:return :human})
-                  console/get-board-size            (stub :board-size {:return 3})
-                  console/play-again?               (stub :play-again {:return false})
-                  game/play                         (stub :game/start)]
-      (core/start-game {:interface :tui})
-      (should-have-invoked :game/start {:with [test-game/state-initial]})))
-
-  (it "obtains a difficulty level if the play-type chosen is computer"
-    (with-redefs [console/display-play-type-options (stub :print-dup-play-type)
-                  console/welcome-message           (stub :console/welcome)
-                  console/get-selection             (stub :get-selection {:return :computer})
-                  user-prompt/get-difficulty        (stub :get-difficulty {:return :hard})
-                  console/get-board-size            (stub :board-size {:return 4})
-                  console/play-again?               (stub :play-again {:return false})
-                  game/play                         (stub :game/start)]
-      (core/start-game {:interface :tui})
-      (should-have-invoked :game/start {:with [test-game/state-computer-2-4-empty]})))
 
   (it "initializes a new game with computer player and human player"
     (with-redefs [console/welcome-message            (stub :console/welcome)
@@ -62,17 +41,18 @@
                   console/display-difficulty-options (stub :print-dup-difficulty)
                   console/board-size-prompt          (stub :board-size-prompt)
                   console/play-again-prompt          (stub :play-again?)
-                  game/play                          (stub :start)]
+                  core/update-state                  (stub :update-loop)
+                  core/save-game                     (stub :save-dup)]
       (with-in-str "human\ncomputer\nmedium\n4\nn\n" (-main "tui"))
-      (should-have-invoked :start {:with [{:interface           :tui
-                                           :board               [[1 2 3 4]
-                                                                 [5 6 7 8]
-                                                                 [9 10 11 12]
-                                                                 [13 14 15 16]]
-                                           :active-player-index 1
-                                           :status              :in-progress
-                                           :players             [{:character "X" :play-type :human :difficulty nil}
-                                                                 {:character "O" :play-type :computer :difficulty :medium}]}]})))
+      (should-have-invoked :update-loop {:with [{:interface           :tui
+                                                 :board               [[1 2 3 4]
+                                                                       [5 6 7 8]
+                                                                       [9 10 11 12]
+                                                                       [13 14 15 16]]
+                                                 :active-player-index 1
+                                                 :status              :in-progress
+                                                 :players             [{:character "X" :play-type :human :difficulty nil}
+                                                                       {:character "O" :play-type :computer :difficulty :medium}]}]})))
 
   (it "uses the console interface if launched with tui"
     (with-redefs [core/start-game           (stub :launch-cli)

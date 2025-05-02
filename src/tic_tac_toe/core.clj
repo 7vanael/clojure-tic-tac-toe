@@ -1,7 +1,5 @@
 (ns tic-tac-toe.core)
 
-(defmulti get-difficulty (fn [state & _] (:interface state)))
-
 (defmulti start-game :interface)
 
 (defn get-update-state [state]
@@ -30,3 +28,7 @@
   (assoc state :active-player-index
                (if (= (:active-player-index state) 0)
                  1 0)))
+
+(defn save-game [state]
+  (prn "state:" state)
+  state)

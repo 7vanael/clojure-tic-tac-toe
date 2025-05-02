@@ -90,7 +90,8 @@
       (-> state
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           board/evaluate-board
-          core/change-player)
+          core/change-player
+          core/save-game)
       state)))
 
 (defmethod core/take-human-turn :gui [state]
@@ -102,4 +103,5 @@
     (-> state
         core/take-turn
         board/evaluate-board
-        core/change-player)))
+        core/change-player
+        core/save-game)))

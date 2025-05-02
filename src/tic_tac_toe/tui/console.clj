@@ -51,10 +51,6 @@
   (let [character (get-in players [active-player-index :character])]
     (println (str (str/capitalize character) " wins! Good game!"))))
 
-(defmethod core/update-state [:tui :tie] [{:keys [active-player-index players]}]
-  (let [character (get-in players [active-player-index :character])]
-    (println (str (str/capitalize character) " wins! Good game!"))))
-
 (defmethod core/update-state [:tui :tie] [_]
   (println "It's a draw! Good game!"))
 
@@ -116,7 +112,7 @@
   (println "What difficulty setting should" char "use?")
   (run! println (map name options)))
 
-(defmethod core/get-difficulty :tui [_ character options]
+(defn get-difficulty [character options]
   (display-difficulty-options character options)
   (get-selection character options))
 

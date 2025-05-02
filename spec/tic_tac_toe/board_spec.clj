@@ -1,7 +1,7 @@
 (ns tic-tac-toe.board_spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.board :refer :all]
-            [tic-tac-toe.gui.gui-spec :as test-gui]))
+            [tic-tac-toe.core-spec :as test-core]))
 
 (def empty-board
   [[1 2 3]
@@ -167,10 +167,10 @@
     (should= false (winner? full-board-draw "O")))
 
   (it "updates status to winner if a player has won"
-    (should= (test-gui/state-create {:board not-full-board-x-row-win :active-player-index 0 :status :winner})
-             (evaluate-board (test-gui/state-create {:board not-full-board-x-row-win :active-player-index 0 :status :in-progress}))))
+    (should= (test-core/state-create {:board not-full-board-x-row-win :active-player-index 0 :status :winner})
+             (evaluate-board (test-core/state-create {:board not-full-board-x-row-win :active-player-index 0 :status :in-progress}))))
 
   (it "updates status to tie if a board is full and no player has won"
-    (should= (test-gui/state-create {:board full-board-draw :active-player-index 0 :status :tie})
-             (evaluate-board (test-gui/state-create {:board full-board-draw :active-player-index 0 :status :in-progress}))))
+    (should= (test-core/state-create {:board full-board-draw :active-player-index 0 :status :tie})
+             (evaluate-board (test-core/state-create {:board full-board-draw :active-player-index 0 :status :in-progress}))))
   )

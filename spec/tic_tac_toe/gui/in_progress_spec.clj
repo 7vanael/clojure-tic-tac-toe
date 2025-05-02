@@ -3,7 +3,7 @@
             [tic-tac-toe.core :as core]
             [tic-tac-toe.gui.in-progress :refer :all]
             [tic-tac-toe.gui.gui_core :as multis]
-            [tic-tac-toe.gui.gui-spec :as test-gui]
+            [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.board_spec :as test-board]
             [tic-tac-toe.tui.game-spec :as test-game]))
 
@@ -39,27 +39,27 @@
   #_(context "update selects based on turn-phase"
     (it "if turn-phase is nil, initializes to awaiting-input and initializes a turn"
       (with-redefs [core/take-turn        (stub :take-turn)]
-        (multis/update-state (test-gui/state-create {:status :in-progress}))
-        (should-have-invoked :take-turn {:with [(test-gui/state-create {:status :in-progress :turn-phase :awaiting-input})]})))
+        (multis/update-state (test-core/state-create {:status :in-progress}))
+        (should-have-invoked :take-turn {:with [(test-core/state-create {:status :in-progress :turn-phase :awaiting-input})]})))
 
     (it "if turn-phase is awaiting-input, no change is made to the state"
-      (should= (test-gui/state-create {:status :in-progress :turn-phase :awaiting-input :board [[1 2 3]]})
-               (multis/update-state (test-gui/state-create {:status :in-progress :turn-phase :awaiting-input :board [[1 2 3]]}))))
+      (should= (test-core/state-create {:status :in-progress :turn-phase :awaiting-input :board [[1 2 3]]})
+               (multis/update-state (test-core/state-create {:status :in-progress :turn-phase :awaiting-input :board [[1 2 3]]}))))
 
     (it "if turn-phase is input-received, the board is evaluated and the turn is marked complete"
-      (with-redefs [eval-board (stub :eval-board {:return (test-gui/state-create {:status :in-progress :turn-phase :input-received :board [[1 2 3]]})})]
-        (should= (test-gui/state-create {:status :in-progress :turn-phase :turn-complete :board [[1 2 3]]})
-                 (multis/update-state (test-gui/state-create {:status :in-progress :turn-phase :input-received :board [[1 2 3]]})))))
+      (with-redefs [eval-board (stub :eval-board {:return (test-core/state-create {:status :in-progress :turn-phase :input-received :board [[1 2 3]]})})]
+        (should= (test-core/state-create {:status :in-progress :turn-phase :turn-complete :board [[1 2 3]]})
+                 (multis/update-state (test-core/state-create {:status :in-progress :turn-phase :input-received :board [[1 2 3]]})))))
 
     (it "if turn-phase is turn-complete, it changes the active player, changes turn-phase to awaiting input and initiates the next turn"
       (with-redefs [core/take-turn (stub :take-turn)]
-        (multis/update-state (test-gui/state-create {:status :in-progress :turn-phase :turn-complete :active-player-index 0 :x-type :human :o-type :human}))
-        (should-have-invoked :take-turn {:with [(test-gui/state-create {:status :in-progress :turn-phase :awaiting-input :active-player-index 1 :x-type :human :o-type :human})]})))
+        (multis/update-state (test-core/state-create {:status :in-progress :turn-phase :turn-complete :active-player-index 0 :x-type :human :o-type :human}))
+        (should-have-invoked :take-turn {:with [(test-core/state-create {:status :in-progress :turn-phase :awaiting-input :active-player-index 1 :x-type :human :o-type :human})]})))
     )
 
   (context "mouse-click"
     (it "does not update if invalid play clicked"
-      (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
+      (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                    :active-player-index 0
                                                    :status              :in-progress
                                                    :x-type              :human
@@ -70,7 +70,7 @@
       )
 
     (it "does not update if active player is not human"
-      (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
+      (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                    :active-player-index 0
                                                    :status              :in-progress
                                                    :x-type              :computer
@@ -81,14 +81,14 @@
       )
 
     (it "does update the board, evaluate it and change players if valid play is selected & player is human"
-      (let [starting-state (test-gui/state-create {:board               test-board/center-x-corner-o-board
+      (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                    :active-player-index 0
                                                    :status              :in-progress
                                                    :x-type              :human
                                                    :o-type              :computer})
             event          {:x grid-origin-x                ;space [0 2]
                             :y (+ grid-origin-y (/ (* 2 usable-screen) 3))}
-            new-state      (test-gui/state-create {:board               test-board/center-x-corner-xo-board
+            new-state      (test-core/state-create {:board               test-board/center-x-corner-xo-board
                                                    :active-player-index 1
                                                    :status              :in-progress
                                                    :x-type              :human

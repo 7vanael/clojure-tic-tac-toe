@@ -3,20 +3,16 @@
             [tic-tac-toe.core :as core]
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]
-            [tic-tac-toe.computer.hard]))
+            [tic-tac-toe.computer.hard]
+            [tic-tac-toe.tui.human]))
 
-
-#_(defn play [{:keys [board status active-player-index players] :as state}]
-  (core/display-board state board)
-  (cond (= status :tie) (core/announce-draw state)
-        (= status :winner) (core/announce-winner state (get-in players [active-player-index :character]))
-        :else (recur (board/evaluate-board (core/take-turn (core/change-player state))))))
 
 (defn play [state]
   (-> state
       core/take-turn
       board/evaluate-board
-      core/change-player))
+      core/change-player
+      core/save-game))
 
 
 #_(defn start [state]

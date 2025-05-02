@@ -3,7 +3,7 @@
             [tic-tac-toe.tui.console :refer :all]
             [tic-tac-toe.board_spec :refer :all :as test-board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.tui.game-spec :as test-game]))
+            [tic-tac-toe.core-spec :as test-core]))
 
 (describe "console"
   (with-stubs)
@@ -31,20 +31,22 @@
     (should= "Please enter the number for the space you'd like to take\n"
              (with-out-str (print-number-prompt))))
 
-  #_(xit "gets input from the user until a valid entry is provided"
+  (it "gets input from the user until a valid entry is provided"
     (with-redefs [print-number-prompt (stub :print-prompt)
                   announce-player (stub :print-dup)];need to feed in a state here instead of interface
-      (should= 6 (with-in-str "c\n26\n6\n1\n" (get-next-play [2 6])))))
+      (should= 6 (with-in-str "c\n26\n6\n1\n" (get-next-play
+                                                (test-core/state-create {:interface :tui :board [["X" 2 "O"]["X" "O" 6] ["O" "X" "O"]]})
+                                                [2 6])))))
 
   (it "notifies the player that a play wasn't valid"
     (should= "That isn't a valid play, please try again\n"
              (with-out-str (invalid-selection))))
 
-  #_(it "notifies the player that the game is a draw"
-    (should= "It's a draw! Good game!\n" (with-out-str (announce-draw ))))
+  (it "notifies the player that the game is a draw"
+    (should= "It's a draw! Good game!\n" (with-out-str (core/update-state {:interface :tui :status :tie}))))
 
-  #_(xit "announces the winner of a game" ;need to feed in a state!
-    (should= "X wins! Good game!\n" (with-out-str (announce-winner {:interface :tui} "X"))))
+  (it "announces the winner of a game"
+    (should= "X wins! Good game!\n" (with-out-str (core/update-state (test-core/state-create {:interface :tui :status :winner :active-player-index 0})))))
 
   (it "displays the options for players to choose from"
     (should= "Who will play  X ?\nhuman\ncomputer\n"
@@ -103,6 +105,6 @@
 
   (it "asks the user for the difficulty selection for character X"
     (with-redefs [display-difficulty-options (stub :display-options)]
-      (should= :hard (with-in-str "hard\n" (core/get-difficulty {:interface :tui} "X" [:easy :medium :hard])))
+      (should= :hard (with-in-str "hard\n" (get-difficulty "X" [:easy :medium :hard])))
       (should-have-invoked :display-options)))
   )
