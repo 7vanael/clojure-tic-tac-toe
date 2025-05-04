@@ -6,7 +6,7 @@
 (def savefile "game-save.edn")
 
 (defn save-game [state]
-  (spit savefile (pr-str state))
+  (spit savefile state)
   state)
 
 (defn load-game []
@@ -14,3 +14,6 @@
          (edn/read-string (slurp reader)))
        (catch FileNotFoundException _
          nil)))
+
+(defn delete-save []
+  (io/delete-file savefile true))

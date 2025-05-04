@@ -2,7 +2,9 @@
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.core :as core]))
+            [tic-tac-toe.core :as core]
+            [tic-tac-toe.persistence :as persistence])
+  (:import (java.io FileNotFoundException)))
 
 (def type-labels ["Play Again" "Exit"])
 
@@ -15,6 +17,9 @@
   (util/draw-2-options-buttons type-labels))
 
 (defmethod core/update-state [:gui :tie] [state]
+  (try
+    (persistence/delete-save)
+    (catch FileNotFoundException _))
   state)
 
 (defmethod multis/mouse-clicked :tie [state {:keys [x y]}]

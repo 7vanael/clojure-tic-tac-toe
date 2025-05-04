@@ -3,9 +3,12 @@
             [tic-tac-toe.tui.console :refer :all]
             [tic-tac-toe.board_spec :refer :all :as test-board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.core-spec :as test-core]))
+            [tic-tac-toe.core-spec :as test-core]
+            [tic-tac-toe.persistence :as persistence]
+            [tic-tac-toe.persistence-spec :as test-persistence])
+  (:import (java.io FileNotFoundException)))
 
-(describe "console"
+  (describe "console"
   (with-stubs)
 
   (it "prints a welcome message"
@@ -33,7 +36,7 @@
 
   (it "gets input from the user until a valid entry is provided"
     (with-redefs [print-number-prompt (stub :print-prompt)
-                  announce-player (stub :print-dup)];need to feed in a state here instead of interface
+                  announce-player (stub :print-dup)]
       (should= 6 (with-in-str "c\n26\n6\n1\n" (get-next-play
                                                 (test-core/state-create {:interface :tui :board [["X" 2 "O"]["X" "O" 6] ["O" "X" "O"]]})
                                                 [2 6])))))
@@ -44,6 +47,26 @@
 
   (it "notifies the player that the game is a draw"
     (should= "It's a draw! Good game!\n" (with-out-str (core/update-state {:interface :tui :status :tie}))))
+
+  (it "deletes the save file when the game ends in a draw"
+    (with-redefs [println (stub :print-dup)
+                  tic-tac-toe.persistence/savefile test-persistence/test-file]
+      (let [state (test-core/state-create {:interface :tui :status :tie :board [["X" "O" "X"]
+                                                                                ["O" "X" "O"]
+                                                                                ["O" "X" "O"]]})]
+        (persistence/save-game state)
+        (core/update-state state)
+        (should-throw FileNotFoundException (slurp test-persistence/test-file)))))
+
+    (it "deletes the save file when the game ends in a win"
+    (with-redefs [println (stub :print-dup)
+                  tic-tac-toe.persistence/savefile test-persistence/test-file]
+      (let [state (test-core/state-create {:interface :tui :status :winner :board [["X" "O" "X"]
+                                                                                ["O" "X" "O"]
+                                                                                ["O" "X" "X"]]})]
+        (persistence/save-game state)
+        (core/update-state state)
+        (should-throw FileNotFoundException (slurp test-persistence/test-file)))))
 
   (it "announces the winner of a game"
     (should= "X wins! Good game!\n" (with-out-str (core/update-state (test-core/state-create {:interface :tui :status :winner :active-player-index 0})))))

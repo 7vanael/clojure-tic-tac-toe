@@ -1,6 +1,7 @@
 (ns tic-tac-toe.tui.console
   (:require [clojure.string :as str]
-            [tic-tac-toe.core :as core]))
+            [tic-tac-toe.core :as core]
+            [tic-tac-toe.persistence :as persistence]))
 
 (defn welcome-message []
   (println "Welcome to tic-tac-toe!"))
@@ -49,9 +50,11 @@
 
 (defmethod core/update-state [:tui :winner] [{:keys [active-player-index players]}]
   (let [character (get-in players [active-player-index :character])]
+    (persistence/delete-save)
     (println (str (str/capitalize character) " wins! Good game!"))))
 
 (defmethod core/update-state [:tui :tie] [_]
+  (persistence/delete-save)
   (println "It's a draw! Good game!"))
 
 (defn display-play-type-options [character options]
