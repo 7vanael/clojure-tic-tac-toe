@@ -3,7 +3,8 @@
             [tic-tac-toe.tui.human :refer :all]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.tui.game-spec :as test-game]
-            [tic-tac-toe.core :as core]))
+            [tic-tac-toe.core :as core]
+            [tic-tac-toe.persistence :as persistence]))
 
 (describe "human turn"
   (with-stubs)
@@ -21,7 +22,8 @@
                   console/get-board-size            (stub :board-size {:return 3})
                   core/update-state                 (stub :update-state)
                   console/play-again?               (stub :play-again {:return false})
-                  core/save-game                    (stub :save-dup)]
+                  persistence/save-game             (stub :save-dup)
+                  persistence/load-game             (stub :load {:return nil})]
       (core/start-game {:interface :tui})
       (should-have-invoked :update-state {:with [test-game/state-initial]})))
 
@@ -33,7 +35,8 @@
                   console/get-board-size            (stub :board-size {:return 4})
                   console/play-again?               (stub :play-again {:return false})
                   core/update-state                 (stub :update-state)
-                  core/save-game                    (stub :save-dup)]
+                  persistence/save-game             (stub :save-dup)
+                  persistence/load-game             (stub :load {:return nil})]
       (core/start-game {:interface :tui})
       (should-have-invoked :update-state {:with [test-game/state-computer-2-4-empty]})))
 

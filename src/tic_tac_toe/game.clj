@@ -4,7 +4,8 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]
             [tic-tac-toe.computer.hard]
-            [tic-tac-toe.tui.human]))
+            [tic-tac-toe.tui.human]
+            [tic-tac-toe.persistence :as persistence]))
 
 
 (defn play [state]
@@ -12,7 +13,7 @@
       core/take-turn
       board/evaluate-board
       core/change-player
-      core/save-game))
+      persistence/save-game))
 
 
 #_(defn start [state]

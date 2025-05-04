@@ -3,9 +3,8 @@
             [tic-tac-toe.core :as core]
             [tic-tac-toe.main :refer :all]
             [tic-tac-toe.game :as game]
-            [tic-tac-toe.tui.game-spec :as test-game]
-            [tic-tac-toe.core :as user-prompt]
-            [tic-tac-toe.tui.console :as console]))
+            [tic-tac-toe.tui.console :as console]
+            [tic-tac-toe.persistence :as persistence]))
 
 
 
@@ -28,7 +27,8 @@
                   console/display-difficulty-options (stub :print-dup-difficulty)
                   console/play-again-prompt          (stub :play-again?)
                   console/board-size-prompt          (stub :board-size-prompt)
-                  core/save-game                     (stub :save-dup)]
+                  persistence/save-game              (stub :save-dup)
+                  persistence/load-game              (stub :load {:return nil})]
       (with-in-str "computer\neasy\ncomputer\neasy\n4\ny\ncomputer\neasy\ncomputer\nmedium\n3\nn\n" (-main "tui"))
       (should-have-invoked :console/welcome {:times 2})
       (should-have-invoked :print-dup-play-type {:times 4})
@@ -42,7 +42,8 @@
                   console/board-size-prompt          (stub :board-size-prompt)
                   console/play-again-prompt          (stub :play-again?)
                   core/update-state                  (stub :update-loop)
-                  core/save-game                     (stub :save-dup)]
+                  persistence/save-game              (stub :save-dup)
+                  persistence/load-game              (stub :load {:return nil})]
       (with-in-str "human\ncomputer\nmedium\n4\nn\n" (-main "tui"))
       (should-have-invoked :update-loop {:with [{:interface           :tui
                                                  :board               [[1 2 3 4]

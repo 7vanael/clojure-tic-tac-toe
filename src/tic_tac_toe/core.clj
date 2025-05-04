@@ -1,4 +1,6 @@
-(ns tic-tac-toe.core)
+(ns tic-tac-toe.core
+  (:require [clojure.java.io :as io]
+            [clojure.edn :as edn]))
 
 (defmulti start-game :interface)
 
@@ -29,6 +31,3 @@
                (if (= (:active-player-index state) 0)
                  1 0)))
 
-(defn save-game [state]
-  (prn "state:" state)
-  state)

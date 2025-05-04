@@ -4,7 +4,8 @@
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.computer.hard]
             [tic-tac-toe.computer.easy]
-            [tic-tac-toe.computer.medium]))
+            [tic-tac-toe.computer.medium]
+            [tic-tac-toe.persistence :as persistence]))
 
 (defn human-turn-tui [{:keys [board active-player-index players] :as state}]
   (let [play-options          (board/play-options board)
@@ -21,7 +22,7 @@
       human-turn-tui
       board/evaluate-board
       core/change-player
-      core/save-game
+      persistence/save-game
       core/update-state))
 
 (defmethod core/update-state [:tui :in-progress] [state]
@@ -29,7 +30,7 @@
       core/take-turn
       board/evaluate-board
       core/change-player
-      core/save-game))
+      persistence/save-game))
 
 (defn initialize-state [{:keys [type-x type-o difficulty-x difficulty-o board-size interface]}]
   {:interface           interface
@@ -45,8 +46,7 @@
 (def difficulty-options
   [:easy :medium :hard])
 
-(defmethod core/start-game :tui [state]
-  (console/welcome-message)
+(defn configure-new []
   (let [player-x      (console/get-player-type "X" player-options)
         difficulty-x  (when (= :computer player-x) (console/get-difficulty "X" difficulty-options))
         player-o      (console/get-player-type "O" player-options)
@@ -54,6 +54,13 @@
         board-size    (console/get-board-size [3 4])
         configuration {:type-x     player-x :type-o player-o :difficulty-x difficulty-x :difficulty-o difficulty-o
                        :board-size board-size :interface :tui}]
-    (core/update-state (initialize-state configuration))
+    configuration))
+
+(defmethod core/start-game :tui [state]
+  (console/welcome-message)
+  (let [saved-game      (persistence/load-game)]
+    (if (nil? saved-game)
+      (core/update-state (initialize-state (configure-new)))
+      (core/update-state saved-game))
     (when (console/play-again?) (recur state))))
 
