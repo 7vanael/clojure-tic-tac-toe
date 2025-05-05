@@ -9,7 +9,7 @@
             [tic-tac-toe.persistence-spec :as test-persistence])
   (:import (java.io FileNotFoundException)))
 
-(describe "draw- end of game"
+(describe "tie- end of game"
   (with-stubs)
 
   (it "deletes the save file when the game ends in a draw"
@@ -19,6 +19,7 @@
                                                                                 ["O" "X" "O"]
                                                                                 ["O" "X" "O"]]})]
         (persistence/save-game state)
+        (should-not-throw (slurp test-persistence/test-file))
         (core/update-state state)
         (should-throw FileNotFoundException (slurp test-persistence/test-file)))))
 

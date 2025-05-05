@@ -1,13 +1,83 @@
 (ns tic-tac-toe.tui.human-spec
   (:require [speclj.core :refer :all]
+            [tic-tac-toe.core-spec :as test-core]
+            [tic-tac-toe.persistence-spec :as test-persistence]
             [tic-tac-toe.tui.human :refer :all]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.tui.game-spec :as test-game]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence :as persistence]))
+            [tic-tac-toe.persistence :as persistence])
+  (:import (java.io FileNotFoundException)))
 
 (describe "human turn"
   (with-stubs)
+
+  (it "checks for a saved game, offers to load it if found"
+    (with-redefs [console/save-found-prompt        (stub :save-found-prompt)
+                  println                          (stub :print-dup)
+                  tic-tac-toe.persistence/savefile test-persistence/test-file
+                  core/update-state                (stub :update-state)
+                  initialize-state                 (stub :initialize-new)
+                  console/play-again?              (stub :play-again {:return false})]
+      (let [saved-state    (test-core/state-create {:interface           :gui :status :in-progress :board [["X" "O" "X"]
+                                                                                                           [4 "X" 6]
+                                                                                                           [7 8 "O"]]
+                                                    :active-player-index 1 :type-x :human :type-o :human})
+            new-game-state (test-core/state-create {:status :config :interface :tui})]
+        (persistence/save-game saved-state)
+
+        (with-in-str "y\n" (core/start-game new-game-state))
+        (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save)]})
+        (should-not-have-invoked :save-found-prompt))))
+
+  (it "resumes play of a loaded game"
+    (with-redefs [console/save-found-prompt        (stub :save-found-prompt)
+                  println                          (stub :print-dup)
+                  tic-tac-toe.persistence/savefile test-persistence/test-file
+                  core/update-state                (stub :update-state)
+                  initialize-state                 (stub :initialize-new)
+                  console/play-again?              (stub :play-again {:return false})]
+      (let [saved-state    (test-core/state-create {:interface           :gui :status :in-progress :board [["X" "O" "X"]
+                                                                                                           [4 "X" 6]
+                                                                                                           [7 8 "O"]]
+                                                    :active-player-index 1 :type-x :human :type-o :human})
+            new-game-state (test-core/state-create {:status :config :interface :tui})]
+        (persistence/save-game saved-state)
+
+        (with-in-str "y\n" (core/start-game new-game-state))
+        (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save)]})
+        (should-not-have-invoked :initialize-new))))
+
+  (it "proceeds to configuration if no loaded game found"
+    (with-redefs [println                          (stub :print-dup)
+                  tic-tac-toe.persistence/savefile test-persistence/test-file
+                  core/update-state                (stub :update-state)
+                  configure-new                    (stub :configure-new)
+                  initialize-state                 (stub :initialize-new)
+                  console/play-again?              (stub :play-again {:return false})]
+      (let [new-game-state (test-core/state-create {:status :config :interface :tui})]
+        (persistence/delete-save)                           ;ensures no residual save found
+
+        (core/start-game new-game-state)
+        (should-have-invoked :configure-new))))
+
+  (it "proceeds to configuration if a loaded game is found but rejected by user"
+    (with-redefs [console/save-found-prompt        (stub :save-found-prompt)
+                  println                          (stub :print-dup)
+                  tic-tac-toe.persistence/savefile test-persistence/test-file
+                  console/play-again?              (stub :play-again {:return false})
+                  initialize-state                 (stub :initialize-new)
+                  configure-new                    (stub :configure-new)]
+      (let [saved-state    (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
+                                                                                                           [4 "X" 6]
+                                                                                                           [7 8 "O"]]
+                                                    :active-player-index 1 :type-x :human :type-o :human})
+            new-game-state (test-core/state-create {:status :config :interface :tui})]
+        (persistence/save-game saved-state)
+        (println (persistence/load-game))
+        (with-in-str "n\nhuman\nhuman\n3\n" (core/start-game new-game-state))
+        (should-have-invoked :configure-new)
+        (should-not-have-invoked :update-state {:with [saved-state]}))))
 
   (it "initializes an empty board, and starting player O"
     (should= test-game/state-initial (initialize-state {:type-x       :human :type-o :human :difficulty-x nil

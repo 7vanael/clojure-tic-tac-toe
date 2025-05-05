@@ -33,9 +33,10 @@
 (defn print-number-prompt []
   (println "Please enter the number for the space you'd like to take"))
 
-(defn announce-player [{:keys [active-player-index players]}]
+(defn announce-player [{:keys [active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])]
-    (println (str "Player " character "'s turn"))))
+    (println (str "Player " character "'s turn"))
+    state))
 
 (defn get-next-play [state play-options]
   (announce-player state)
@@ -48,14 +49,19 @@
 (defn invalid-selection []
   (println "That isn't a valid play, please try again"))
 
-(defmethod core/update-state [:tui :winner] [{:keys [active-player-index players]}]
+(defmethod core/update-state [:tui :winner] [{:keys [active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])]
     (persistence/delete-save)
-    (println (str (str/capitalize character) " wins! Good game!"))))
+    (println (str (str/capitalize character) " wins! Good game!"))
+    (core/update-state (assoc state :status :game-over))))
 
-(defmethod core/update-state [:tui :tie] [_]
-  (persistence/delete-save)
+(defn announce-draw []
   (println "It's a draw! Good game!"))
+
+(defmethod core/update-state [:tui :tie] [state]
+  (persistence/delete-save)
+  (announce-draw)
+  (core/update-state (assoc state :status :game-over)))
 
 (defn display-play-type-options [character options]
   (println "Who will play " character "?")
@@ -74,24 +80,30 @@
   (display-play-type-options character options)
   (get-selection character options))
 
+(defn save-found-prompt []
+  (println "A saved game was found, would you like to resume it? (y/n)"))
+
 (defn play-again-prompt []
   (println "Would you like to play again? (y/n)"))
 
 (def valid-yes-no-responses
   #{"yes" "y" "no" "n"})
 
-(defn validate-play-again [input]
+(defn validate-yes-no-entry [input]
   (contains? valid-yes-no-responses input))
 
-(defn get-play-again-selection []
-  (play-again-prompt)
+(defn get-yes-no-response [prompt]
+  (prompt)
   (let [input (str/trim (str/lower-case (read-line)))]
-    (if (validate-play-again input)
+    (if (validate-yes-no-entry input)
       input
-      (get-play-again-selection))))
+      (get-yes-no-response prompt))))
 
 (defn play-again? []
-  (str/includes? (get-play-again-selection) "y"))
+  (str/includes? (get-yes-no-response play-again-prompt) "y"))
+
+(defn resume? []
+  (str/includes? (get-yes-no-response save-found-prompt) "y"))
 
 (defn format-size-option-display [size]
   (str size ") " size "x" size))

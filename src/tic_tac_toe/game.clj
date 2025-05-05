@@ -8,7 +8,7 @@
             [tic-tac-toe.persistence :as persistence]))
 
 
-(defn play [state]
+#_(defn play [state]
   (-> state
       core/take-turn
       board/evaluate-board

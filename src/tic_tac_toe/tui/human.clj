@@ -18,10 +18,12 @@
 (defmethod core/take-human-turn :tui [{:keys [board] :as state}]
   (console/display-board board)
   (-> state
-      console/announce-player
       human-turn-tui
+      core/inspect
       board/evaluate-board
+      core/break-loop?
       core/change-player
+      core/inspect
       persistence/save-game
       core/update-state))
 
@@ -29,13 +31,15 @@
   (-> state
       core/take-turn
       board/evaluate-board
+      core/break-loop?
       core/change-player
-      persistence/save-game))
+      persistence/save-game
+      core/update-state))
 
 (defn initialize-state [{:keys [type-x type-o difficulty-x difficulty-o board-size interface]}]
   {:interface           interface
    :board               (board/new-board board-size)
-   :active-player-index 1
+   :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type type-x :difficulty difficulty-x}
                          {:character "O" :play-type type-o :difficulty difficulty-o}]})
@@ -56,11 +60,20 @@
                        :board-size board-size :interface :tui}]
     configuration))
 
-(defmethod core/start-game :tui [state]
+(defmethod core/update-state [:tui :found-save] [state]
+      (if (console/resume?)
+      (core/update-state (assoc state :status :in-progress))
+      (core/update-state (initialize-state (configure-new)))))
+
+(defmethod core/start-game :tui [_]
   (console/welcome-message)
   (let [saved-game      (persistence/load-game)]
     (if (nil? saved-game)
       (core/update-state (initialize-state (configure-new)))
-      (core/update-state saved-game))
-    (when (console/play-again?) (recur state))))
+      (core/update-state (assoc saved-game :status :found-save)))))
 
+(defmethod core/update-state [:tui :game-over] [state]
+  (persistence/delete-save)
+  (if (console/play-again?)
+    (core/update-state (initialize-state (configure-new)))
+    (System/exit 0)))

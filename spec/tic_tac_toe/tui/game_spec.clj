@@ -9,7 +9,7 @@
 (def state-initial
   {:interface           :tui
    :board               test-board/empty-board
-   :active-player-index 1
+   :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]})
@@ -49,7 +49,7 @@
 (def state-computer-2-4-empty
   {:interface           :tui
    :board               test-board/empty-4-board
-   :active-player-index 1
+   :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :computer :difficulty :hard}]})

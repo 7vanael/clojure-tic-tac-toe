@@ -1,6 +1,4 @@
-(ns tic-tac-toe.core
-  (:require [clojure.java.io :as io]
-            [clojure.edn :as edn]))
+(ns tic-tac-toe.core)
 
 (defmulti start-game :interface)
 
@@ -25,9 +23,18 @@
     (take-human-turn state)
     (take-computer-turn state)))
 
-
 (defn change-player [state]
   (assoc state :active-player-index
                (if (= (:active-player-index state) 0)
                  1 0)))
+(def states-to-break-loop
+  #{:tie :winner})
 
+(defn break-loop? [{:keys [status] :as state}]
+  (if (contains? states-to-break-loop status)
+    (update-state state)
+    state))
+
+(defn inspect [state]
+  (prn "state:" state)
+  state)
