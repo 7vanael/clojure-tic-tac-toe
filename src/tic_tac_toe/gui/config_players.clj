@@ -86,7 +86,6 @@
   state)
 
 (defmethod multis/mouse-clicked :config-o-type [state {:keys [x y] :as event}]
-  (core/inspect state)
   (cond (util/button-clicked? [x y] util/opt1-of-2-rect)
         (-> state
             (assoc-in [:players 1 :play-type] :human)
@@ -109,7 +108,6 @@
   state)
 
 (defmethod multis/mouse-clicked :config-o-difficulty [state {:keys [x y]}]
-  (core/inspect state)
   (cond (util/button-clicked? [x y] easy-rect)
         (-> state
             (assoc-in [:players 1 :difficulty] :easy)

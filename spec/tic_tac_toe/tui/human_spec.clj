@@ -6,8 +6,7 @@
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.tui.game-spec :as test-game]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence :as persistence])
-  (:import (java.io FileNotFoundException)))
+            [tic-tac-toe.persistence :as persistence]))
 
 (describe "human turn"
   (with-stubs)
@@ -60,25 +59,6 @@
 
         (core/start-game new-game-state)
         (should-have-invoked :configure-new))))
-
-  #_(xit "proceeds to configuration if a loaded game is found but rejected by user"
-    (with-redefs [console/save-found-prompt        (stub :save-found-prompt)
-                  println                          (stub :print-dup)
-                  tic-tac-toe.persistence/savefile test-persistence/test-file
-                  console/play-again?              (stub :play-again {:return false})
-                  initialize-state                 (stub :initialize-new {:return (test-core/state-create {:interface :tui :type-o :human :type-x :human :status :in-progress})})
-                  ;configure-new                    (stub :configure-new)
-                  ]
-      (let [saved-state    (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
-                                                                                                           [4 "X" 6]
-                                                                                                           [7 8 "O"]]
-                                                    :active-player-index 1 :type-x :human :type-o :human})
-            new-game-state (test-core/state-create {:status :config :interface :tui})]
-        (persistence/save-game saved-state)
-        (println (persistence/load-game))
-        (with-in-str "n\nhuman\nhuman\n3\n" (core/start-game new-game-state))
-        (should-have-invoked configure-new)
-        (should-not-have-invoked :update-state {:with [saved-state]}))))
 
   (it "initializes an empty board, and starting player O"
     (should= test-game/state-initial (initialize-state {:type-x       :human :type-o :human :difficulty-x nil

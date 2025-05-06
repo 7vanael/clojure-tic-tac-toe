@@ -34,7 +34,3 @@
   (if (contains? states-to-break-loop status)
     (update-state state)
     state))
-
-(defn inspect [state]
-  (prn "state:" state)
-  state)
