@@ -14,6 +14,50 @@
    [9 10 11 12]
    [13 14 15 16]])
 
+(def empty-3d-board
+  [[[1 2 3]
+    [4 5 6]
+    [7 8 9]]
+   [[10 11 12]
+    [13 14 15]
+    [16 17 18]]
+   [[19 20 21]
+    [22 23 24]
+    [25 26 27]]])
+
+(def first-x-3d-board
+  [[[1 2 3]
+    [4 5 6]
+    [7 "X" 9]]
+   [[10 11 12]
+    [13 14 15]
+    [16 17 18]]
+   [[19 20 21]
+    [22 23 24]
+    [25 26 27]]])
+
+(def z-diag-board
+  [[["X" 2 3]
+    [4 5 "O"]
+    [7 8 9]]
+   [[10 11 12]
+    [13 "X" "O"]
+    [16 17 18]]
+   [[19 20 21]
+    [22 23 24]
+    [25 26 "X"]]])
+
+(def tie-3d
+  [[["X" "O" "X"]
+    ["O" "X" "O"]
+    ["X" "O" "O"]]
+   [["O" "O" "X"]
+    ["X" "X" "O"]
+    ["O" "O" "X"]]
+   [["X" "O" "O"]
+    ["X" "O" "X"]
+    ["X" "X" "O"]]])
+
 (def first-X-4-board
   [[1 2 3 4]
    [5 "X" 7 8]
@@ -96,7 +140,12 @@
    ["X" "O" "X"]])
 
 (describe "board"
-  (it "creates a new board"
+
+  (it "gets the board complexity"
+    (should= :single-digit (get-size-complexity 3))
+    (should= 3 (get-size-complexity [3 3 3])))
+
+  (it "creates a new 2D board"
     (should= empty-board
              (new-board 3)))
 
@@ -104,35 +153,61 @@
     (should= empty-4-board
              (new-board 4)))
 
-  (it "checks if a position is available"
+  (it "creates a new 3x3x3 board"
+    (should= empty-3d-board (new-board [3 3 3])))
+
+  (it "gets the available? complexity"
+    (should= 3 (get-available-complexity empty-3d-board [1 1 1]))
+    (should= 2 (get-available-complexity empty-board [1 1])))
+
+  (it "checks if a position is available in 2 or 3d"
     (should= true (available? empty-board [1 1]))
     (should= true (available? empty-4-board [1 1]))
     (should= false (available? center-x-board [1 1]))
-    (should= false (available? first-X-4-board [1 1])))
+    (should= false (available? first-X-4-board [1 1]))
+    (should= true (available? empty-3d-board [1 1 1]))
+    (should= false (available? z-diag-board [0 0 0]))
+    (should= false (available? z-diag-board [1 1 2])))
 
   (it "returns the numbers of available positions"
     (should= [2 6] (play-options not-full-board-x-column-win))
     (should= [6] (play-options diag-win-X-4-board)))
 
-  (it "takes a single number and returns the coordinates of that position"
+  (it "gets the complexity of the board"
+    (should= 2 (get-board-complexity 6 empty-board))
+    (should= 3 (get-board-complexity 6 empty-3d-board)))
+
+  (it "takes a single number and returns the coordinates of that position on a 2 or 3d board"
     (should= [0 1] (space->coordinates 2 not-full-board-x-column-win))
     (should= [1 2] (space->coordinates 6 not-full-board-x-column-win))
-    (should= [1 1] (space->coordinates 6 diag-win-X-4-board)))
+    (should= [1 1] (space->coordinates 6 diag-win-X-4-board))
+    (should= [1 1 2] (space->coordinates 15 empty-3d-board)))
 
-  (it "allows a player to take an empty square"
+  (it "gets the complexity of the board for claiming"
+    (should= 2 (get-claim-complexity empty-board [1 1] "X"))
+    (should= 3 (get-claim-complexity empty-3d-board [0 2 1] "X")))
+
+  (it "allows a player to take an empty square in 2 or 3d"
     (should= center-x-board
              (take-square empty-board [1 1] "X"))
     (should= first-X-4-board
-             (take-square empty-4-board [1 1] "X")))
+             (take-square empty-4-board [1 1] "X"))
+    (should= first-x-3d-board
+             (take-square empty-3d-board [0 2 1] "X")))
 
   (it "does not take a square for a player if it is occupied"
     (should= center-x-board
-             (take-square center-x-board [1 1] "O")))
+             (take-square center-x-board [1 1] "O"))
+    (should= first-x-3d-board
+             (take-square first-x-3d-board [0 2 1] "O")))
 
   (it "checks if the board is full"
     (should-not (any-space-available? full-board-draw))
     (should-not (any-space-available? full-draw-4-board))
-    (should (any-space-available? not-full-board-x-column-win)))
+    (should (any-space-available? not-full-board-x-column-win))
+    (should (any-space-available? z-diag-board))
+    (should (any-space-available? first-x-3d-board))
+    (should-not (any-space-available? tie-3d)))
 
   (it "checks if there is a player with an entire row"
     (should= true (win-row? not-full-board-x-row-win "X"))
