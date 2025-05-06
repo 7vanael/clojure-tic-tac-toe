@@ -8,8 +8,8 @@
 
 (def type-labels ["Play Again" "Exit"])
 
-(defmethod multis/draw-state :winner [{:keys [active-player-index players] :as state}]
-  (let [current-player (get-in players [active-player-index :character])
+(defmethod multis/draw-state :winner [{:keys [active-player-index] :as state}]
+  (let [current-player (if (= active-player-index 0) "O" "X")
         title-text     (str current-player " wins! Good game!")]
     (q/background 240)
     (q/fill 0)

@@ -19,12 +19,15 @@
   state)
 
 (defmethod multis/mouse-clicked :select-board [state {:keys [x y]}]
+  (core/inspect state)
   (cond (util/button-clicked? [x y] util/opt1-of-2-rect)
         (-> state
             (assoc :board (board/new-board 3))
-            (assoc :status :in-progress))
+            (assoc :status :in-progress)
+            core/inspect)
         (util/button-clicked? [x y] util/opt2-of-2-rect)
         (-> state
             (assoc :board (board/new-board 4))
-            (assoc :status :in-progress))
+            (assoc :status :in-progress)
+            core/inspect)
         :else state))

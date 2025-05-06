@@ -78,6 +78,7 @@
 
 
 (defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players] :as state} {:keys [x y]}]
+  (prn "state:" state)
   (let [play-options (set (board/play-options board))
         cell-size    (/ usable-screen (count board))
         relative-x   (- x grid-origin-x)
@@ -91,6 +92,8 @@
       (-> state
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           board/evaluate-board
+          core/inspect
+          core/break-loop?
           core/change-player
           persistence/save-game)
       state)))
@@ -104,5 +107,6 @@
     (-> state
         core/take-turn
         board/evaluate-board
+        core/break-loop?
         core/change-player
         persistence/save-game)))

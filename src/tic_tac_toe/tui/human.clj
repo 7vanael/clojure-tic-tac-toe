@@ -17,15 +17,8 @@
 
 (defmethod core/take-human-turn :tui [{:keys [board] :as state}]
   (console/display-board board)
-  (-> state
-      human-turn-tui
-      core/inspect
-      board/evaluate-board
-      core/break-loop?
-      core/change-player
-      core/inspect
-      persistence/save-game
-      core/update-state))
+  (let [new-state (human-turn-tui state)]
+    new-state))
 
 (defmethod core/update-state [:tui :in-progress] [state]
   (-> state

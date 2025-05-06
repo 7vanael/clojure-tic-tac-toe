@@ -9,7 +9,8 @@
             [tic-tac-toe.gui.in-progress]
             [tic-tac-toe.gui.select-board]
             [tic-tac-toe.gui.welcome]
-            [tic-tac-toe.gui.winner]))
+            [tic-tac-toe.gui.winner]
+            [tic-tac-toe.gui.found-save]))
 
 
 (defn debug-overlay [options]

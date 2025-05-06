@@ -49,11 +49,14 @@
 (defn invalid-selection []
   (println "That isn't a valid play, please try again"))
 
+(defn announce-winner [character]
+  (println (str (str/capitalize character) " wins! Good game!")))
+
 (defmethod core/update-state [:tui :winner] [{:keys [active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])]
     (persistence/delete-save)
-    (println (str (str/capitalize character) " wins! Good game!"))
-    (core/update-state (assoc state :status :game-over))))
+    (announce-winner character)
+    (assoc state :status :game-over)))
 
 (defn announce-draw []
   (println "It's a draw! Good game!"))
@@ -61,7 +64,7 @@
 (defmethod core/update-state [:tui :tie] [state]
   (persistence/delete-save)
   (announce-draw)
-  (core/update-state (assoc state :status :game-over)))
+  (assoc state :status :game-over))
 
 (defn display-play-type-options [character options]
   (println "Who will play " character "?")

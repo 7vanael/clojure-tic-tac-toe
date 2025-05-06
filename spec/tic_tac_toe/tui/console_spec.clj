@@ -8,7 +8,7 @@
             [tic-tac-toe.persistence-spec :as test-persistence])
   (:import (java.io FileNotFoundException)))
 
-  (describe "console"
+(describe "console"
   (with-stubs)
 
   (it "prints a welcome message"
@@ -36,18 +36,18 @@
 
   (it "gets input from the user until a valid entry is provided"
     (with-redefs [print-number-prompt (stub :print-prompt)
-                  announce-player (stub :print-dup)]
+                  announce-player     (stub :print-dup)]
       (should= 6 (with-in-str "c\n26\n6\n1\n" (get-next-play
-                                                (test-core/state-create {:interface :tui :board [["X" 2 "O"]["X" "O" 6] ["O" "X" "O"]]})
+                                                (test-core/state-create {:interface :tui :board [["X" 2 "O"] ["X" "O" 6] ["O" "X" "O"]]})
                                                 [2 6])))))
 
-    (it "notifies a player that a saved game was found"
-      (should= "A saved game was found, would you like to resume it? (y/n)\n"
-               (with-out-str (save-found-prompt))))
+  (it "notifies a player that a saved game was found"
+    (should= "A saved game was found, would you like to resume it? (y/n)\n"
+             (with-out-str (save-found-prompt))))
 
-    (it "returns if a user wants to load a saved game or not"
-      (with-redefs [save-found-prompt (stub :print-dup)]
-        (should= true (with-in-str "y\n" (resume?)))))
+  (it "returns if a user wants to load a saved game or not"
+    (with-redefs [save-found-prompt (stub :print-dup)]
+      (should= true (with-in-str "y\n" (resume?)))))
 
   (it "notifies the player that a play wasn't valid"
     (should= "That isn't a valid play, please try again\n"
@@ -56,34 +56,9 @@
   (it "notifies the player that the game is a draw"
     (should= "It's a draw! Good game!\n" (with-out-str (announce-draw))))
 
-  (xit "changes state to game-over when it ends in a tie"
-    (with-redefs [announce-draw (stub :print-dup)
-                  play-again? (stub :play-again)])
-    (core/update-state {:interface :tui :status :tie})
-    (should-have-invoked play-again?))
 
-  (xit "deletes the save file when the game ends in a draw"
-    (with-redefs [println (stub :print-dup)
-                  tic-tac-toe.persistence/savefile test-persistence/test-file]
-      (let [state (test-core/state-create {:interface :tui :status :tie :board [["X" "O" "X"]
-                                                                                ["O" "X" "O"]
-                                                                                ["O" "X" "O"]]})]
-        (persistence/save-game state)
-        (core/update-state state)
-        (should-throw FileNotFoundException (slurp test-persistence/test-file)))))
-
-    (xit "deletes the save file when the game ends in a win"
-    (with-redefs [println (stub :print-dup)
-                  tic-tac-toe.persistence/savefile test-persistence/test-file]
-      (let [state (test-core/state-create {:interface :tui :status :winner :board [["X" "O" "X"]
-                                                                                ["O" "X" "O"]
-                                                                                ["O" "X" "X"]]})]
-        (persistence/save-game state)
-        (core/update-state state)
-        (should-throw FileNotFoundException (slurp test-persistence/test-file)))))
-
-  (xit "announces the winner of a game"
-    (should= "X wins! Good game!\n" (with-out-str (core/update-state (test-core/state-create {:interface :tui :status :winner :active-player-index 0})))))
+  (it "announces the winner of a game"
+    (should= "X wins! Good game!\n" (with-out-str (announce-winner "X"))))
 
   (it "displays the options for players to choose from"
     (should= "Who will play  X ?\nhuman\ncomputer\n"
