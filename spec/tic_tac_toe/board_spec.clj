@@ -36,7 +36,7 @@
     [22 23 24]
     [25 26 27]]])
 
-(def z-diag-board
+(def cube-diag-board
   [[["X" 2 3]
     [4 5 "O"]
     [7 8 9]]
@@ -47,12 +47,45 @@
     [22 23 24]
     [25 26 "X"]]])
 
+(def conventional-row-3d-board
+  [[["X" "X" "X"]
+    [4 5 "O"]
+    [7 "O" 9]]
+   [[10 11 12]
+    [13 "X" "O"]
+    [16 17 18]]
+   [[19 20 21]
+    [22 23 24]
+    [25 26 "X"]]])
+
+(def z-diag-board
+  [[["X" 2 3]
+    [4 5 "O"]
+    [7 "O" 9]]
+   [[10 "X" 12]
+    [13 14 "O"]
+    [16 17 18]]
+   [[19 20 "X"]
+    [22 23 24]
+    [25 26 "X"]]])
+
+(def z-line-board
+  [[["X" 2 3]
+    [4 5 "O"]
+    [7 "O" 9]]
+   [["X" 11 12]
+    [13 14 "O"]
+    [16 17 18]]
+   [["X" 20 21 ]
+    [22 23 24]
+    [25 26 "X"]]])
+
 (def not-full-3d
   [[[1 "O" "O"]
-    ["O" "X" "X"]
+    ["O" "X" 6]
     ["X" "O" "O"]]
-   [[10 "O" "X"]
-    ["X" "X" "O"]
+   [[10 11 "X"]
+    ["O" "X" "O"]
     ["O" "O" "X"]]
    [["X" "O" "O"]
     ["X" "O" "X"]
@@ -173,13 +206,13 @@
     (should= false (available? center-x-board [1 1]))
     (should= false (available? first-X-4-board [1 1]))
     (should= true (available? empty-3d-board [1 1 1]))
-    (should= false (available? z-diag-board [0 0 0]))
-    (should= false (available? z-diag-board [1 1 2])))
+    (should= false (available? cube-diag-board [0 0 0]))
+    (should= false (available? cube-diag-board [1 1 2])))
 
   (it "returns the numbers of available positions"
     (should= [2 6] (play-options not-full-board-x-column-win))
     (should= [6] (play-options diag-win-X-4-board))
-    (should= [1 10 25] (play-options not-full-3d)))
+    (should= [1 6 10 11 25] (play-options not-full-3d)))
 
   (it "gets the complexity of the board"
     (should= 2 (get-board-complexity empty-board))
@@ -209,7 +242,7 @@
     (should-not (any-space-available? full-board-draw))
     (should-not (any-space-available? full-draw-4-board))
     (should (any-space-available? not-full-board-x-column-win))
-    (should (any-space-available? z-diag-board))
+    (should (any-space-available? cube-diag-board))
     (should (any-space-available? first-x-3d-board))
     (should-not (any-space-available? tie-3d)))
 
@@ -233,7 +266,7 @@
     (should-not (win-diag? not-full-board-x-row-win "X")))
 
 
-  (it "checks if there is a winner"
+  (it "checks if there is a winner for 2-d boards"
     (should= true (winner? not-full-board-x-row-win "X"))
     (should= true (winner? col-win-X-4-board "X"))
     (should= true (winner? not-full-board-x-column-win "X"))
@@ -244,6 +277,20 @@
     (should= false (winner? not-full-board-x-row-win "O"))
     (should= false (winner? not-full-board-x-diag-win "O"))
     (should= false (winner? full-board-draw "O")))
+
+  (it "gets a z-line from a board"
+    (should= [1 10 "X"] (get-z-line not-full-3d [0 0])))
+
+  (it "checks for a z-line win in 3-d board"
+    (should (win-3d-z-line? z-line-board "X"))
+    (should-not (win-3d-z-line? not-full-3d "O")))
+
+  (it "checks if there is a winner for 3-d boards"
+    (should= true (winner? conventional-row-3d-board "X"))
+    (should= true (winner? z-diag-board "X"))
+    (should= true (winner? z-line-board "X"))
+    (should= true (winner? cube-diag-board "X"))
+    (should= false (winner? not-full-3d "X")))
 
   (it "updates status to winner if a player has won"
     (should= (test-core/state-create {:board not-full-board-x-row-win :active-player-index 0 :status :winner})
