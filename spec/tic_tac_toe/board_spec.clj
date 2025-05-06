@@ -47,15 +47,26 @@
     [22 23 24]
     [25 26 "X"]]])
 
-(def tie-3d
-  [[["X" "O" "X"]
-    ["O" "X" "O"]
+(def not-full-3d
+  [[[1 "O" "O"]
+    ["O" "X" "X"]
     ["X" "O" "O"]]
-   [["O" "O" "X"]
+   [[10 "O" "X"]
     ["X" "X" "O"]
     ["O" "O" "X"]]
    [["X" "O" "O"]
     ["X" "O" "X"]
+    [25 "X" "O"]]])
+
+(def tie-3d
+  [[["X" "O" "O"]
+    ["O" "X" "X"]
+    ["X" "O" "O"]]
+   [["O" "O" "X"]
+    ["X" "X" "O"]
+    ["O" "O" "X"]]
+   [["X" "X" "O"]
+    ["O" "O" "X"]
     ["X" "X" "O"]]])
 
 (def first-X-4-board
@@ -156,10 +167,6 @@
   (it "creates a new 3x3x3 board"
     (should= empty-3d-board (new-board [3 3 3])))
 
-  (it "gets the available? complexity"
-    (should= 3 (get-available-complexity empty-3d-board [1 1 1]))
-    (should= 2 (get-available-complexity empty-board [1 1])))
-
   (it "checks if a position is available in 2 or 3d"
     (should= true (available? empty-board [1 1]))
     (should= true (available? empty-4-board [1 1]))
@@ -171,21 +178,18 @@
 
   (it "returns the numbers of available positions"
     (should= [2 6] (play-options not-full-board-x-column-win))
-    (should= [6] (play-options diag-win-X-4-board)))
+    (should= [6] (play-options diag-win-X-4-board))
+    (should= [1 10 25] (play-options not-full-3d)))
 
   (it "gets the complexity of the board"
-    (should= 2 (get-board-complexity 6 empty-board))
-    (should= 3 (get-board-complexity 6 empty-3d-board)))
+    (should= 2 (get-board-complexity empty-board))
+    (should= 3 (get-board-complexity empty-3d-board)))
 
   (it "takes a single number and returns the coordinates of that position on a 2 or 3d board"
     (should= [0 1] (space->coordinates 2 not-full-board-x-column-win))
     (should= [1 2] (space->coordinates 6 not-full-board-x-column-win))
     (should= [1 1] (space->coordinates 6 diag-win-X-4-board))
     (should= [1 1 2] (space->coordinates 15 empty-3d-board)))
-
-  (it "gets the complexity of the board for claiming"
-    (should= 2 (get-claim-complexity empty-board [1 1] "X"))
-    (should= 3 (get-claim-complexity empty-3d-board [0 2 1] "X")))
 
   (it "allows a player to take an empty square in 2 or 3d"
     (should= center-x-board

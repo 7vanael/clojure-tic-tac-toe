@@ -1,60 +1,37 @@
 (ns tic-tac-toe.board)
+;[z x y]
 
-#_(defn new-board [size]
+(defn new-2d-board [size]
   (mapv vec (partition size (range 1 (inc (* size size))))))
 ;mapv vec is needed to ensure we get a vector of vectors, not a list
 
-(defn get-size-complexity [size]
-  (if (sequential? size) (count size) :single-digit))
-
-(defmulti new-board get-size-complexity)
-
-(defmethod new-board :single-digit [size]
-  (mapv vec (partition size (range 1 (inc (* size size))))))
-;mapv vec is needed to ensure we get a vector of vectors, not a list
-
-(defmethod new-board 3 [[size _]]
+(defn new-3d-board [size]
   (vec (for [z (range size)]
          (vec (for [x (range size)]
                 (vec (for [y (range size)]
                        (+ 1 y (* size x) (* size size z)))))))))
 
-#_(defn available? [board [x y]]
-  (number? (get-in board [x y])))
+(defn get-size-complexity [size]
+  (if (sequential? size) (count size) :single-digit))
 
-(defn get-available-complexity [_ coordinates]
-  (get-size-complexity coordinates))
+(defn new-board [size]
+  (if (= :single-digit (get-size-complexity size))
+    (new-2d-board size)
+    (new-3d-board (first size))))
 
-(defmulti available? get-available-complexity)
-
-(defmethod available? 2 [board [x y]]
-          (number? (get-in board [x y])))
-
-;should z just always come first? It's the panel selector
-(defmethod available? 3 [board [z x y]]
-  (number? (get-in board [z x y])))
+(defn available? [board coordinates]
+    (number? (get-in board coordinates)))
 
 (defn play-options [board]
   (filter number? (flatten board)))
 
-#_(defn space->coordinates [number board]
+(defn space->2d-coordinates [number board]
   (let [width (count board)
         x     (quot (dec number) width)
         y     (rem (dec number) width)]
     [x y]))
 
-(defn get-board-complexity [_ board]
-  (if (vector? (first (first board))) 3 2))
-
-(defmulti space->coordinates get-board-complexity)
-
-(defmethod space->coordinates 2 [number board]
-  (let [width (count board)
-        x     (quot (dec number) width)
-        y     (rem (dec number) width)]
-    [x y]))
-
-(defmethod space->coordinates 3 [number board]
+(defn space->3d-coordinates [number board]
   (let [single-dimension (count board)
         single-slice (* single-dimension single-dimension)
         z (quot (dec number) single-slice)
@@ -63,24 +40,17 @@
         y (rem one-board single-dimension)]
     [z x y]))
 
-#_(defn take-square [board [x y] character]
-  (if (available? board [x y])
-    (assoc-in board [x y] character)
-    board))
+(defn get-board-complexity [board]
+  (if (vector? (first (first board))) 3 2))
 
-(defn get-claim-complexity [_ coordinates _]
-  (get-size-complexity coordinates))
+(defn space->coordinates [number board]
+  (if (= 2 (get-board-complexity board))
+    (space->2d-coordinates number board)
+    (space->3d-coordinates number board)))
 
-(defmulti take-square get-claim-complexity)
-
-(defmethod take-square 2 [board [x y] character]
-  (if (available? board [x y])
-    (assoc-in board [x y] character)
-    board))
-
-(defmethod take-square 3 [board [z x y] character]
-  (if (available? board [z x y])
-    (assoc-in board [z x y] character)
+(defn take-square [board coordinates character]
+  (if (available? board coordinates)
+    (assoc-in board coordinates character)
     board))
 
 (defn any-space-available? [board]
@@ -101,26 +71,22 @@
     (or (every? #(= character (get-in board %)) diag)
         (every? #(= character (get-in board %)) ortho-diag))))
 
-#_(defn winner? [board character]
+
+(defn winner-2d? [board character]
   (or (win-row? board character)
       (win-column? board character)
       (win-diag? board character)))
 
-(defn get-winner-complexity [board character]
-  (get-board-complexity character board))
-
-(defmulti winner? get-winner-complexity)
-
-(defmethod winner? 2 [board character]
-  (or (win-row? board character)
-      (win-column? board character)
-      (win-diag? board character)))
-
-#_(defmethod winner? 3 [board character]
-  (or (win-3d-row? board character)
+(defn winner-3d? [board character]
+  #_(or (win-3d-row? board character)
       (win-3d-column? board character)
       (win-3d-z-line? board character)
       (win-3d-diag? board character)))
+
+(defn winner? [board character]
+    (if (= 2 (get-board-complexity board))
+      (winner-2d? board character)
+      (winner-3d? board character)))
 
   (defn evaluate-board [{:keys [board active-player-index players] :as state}]
     (cond (winner? board (get-in players [active-player-index :character])) (assoc state :status :winner)
