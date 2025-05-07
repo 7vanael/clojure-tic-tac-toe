@@ -52,20 +52,9 @@
     [4 5 "O"]
     [7 "O" 9]]
    [[10 11 12]
-    [13 "X" "O"]
-    [16 17 18]]
-   [[19 20 21]
-    [22 23 24]
-    [25 26 "X"]]])
-
-(def z-diag-board
-  [[["X" 2 3]
-    [4 5 "O"]
-    [7 "O" 9]]
-   [[10 "X" 12]
     [13 14 "O"]
     [16 17 18]]
-   [[19 20 "X"]
+   [[19 20 21]
     [22 23 24]
     [25 26 "X"]]])
 
@@ -77,6 +66,17 @@
     [13 14 "O"]
     [16 17 18]]
    [["X" 20 21 ]
+    [22 23 24]
+    [25 26 "X"]]])
+
+(def z-diag-board
+  [[["X" 2 3]
+    [4 5 "O"]
+    [7 "O" 9]]
+   [[10 "X" 12]
+    [13 "O" "O"]
+    [16 17 18]]
+   [[19 "O" "X"]
     [22 23 24]
     [25 26 "X"]]])
 
@@ -104,12 +104,6 @@
 
 (def first-X-4-board
   [[1 2 3 4]
-   [5 "X" 7 8]
-   [9 10 11 12]
-   [13 14 15 16]])
-
-(def second-X-4-board
-  [["O" 2 3 4]
    [5 "X" 7 8]
    [9 10 11 12]
    [13 14 15 16]])
@@ -278,12 +272,37 @@
     (should= false (winner? not-full-board-x-diag-win "O"))
     (should= false (winner? full-board-draw "O")))
 
+  (it "checks a 3d board for a conventional win"
+    (should= true (win-3d-panel? conventional-row-3d-board "X"))
+    (should-not (win-3d-panel? empty-3d-board "X")))
+
   (it "gets a z-line from a board"
     (should= [1 10 "X"] (get-z-line not-full-3d [0 0])))
 
   (it "checks for a z-line win in 3-d board"
     (should (win-3d-z-line? z-line-board "X"))
-    (should-not (win-3d-z-line? not-full-3d "O")))
+    (should-not (win-3d-z-line? z-diag-board "O")))
+
+  (it "gets the diagonal starts & steps for y-plane diagonals (for 1 y)"
+    (should= [[[0 0 1] [1 1 0]]
+              [[2 0 1] [-1 1 0]]] (y-plane-diags 1 3)))
+
+  (it "gets the diagonal starts & steps for x-plane diagonals (for 0 x)"
+    (should= [[[0 0 0] [1 0 1]]
+              [[0 0 2] [1 0 -1]]] (x-plane-diags 0 3)))
+
+  (it "gets the values from a line given a board, a starting position and a step"
+    (let [start [0 0 0]
+          step [0 1 1]]
+      (should= [1 5 9] (start-step->values empty-3d-board start step)))
+    (let [start [2 0 1]
+          step [-1 1 0]]
+      (should= [20 14 8] (start-step->values empty-3d-board start step))))
+
+  (it "finds a diagonal win in a 3d board"
+    (should= false (win-3d-diag? empty-3d-board "X"))
+    (should= false (win-3d-diag? conventional-row-3d-board "X"))
+    (should= true (win-3d-diag? cube-diag-board "X")))
 
   (it "checks if there is a winner for 3-d boards"
     (should= true (winner? conventional-row-3d-board "X"))

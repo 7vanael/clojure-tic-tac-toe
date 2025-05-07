@@ -120,7 +120,7 @@
         plane-z-diags (mapcat #(z-plane-diags % size) (range size))
         all-diags     (concat cube-diags plane-x-diags plane-y-diags plane-z-diags)
         diag-values   (map #(start-step->values board (first %) (second %)) all-diags)]
-    (boolean (some #(all-matching? % character) diag-values)))) ;make nil -> false for consistency
+    (boolean (some #(all-matching? % character) diag-values)))) ;nil -> false for consistency with 2d
 
 (defn winner-3d? [board character]
   (or (win-3d-panel? board character)

@@ -2,11 +2,7 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.tui.console :refer :all]
             [tic-tac-toe.board_spec :refer :all :as test-board]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.persistence :as persistence]
-            [tic-tac-toe.persistence-spec :as test-persistence])
-  (:import (java.io FileNotFoundException)))
+            [tic-tac-toe.core-spec :as test-core]))
 
 (describe "console"
   (with-stubs)
@@ -29,6 +25,12 @@
     (should= "  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  X |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n"
              (with-out-str (display-board test-board/first-X-4-board))))
 
+  (it "prints the board state for a 3d board"
+    (should= "\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n"
+             (with-out-str (display-board test-board/empty-3d-board)))
+
+    (should= "\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  X |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n"
+             (with-out-str (display-board test-board/first-x-3d-board))))
 
   (it "prints the number prompt"
     (should= "Please enter the number for the space you'd like to take\n"

@@ -20,12 +20,27 @@
   (let [row (str " " (str/join " | " (map add-space row)))]
     (str row " \n")))
 
-(defn process-board [board]
+(defn process-2d-board [board]
   (apply str (map row-string board)))
 
-(defn display-board [board]
+(defn display-2d-board [board]
   (println (str/join (horizontal-line (count board))
-                     (str/split-lines (process-board board)))))
+                     (str/split-lines (process-2d-board board)))))
+
+(defn format-layer [idx layer size]
+  (str "\nLayer " (inc idx) ":\n"
+       (str/join (horizontal-line size)
+                 (str/split-lines (process-2d-board layer)))
+       "\n"))
+
+(defn display-3d-board [board]
+  (let [size (count board)]
+    (println (apply str (map-indexed #(format-layer %1 %2 size) board)))))
+
+(defn display-board [board]
+  (if (vector? (get-in board [0 0] nil))
+    (display-3d-board board)
+    (display-2d-board board)))
 
 (defn validate-number [play-options input]
   (contains? (set play-options) input))
