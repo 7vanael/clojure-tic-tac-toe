@@ -148,8 +148,9 @@
       (should-not (= first-result second-result third-result))))
 
   (it "scales max-depth to board size"
-    (should= 3 (calc-max-depth 4))
-    (should= 3 (calc-max-depth 3)))
+    (should= 8 (calc-max-depth 9))
+    (should= 3 (calc-max-depth 16))
+    (should= 2 (calc-max-depth 27)))
 
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (core/take-turn state-o-about-to-win)))

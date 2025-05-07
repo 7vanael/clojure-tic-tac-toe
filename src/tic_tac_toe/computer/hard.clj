@@ -16,7 +16,9 @@
       (board/winner? board opp-char)))
 
 (defn calc-max-depth [size]
-  3)
+  (cond (< size 10) 8
+        (< size 17) 3
+        :else 2))
 
 (defn minimax [board {:keys [char opp-char current-player depth max-depth] :as config}]
   (let [open-spaces (util/get-possible-moves board)]
@@ -33,7 +35,7 @@
   (let [moves     (util/get-possible-moves board)
         char      (get-in players [active-player-index :character])
         opp-char  (if (= "X" char) "O" "X")
-        max-depth (calc-max-depth (count board))
+        max-depth (calc-max-depth (count (flatten board)))
         config {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}]
     (map #(vector % (minimax (board/take-square board % char) config)) moves)))
 
