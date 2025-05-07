@@ -104,14 +104,14 @@
       (should= false (with-in-str "nonsense\nn\n" (play-again?)))))
 
   (it "prints the board-size options"
-    (should= "What size board do you want to play on?\n3) 3x3\n4) 4x4\n"
-             (with-out-str (board-size-prompt [3 4]))))
+    (should= "What size board do you want to play on?\n1) :3x3\n2) :4x4\n3) :3x3x3\n"
+             (with-out-str (board-size-prompt {:3x3 3, :4x4 4, :3x3x3 [3 3 3]}))))
 
-  (it "allows the player to select a board size of 3 or 4"
+  (it "allows the player to select a board size of 3 or 4 or 3x3x3"
     (with-redefs [board-size-prompt (stub :size-prompt)]
-      (should= 3 (with-in-str "3\n" (get-board-size [3 4])))
-      (should= 4 (with-in-str "4\n" (get-board-size [3 4])))
-      (should= 3 (with-in-str "6\ngesf\nhello\n3\n4\n" (get-board-size [3 4])))))
+      (should= 3 (with-in-str "1\n" (get-board-size {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})))
+      (should= 4 (with-in-str "2\n" (get-board-size {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})))
+      (should= [3 3 3] (with-in-str "6\ngesf\nhello\n3\n4\n" (get-board-size {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})))))
 
   (it "prints the difficulty options"
     (should= "What difficulty setting should X use?\neasy\nmedium\nhard\n"

@@ -123,22 +123,23 @@
 (defn resume? []
   (str/includes? (get-yes-no-response save-found-prompt) "y"))
 
-(defn format-size-option-display [size]
-  (str size ") " size "x" size))
+#_(defn format-size-option-display [idx key]
+    (str idx ") " key))
 
 (defn board-size-prompt [size-options]
   (println "What size board do you want to play on?")
-  (doseq [size size-options]
-    (println (format-size-option-display size))))
+  (doseq [[idx key] (map-indexed vector (keys size-options))]
+    (println (str (inc idx) ") " key))))
 
 (defn get-board-size  [size-options]
   (board-size-prompt size-options)
   (let [input (read-line)
-        size-selection (try (read-string input)
+        size-selection (try (Integer/parseInt input)
                             (catch Exception _
-                              nil))]
-    (if (some #{size-selection} size-options)
-      size-selection
+                              nil))
+        option-keys (vec (keys size-options))]
+    (if (and size-selection (>= size-selection 1) (<= size-selection (count size-options)))
+      (get size-options (get option-keys (dec size-selection)))
       (get-board-size size-options))))
 
 (defn display-difficulty-options [char options]

@@ -43,12 +43,15 @@
 (def difficulty-options
   [:easy :medium :hard])
 
+(def board-options
+  {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
+
 (defn configure-new []
   (let [player-x      (console/get-player-type "X" player-options)
         difficulty-x  (when (= :computer player-x) (console/get-difficulty "X" difficulty-options))
         player-o      (console/get-player-type "O" player-options)
         difficulty-o  (when (= :computer player-o) (console/get-difficulty "O" difficulty-options))
-        board-size    (console/get-board-size [3 4])
+        board-size    (console/get-board-size board-options)
         configuration {:type-x     player-x :type-o player-o :difficulty-x difficulty-x :difficulty-o difficulty-o
                        :board-size board-size :interface :tui}]
     configuration))

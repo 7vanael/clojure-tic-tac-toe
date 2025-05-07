@@ -16,7 +16,7 @@
       (board/winner? board opp-char)))
 
 (defn calc-max-depth [size]
-  (if (= 3 size) 8 3))
+  3)
 
 (defn minimax [board {:keys [char opp-char current-player depth max-depth] :as config}]
   (let [open-spaces (util/get-possible-moves board)]

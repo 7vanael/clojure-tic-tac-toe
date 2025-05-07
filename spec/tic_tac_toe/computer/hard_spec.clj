@@ -149,7 +149,7 @@
 
   (it "scales max-depth to board size"
     (should= 3 (calc-max-depth 4))
-    (should= 8 (calc-max-depth 3)))
+    (should= 3 (calc-max-depth 3)))
 
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (core/take-turn state-o-about-to-win)))

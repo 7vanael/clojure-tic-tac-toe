@@ -17,7 +17,7 @@
                   console/display-play-type-options (stub :print-dup-play-type)
                   console/play-again-prompt         (stub :play-again?)
                   console/board-size-prompt         (stub :board-size-prompt {:return 3})]
-      (with-in-str "human\nhuman\n3\nno\n" (-main "tui"))
+      (with-in-str "human\nhuman\n1\nno\n" (-main "tui"))
       (should-have-invoked :core/start)))
 
   (it "initializes a new game with computer player and human player"
@@ -29,7 +29,7 @@
                   core/update-state                  (stub :update-loop)
                   persistence/save-game              (stub :save-dup)
                   persistence/load-game              (stub :load {:return nil})]
-      (with-in-str "human\ncomputer\nmedium\n4\nn\n" (-main "tui"))
+      (with-in-str "human\ncomputer\nmedium\n2\nn\n" (-main "tui"))
       (should-have-invoked :update-loop {:with [{:interface           :tui
                                                  :board               [[1 2 3 4]
                                                                        [5 6 7 8]
@@ -45,7 +45,7 @@
                   console/play-again-prompt (stub :play-again?)
                   ;game/play                 (stub :start)
                   ]
-      (with-in-str "human\ncomputer\nmedium\n3\nn\n" (-main "tui"))
+      (with-in-str "human\ncomputer\nmedium\n1\nn\n" (-main "tui"))
       (should-have-invoked :launch-cli {:with [{:status :config :interface :tui}]})))
 
   (it "uses the quil interface if launched with gui"
