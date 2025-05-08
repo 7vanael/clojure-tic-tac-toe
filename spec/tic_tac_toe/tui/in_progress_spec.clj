@@ -1,4 +1,4 @@
-(ns tic-tac-toe.tui.human-spec
+(ns tic-tac-toe.tui.in-progress_spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.persistence-spec :as test-persistence]
@@ -9,7 +9,7 @@
             [tic-tac-toe.persistence :as persistence]
             [clojure.java.io :as io]))
 
-(describe "human turn"
+(describe "in-progress tui"
   (with-stubs)
 
   (it "checks for a saved game, offers to load it if found"
@@ -54,19 +54,14 @@
     (with-redefs [println                          (stub :print-dup)
                   tic-tac-toe.persistence/savefile test-persistence/test-file
                   core/update-state                (stub :update-state)
-                  configure-new                    (stub :configure-new)
                   initialize-state                 (stub :initialize-new)
                   console/play-again?              (stub :play-again {:return false})]
       (let [new-game-state (test-core/state-create {:status :config :interface :tui})]
         (persistence/delete-save)                           ;ensures no residual save found
 
         (core/start-game new-game-state)
-        (should-have-invoked :configure-new)
+        (should-have-invoked :initialize-new)
         (io/delete-file test-persistence/test-file true))))
-
-  (it "initializes an empty board, and starting player O"
-    (should= test-game/state-initial (initialize-state {:type-x       :human :type-o :human :difficulty-x nil
-                                                        :difficulty-o nil :board-size 3 :interface :tui})))
 
   (it "assigns a difficulty of nil if player type is human"
     (with-redefs [console/display-play-type-options (stub :print-dup-play-type)
@@ -102,13 +97,13 @@
     (with-redefs [console/print-number-prompt (stub :print-dup)
                   console/announce-player     (stub :print-dup-announce)]
       (should= test-game/state-center-x
-               (with-in-str "0\n45\njunk\n5\n" (human-turn-tui (assoc test-game/state-initial :active-player-index 0))))
+               (with-in-str "0\n45\njunk\n5\n" (core/take-human-turn (assoc test-game/state-initial :active-player-index 0))))
       (should-have-invoked :print-dup {:times 4})))
 
   (it "lets a player take a turn on a 4x board, repeatedly asks for input until valid play selected"
     (with-redefs [console/print-number-prompt (stub :print-dup)
                   console/announce-player     (stub :print-dup-announce)]
       (should= test-game/state-4-first-x
-               (with-in-str "0\n45\njunk\n6\n" (human-turn-tui test-game/state-4-initial)))
+               (with-in-str "0\n45\njunk\n6\n" (core/take-human-turn test-game/state-4-initial)))
       (should-have-invoked :print-dup {:times 4})))
   )

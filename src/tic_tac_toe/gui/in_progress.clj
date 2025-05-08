@@ -97,8 +97,7 @@
 
 (defmethod core/take-human-turn :gui [state] state)
 
-(defmethod core/update-state [:gui :in-progress] [state]
-
+#_(defmethod core/update-state [:gui :in-progress] [state]
   (-> state
       core/take-turn
       board/evaluate-board

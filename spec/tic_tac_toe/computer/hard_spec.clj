@@ -3,7 +3,7 @@
             [tic-tac-toe.computer.hard :refer :all]
             [tic-tac-toe.board_spec :as test-board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.tui.game-spec :as test-game]))
+            [tic-tac-toe.game-spec :as test-game]))
 
 (def board-one-remaining
   [["X" "O" 3]

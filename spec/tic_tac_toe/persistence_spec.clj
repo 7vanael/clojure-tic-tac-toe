@@ -14,7 +14,7 @@
     (let [state     (test-core/state-create {:active-player-index 1 :interface :tui :x-type :human :o-type :human :board [["X" 2 "O"] [4 5 "O"] ["X" 8 "X"]]})]
       (with-redefs [tic-tac-toe.persistence/savefile test-file]
         (save-game state)
-        (should= (dissoc state :interface) (slurp test-file))
+        (should= (str (dissoc state :interface)) (slurp test-file))
         (io/delete-file test-file true))))
 
   (it "returns nil if file not found"
@@ -34,5 +34,3 @@
         (delete-save)
         (should-throw FileNotFoundException (slurp test-file))))
   )
-
-#_(test-core/state-create {:active-player-index 0 :interface :tui :x-type :human :o-type :human :board [["X" 2 "O"] ["X" "O" "O"] ["X" 8 "X"]]})

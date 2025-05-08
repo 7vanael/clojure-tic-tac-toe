@@ -8,7 +8,7 @@
             [tic-tac-toe.persistence :as persistence]))
 
 
-#_(defn update-state [state]
+(defmethod core/update-state :default [state]
   (-> state
       core/take-turn
       board/evaluate-board
@@ -16,5 +16,8 @@
       persistence/save-game))
 
 
-#_(defn start [state]
-  (play state))
+#_(defn start-game [state]
+  (let [saved-game      (persistence/load-game)
+        game (if saved-game (assoc saved-game :status :found-save) (core/initialize-state state))]
+    (loop [game game]
+      (recur (core/update-state game)))))

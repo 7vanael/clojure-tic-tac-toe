@@ -3,7 +3,7 @@
             [tic-tac-toe.computer.easy :refer :all]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.computer.hard-spec :as test-computer]
-            [tic-tac-toe.tui.game-spec :as test-game]))
+            [tic-tac-toe.game-spec :as test-game]))
 
 (describe "easy"
   (with-stubs)

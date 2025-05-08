@@ -1,4 +1,4 @@
-(ns tic-tac-toe.tui.game-spec
+(ns tic-tac-toe.game-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.game :refer :all]
             [tic-tac-toe.board_spec :as test-board]))
@@ -38,7 +38,7 @@
 (def state-easy-initial-4
   {:interface           :tui
    :board               test-board/empty-4-board
-   :active-player-index 1
+   :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :computer :difficulty :medium}
                          {:character "O" :play-type :computer :difficulty :easy}]})
