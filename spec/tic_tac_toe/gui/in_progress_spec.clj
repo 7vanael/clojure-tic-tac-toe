@@ -1,11 +1,13 @@
 (ns tic-tac-toe.gui.in-progress-spec
-  (:require [speclj.core :refer :all]
-            [tic-tac-toe.board :as board]
-            [tic-tac-toe.core :as core]
+  (:require [clojure.java.io :as io]
+            [speclj.core :refer :all]
             [tic-tac-toe.gui.in-progress :refer :all]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.board_spec :as test-board]))
+            [tic-tac-toe.board_spec :as test-board]
+            [tic-tac-toe.persistence]))
+(def test-file
+  (str (System/getProperty "java.io.tmpdir") "test-game-save.edn"))
 
 (describe "in-progress"
   (with-stubs)
@@ -45,7 +47,8 @@
                                                     :o-type              :computer})
             event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
                             :y (+ grid-origin-y (/ usable-screen 2))}]
-        (should= starting-state (multis/mouse-clicked starting-state event)))
+        (should= starting-state (multis/mouse-clicked starting-state event))
+        (io/delete-file test-file true))
       )
 
     (it "does not update if active player is not human"
@@ -56,11 +59,13 @@
                                                     :o-type              :computer})
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
                             :y (+ grid-origin-y (/ (* 2.5 usable-screen) 3))}]
-        (should= starting-state (multis/mouse-clicked starting-state event)))
+        (should= starting-state (multis/mouse-clicked starting-state event))
+        (io/delete-file test-file true))
       )
 
     (it "does update the board, evaluate it and change players if valid play is selected & player is human"
-      (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
+      (with-redefs [tic-tac-toe.persistence/savefile test-file]
+        (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                     :active-player-index 0
                                                     :status              :in-progress
                                                     :x-type              :human
@@ -72,6 +77,7 @@
                                                     :status              :in-progress
                                                     :x-type              :human
                                                     :o-type              :computer})]
-        (should= new-state (multis/mouse-clicked starting-state event))))
+          (should= new-state (multis/mouse-clicked starting-state event))
+          (io/delete-file test-file true))))
     )
   )

@@ -1,4 +1,4 @@
-(ns tic-tac-toe.tui.human
+(ns tic-tac-toe.tui.in-progress
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.tui.console :as console]
@@ -24,7 +24,6 @@
   (-> state
       core/take-turn
       board/evaluate-board
-      ;core/break-loop?
       core/change-player
       persistence/save-game
      ))
@@ -58,10 +57,10 @@
 
 (defmethod core/update-state [:tui :found-save] [state]
       (if (console/resume?)
-      (core/update-state (assoc state :status :in-progress))
+      (core/update-state (assoc state :status :in-progress :interface :tui))
       (core/update-state (initialize-state (configure-new)))))
 
-(defmethod core/start-game :tui [_]
+#_(defmethod core/start-game :tui [_]
   (console/welcome-message)
   (let [saved-game      (persistence/load-game)
         game (if saved-game (assoc saved-game :status :found-save) (initialize-state (configure-new)))]

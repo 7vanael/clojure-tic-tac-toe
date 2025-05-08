@@ -18,6 +18,6 @@
   state)
 
 (defmethod multis/mouse-clicked :found-save [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc state :status :in-progress)
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc state :status :in-progress :interface :gui)
         (util/button-clicked? [x y] util/opt2-of-2-rect) (assoc-in util/initial-state [:status] :config-x-type)
         :else state))

@@ -1,5 +1,5 @@
 (ns tic-tac-toe.gui.in-progress
-  (:require [quil.core :as q :include-macros true]
+  (:require [quil.core :as q]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]
@@ -91,20 +91,16 @@
       (-> state
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           board/evaluate-board
-          core/break-loop?
           core/change-player
           persistence/save-game)
       state)))
 
-(defmethod core/take-human-turn :gui [state]
-  (core/update-state state))
+(defmethod core/take-human-turn :gui [state] state)
 
 (defmethod core/update-state [:gui :in-progress] [state]
-  (if (core/human? state)
-    state
-    (-> state
-        core/take-turn
-        board/evaluate-board
-        core/break-loop?
-        core/change-player
-        persistence/save-game)))
+
+  (-> state
+      core/take-turn
+      board/evaluate-board
+      core/change-player
+      persistence/save-game))

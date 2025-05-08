@@ -5,7 +5,7 @@
             [tic-tac-toe.persistence :as persistence]))
 
 
-(defmethod multis/mouse-clicked :welcome [state event]
+(defmethod multis/mouse-clicked :welcome [state _]
   (let [saved-game (persistence/load-game)]
     (if (nil? saved-game)
     (assoc state :status :config-x-type)

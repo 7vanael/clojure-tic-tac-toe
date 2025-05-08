@@ -2,7 +2,6 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.main :refer :all]
-            [tic-tac-toe.game :as game]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.persistence :as persistence]))
 
@@ -42,17 +41,13 @@
 
   (it "uses the console interface if launched with tui"
     (with-redefs [core/start-game           (stub :launch-cli)
-                  console/play-again-prompt (stub :play-again?)
-                  ;game/play                 (stub :start)
-                  ]
+                  console/play-again-prompt (stub :play-again?)]
       (with-in-str "human\ncomputer\nmedium\n1\nn\n" (-main "tui"))
       (should-have-invoked :launch-cli {:with [{:status :config :interface :tui}]})))
 
   (it "uses the quil interface if launched with gui"
     (with-redefs [core/start-game           (stub :launch-quil)
-                  console/play-again-prompt (stub :play-again?)
-                  ;game/play                 (stub :start)
-                  ]
+                  console/play-again-prompt (stub :play-again?)]
       (-main "gui")
       (should-have-invoked :launch-quil {:with [{:status :config :interface :gui}]})))
   )

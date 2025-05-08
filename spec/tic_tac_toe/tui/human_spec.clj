@@ -2,11 +2,12 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.persistence-spec :as test-persistence]
-            [tic-tac-toe.tui.human :refer :all]
+            [tic-tac-toe.tui.in-progress :refer :all]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.tui.game-spec :as test-game]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence :as persistence]))
+            [tic-tac-toe.persistence :as persistence]
+            [clojure.java.io :as io]))
 
 (describe "human turn"
   (with-stubs)
@@ -27,7 +28,8 @@
 
         (with-in-str "y\n" (core/start-game new-game-state))
         (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save)]})
-        (should-not-have-invoked :save-found-prompt))))
+        (should-not-have-invoked :save-found-prompt)
+        (io/delete-file test-persistence/test-file true))))
 
   (it "resumes play of a loaded game"
     (with-redefs [console/save-found-prompt        (stub :save-found-prompt)
@@ -45,7 +47,8 @@
 
         (with-in-str "y\n" (core/start-game new-game-state))
         (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save)]})
-        (should-not-have-invoked :initialize-new))))
+        (should-not-have-invoked :initialize-new)
+        (io/delete-file test-persistence/test-file true))))
 
   (it "proceeds to configuration if no loaded game found"
     (with-redefs [println                          (stub :print-dup)
@@ -58,13 +61,12 @@
         (persistence/delete-save)                           ;ensures no residual save found
 
         (core/start-game new-game-state)
-        (should-have-invoked :configure-new))))
+        (should-have-invoked :configure-new)
+        (io/delete-file test-persistence/test-file true))))
 
   (it "initializes an empty board, and starting player O"
     (should= test-game/state-initial (initialize-state {:type-x       :human :type-o :human :difficulty-x nil
                                                         :difficulty-o nil :board-size 3 :interface :tui})))
-
-
 
   (it "assigns a difficulty of nil if player type is human"
     (with-redefs [console/display-play-type-options (stub :print-dup-play-type)
@@ -90,7 +92,6 @@
                   persistence/load-game             (stub :load {:return nil})]
       (core/start-game {:interface :tui})
       (should-have-invoked :update-state {:with [test-game/state-computer-2-4-empty]})))
-
 
   (it "The human turn method is called if the active player is human"
     (with-redefs [core/take-human-turn (stub :human-turn)]
