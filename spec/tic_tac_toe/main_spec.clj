@@ -43,7 +43,6 @@
   (it "uses the console interface if launched with tui"
     (with-redefs [core/start-game           (stub :launch-cli)
                   console/play-again-prompt (stub :play-again?)
-                  ;game/play                 (stub :start)
                   ]
       (with-in-str "human\ncomputer\nmedium\n1\nn\n" (-main "tui"))
       (should-have-invoked :launch-cli {:with [{:status :config :interface :tui}]})))
@@ -51,7 +50,6 @@
   (it "uses the quil interface if launched with gui"
     (with-redefs [core/start-game           (stub :launch-quil)
                   console/play-again-prompt (stub :play-again?)
-                  ;game/play                 (stub :start)
                   ]
       (-main "gui")
       (should-have-invoked :launch-quil {:with [{:status :config :interface :gui}]})))

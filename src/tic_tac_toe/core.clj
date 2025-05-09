@@ -14,23 +14,33 @@
 
 (defmulti take-human-turn :interface)
 
-(defn human? [{:keys [active-player-index players]}]
+(defn currently-human? [{:keys [active-player-index players]}]
   (let [player-type (get-in players [active-player-index :play-type])]
     (= player-type :human)))
 
-(defn take-turn [state]
-  (if (human? state)
-    (take-human-turn state)
-    (take-computer-turn state)))
+(defn next-player [board]
+  (let [flat-board (flatten board)
+        played     (count (filter string? flat-board))]
+    (if (even? played) "X" "O")))
 
-(defn change-player [state]
-  (assoc state :active-player-index
-               (if (= (:active-player-index state) 0)
-                 1 0)))
+(defn take-turn [{:keys [active-player-index players board] :as state}]
+  (let [current-char     (get-in players [active-player-index :character])
+        next-player-char (next-player board)
+        correct-player   (= current-char next-player-char)]
+    (cond (not correct-player) state
+          (currently-human? state) (take-human-turn state)
+          :else (take-computer-turn state))))
+
 (def states-to-break-loop
   #{:tie :winner})
 
-(defn break-loop? [{:keys [status] :as state}]
-  (if (contains? states-to-break-loop status)
-    (update-state state)
-    state))
+(defn change-player [{:keys [active-player-index players board] :as state}]
+  (let [current-char               (get-in players [active-player-index :character])
+        next-player-char           (next-player board)
+        current-player-not-played? (= current-char next-player-char)
+        game-over?                 (contains? states-to-break-loop (:status state))]
+    (if (or game-over? current-player-not-played?)
+      state
+      (assoc state :active-player-index
+                   (if (= (:active-player-index state) 0)
+                     1 0)))))

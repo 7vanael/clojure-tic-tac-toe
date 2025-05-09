@@ -1,4 +1,4 @@
-(ns tic-tac-toe.tui.human
+(ns tic-tac-toe.tui.in-progress
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.tui.console :as console]
@@ -24,18 +24,9 @@
   (-> state
       core/take-turn
       board/evaluate-board
-      core/break-loop?
       core/change-player
       persistence/save-game
       core/update-state))
-
-(defn initialize-state [{:keys [type-x type-o difficulty-x difficulty-o board-size interface]}]
-  {:interface           interface
-   :board               (board/new-board board-size)
-   :active-player-index 0
-   :status              :in-progress
-   :players             [{:character "X" :play-type type-x :difficulty difficulty-x}
-                         {:character "O" :play-type type-o :difficulty difficulty-o}]})
 
 (def player-options
   [:human :computer])
@@ -46,30 +37,33 @@
 (def board-options
   {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
 
-(defn configure-new []
-  (let [player-x      (console/get-player-type "X" player-options)
-        difficulty-x  (when (= :computer player-x) (console/get-difficulty "X" difficulty-options))
-        player-o      (console/get-player-type "O" player-options)
-        difficulty-o  (when (= :computer player-o) (console/get-difficulty "O" difficulty-options))
-        board-size    (console/get-board-size board-options)
-        configuration {:type-x     player-x :type-o player-o :difficulty-x difficulty-x :difficulty-o difficulty-o
-                       :board-size board-size :interface :tui}]
-    configuration))
+(defn initialize-state []
+  (let [type-x      (console/get-player-type "X" player-options)
+        difficulty-x  (when (= :computer type-x) (console/get-difficulty "X" difficulty-options))
+        type-o      (console/get-player-type "O" player-options)
+        difficulty-o  (when (= :computer type-o) (console/get-difficulty "O" difficulty-options))
+        board-size    (console/get-board-size board-options)]
+  {:interface           :tui
+   :board               (board/new-board board-size)
+   :active-player-index 0
+   :status              :in-progress
+   :players             [{:character "X" :play-type type-x :difficulty difficulty-x}
+                         {:character "O" :play-type type-o :difficulty difficulty-o}]}))
 
 (defmethod core/update-state [:tui :found-save] [state]
       (if (console/resume?)
       (core/update-state (assoc state :status :in-progress))
-      (core/update-state (initialize-state (configure-new)))))
+      (core/update-state (initialize-state))))
 
 (defmethod core/start-game :tui [_]
   (console/welcome-message)
   (let [saved-game      (persistence/load-game)]
     (if (nil? saved-game)
-      (core/update-state (initialize-state (configure-new)))
-      (core/update-state (assoc saved-game :status :found-save)))))
+      (core/update-state (initialize-state))
+      (core/update-state (assoc saved-game :status :found-save :interface :tui)))))
 
-(defmethod core/update-state [:tui :game-over] [state]
+(defmethod core/update-state [:tui :game-over] [_]
   (persistence/delete-save)
   (if (console/play-again?)
-    (core/update-state (initialize-state (configure-new)))
+    (core/update-state (initialize-state))
     (System/exit 0)))

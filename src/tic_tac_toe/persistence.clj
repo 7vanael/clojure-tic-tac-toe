@@ -6,7 +6,7 @@
 (def savefile "game-save.edn")
 
 (defn save-game [state]
-  (spit savefile state)
+  (spit savefile (dissoc state :interface))
   state)
 
 (defn load-game []

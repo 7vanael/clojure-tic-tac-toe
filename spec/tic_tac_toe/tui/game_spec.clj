@@ -38,10 +38,10 @@
 (def state-easy-initial-4
   {:interface           :tui
    :board               test-board/empty-4-board
-   :active-player-index 1
+   :active-player-index 0
    :status              :in-progress
-   :players             [{:character "X" :play-type :computer :difficulty :medium}
-                         {:character "O" :play-type :computer :difficulty :easy}]})
+   :players             [{:character "X" :play-type :computer :difficulty :easy}
+                         {:character "O" :play-type :computer :difficulty :medium}]})
 
 (def state-center-x
   {:interface           :tui

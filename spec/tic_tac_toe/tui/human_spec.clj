@@ -2,7 +2,7 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.persistence-spec :as test-persistence]
-            [tic-tac-toe.tui.human :refer :all]
+            [tic-tac-toe.tui.in-progress :refer :all]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.tui.game-spec :as test-game]
             [tic-tac-toe.core :as core]
@@ -51,20 +51,13 @@
     (with-redefs [println                          (stub :print-dup)
                   tic-tac-toe.persistence/savefile test-persistence/test-file
                   core/update-state                (stub :update-state)
-                  configure-new                    (stub :configure-new)
                   initialize-state                 (stub :initialize-new)
                   console/play-again?              (stub :play-again {:return false})]
       (let [new-game-state (test-core/state-create {:status :config :interface :tui})]
         (persistence/delete-save)                           ;ensures no residual save found
 
         (core/start-game new-game-state)
-        (should-have-invoked :configure-new))))
-
-  (it "initializes an empty board, and starting player O"
-    (should= test-game/state-initial (initialize-state {:type-x       :human :type-o :human :difficulty-x nil
-                                                        :difficulty-o nil :board-size 3 :interface :tui})))
-
-
+        (should-have-invoked :initialize-new))))
 
   (it "assigns a difficulty of nil if player type is human"
     (with-redefs [console/display-play-type-options (stub :print-dup-play-type)

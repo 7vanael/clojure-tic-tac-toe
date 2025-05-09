@@ -4,17 +4,13 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]
             [tic-tac-toe.computer.hard]
-            [tic-tac-toe.tui.human]
+            [tic-tac-toe.tui.in-progress]
             [tic-tac-toe.persistence :as persistence]))
 
 
-#_(defn play [state]
+(defmethod core/update-state :default [state]
   (-> state
       core/take-turn
       board/evaluate-board
       core/change-player
       persistence/save-game))
-
-
-#_(defn start [state]
-  (play state))

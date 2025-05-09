@@ -91,7 +91,6 @@
       (-> state
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           board/evaluate-board
-          core/break-loop?
           core/change-player
           persistence/save-game)
       state)))
@@ -100,11 +99,10 @@
   (core/update-state state))
 
 (defmethod core/update-state [:gui :in-progress] [state]
-  (if (core/human? state)
+  (if (core/currently-human? state)
     state
     (-> state
         core/take-turn
         board/evaluate-board
-        core/break-loop?
         core/change-player
         persistence/save-game)))
