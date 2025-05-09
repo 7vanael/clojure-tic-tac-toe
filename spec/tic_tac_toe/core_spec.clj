@@ -67,6 +67,75 @@
    [4 "X" 6]
    ["X" 8 9]])
 
+(def center-x-board
+  [[1 2 3]
+   [4 "X" 6]
+   [7 8 9]])
+
+(def state-initial
+  {:interface           :tui
+   :board               empty-board
+   :active-player-index 0
+   :status              :in-progress
+   :players             [{:character "X" :play-type :human :difficulty nil}
+                         {:character "O" :play-type :human :difficulty nil}]})
+
+(def state-4-initial
+  {:interface           :tui
+   :board               empty-4-board
+   :active-player-index 0
+   :status              :in-progress
+   :players             [{:character "X" :play-type :human :difficulty nil}
+                         {:character "O" :play-type :human :difficulty nil}]})
+
+(def state-4-first-x
+  {:interface           :tui
+   :board               first-X-4-board
+   :active-player-index 0
+   :status              :in-progress
+   :players             [{:character "X" :play-type :human :difficulty nil}
+                         {:character "O" :play-type :human :difficulty nil}]})
+
+(def state-medium-initial-4
+  {:interface :tui
+   :board               empty-4-board
+   :active-player-index 0
+   :status              "in-progress"
+   :players             [{:character "X" :play-type :computer :difficulty :medium}
+                         {:character "O" :play-type :computer :difficulty :easy}]})
+
+(def state-easy-initial-4
+  {:interface           :tui
+   :board               empty-4-board
+   :active-player-index 0
+   :status              :in-progress
+   :players             [{:character "X" :play-type :computer :difficulty :easy}
+                         {:character "O" :play-type :computer :difficulty :medium}]})
+
+(def state-center-x
+  {:interface           :tui
+   :board               center-x-board
+   :active-player-index 0
+   :status              :in-progress
+   :players             [{:character "X" :play-type :human :difficulty nil}
+                         {:character "O" :play-type :human :difficulty nil}]})
+
+(def state-center-x-mid-turn
+  {:interface           :tui
+   :board               center-x-board
+   :active-player-index 1
+   :status              :in-progress
+   :players             [{:character "X" :play-type :human :difficulty nil}
+                         {:character "O" :play-type :human :difficulty nil}]})
+
+(def state-computer-2-4-empty
+  {:interface           :tui
+   :board               empty-4-board
+   :active-player-index 0
+   :status              :in-progress
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
+                         {:character "O" :play-type :computer :difficulty :hard}]})
+
 (describe "core"
   (with-stubs)
 

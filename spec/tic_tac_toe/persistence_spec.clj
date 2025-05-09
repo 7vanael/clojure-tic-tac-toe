@@ -35,5 +35,3 @@
         (delete-save)
         (should-throw FileNotFoundException (slurp test-file))))
   )
-
-#_(test-core/state-create {:active-player-index 0 :interface :tui :x-type :human :o-type :human :board [["X" 2 "O"] ["X" "O" "O"] ["X" 8 "X"]]})

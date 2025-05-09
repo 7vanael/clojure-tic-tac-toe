@@ -1,7 +1,8 @@
 (ns tic-tac-toe.computer.medium-spec
   (:require [speclj.core :refer :all]
+            [tic-tac-toe.computer.medium]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.computer.hard-spec :as test-computer]
+            [tic-tac-toe.core-spec :as test-computer]
             [tic-tac-toe.computer.easy :as easy]
             [tic-tac-toe.computer.hard :as hard]))
 

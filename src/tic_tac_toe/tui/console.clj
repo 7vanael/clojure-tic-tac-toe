@@ -123,9 +123,6 @@
 (defn resume? []
   (str/includes? (get-yes-no-response save-found-prompt) "y"))
 
-#_(defn format-size-option-display [idx key]
-    (str idx ") " key))
-
 (defn board-size-prompt [size-options]
   (println "What size board do you want to play on?")
   (doseq [[idx key] (map-indexed vector (keys size-options))]
@@ -150,3 +147,5 @@
   (display-difficulty-options character options)
   (get-selection character options))
 
+(defn exit-message []
+  (println "Thanks for playing!"))

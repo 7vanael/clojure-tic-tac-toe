@@ -1,4 +1,4 @@
-(ns tic-tac-toe.game
+#_(ns tic-tac-toe.game
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.computer.easy]
@@ -8,7 +8,7 @@
             [tic-tac-toe.persistence :as persistence]))
 
 
-(defmethod core/update-state :default [state]
+#_(defmethod core/update-state [:default] [state]
   (-> state
       core/take-turn
       board/evaluate-board

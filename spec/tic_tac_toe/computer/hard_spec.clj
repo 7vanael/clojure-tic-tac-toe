@@ -2,8 +2,7 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.computer.hard :refer :all]
             [tic-tac-toe.board_spec :as test-board]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.tui.game-spec :as test-game]))
+            [tic-tac-toe.core :as core]))
 
 (def board-one-remaining
   [["X" "O" 3]
@@ -81,21 +80,14 @@
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
-(def state-easy-empty-4
-  {:interface :tui
-   :board               test-board/empty-4-board
-   :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :computer :difficulty :easy}
-                         {:character "O" :play-type :computer :difficulty :hard}]})
 
-(def state-medium-initial-4
-  {:interface :tui
+(def state-computer-2-4-empty
+  {:interface           :tui
    :board               test-board/empty-4-board
    :active-player-index 0
-   :status              "in-progress"
-   :players             [{:character "X" :play-type :computer :difficulty :medium}
-                         {:character "O" :play-type :computer :difficulty :easy}]})
+   :status              :in-progress
+   :players             [{:character "X" :play-type :computer :difficulty :hard}
+                         {:character "O" :play-type :computer :difficulty :hard}]})
 
 (describe "computer- hard mode"
   (with-stubs)
@@ -103,7 +95,7 @@
 
   (it "The computer hard turn method is called if the active player is computer"
     (with-redefs [hard (stub :computer-turn)]
-      (core/take-turn test-game/state-computer-2-4-empty)
+      (core/take-turn state-computer-2-4-empty)
       (should-have-invoked :computer-turn)))
 
   (it "takes the only available move"
