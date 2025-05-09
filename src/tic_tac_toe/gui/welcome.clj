@@ -9,7 +9,7 @@
   (let [saved-game (persistence/load-game)]
     (if (nil? saved-game)
     (assoc state :status :config-x-type)
-    (assoc saved-game :status :found-save))))
+    (assoc saved-game :status :found-save :interface :gui))))
 
 (defmethod core/update-state [:gui :welcome] [state]
   state)

@@ -24,8 +24,10 @@
   (apply str (map row-string board)))
 
 (defn display-2d-board [board]
+  (println)
   (println (str/join (horizontal-line (count board))
-                     (str/split-lines (process-2d-board board)))))
+                     (str/split-lines (process-2d-board board))))
+  (println))
 
 (defn format-layer [idx layer size]
   (str "\nLayer " (inc idx) ":\n"
@@ -35,7 +37,9 @@
 
 (defn display-3d-board [board]
   (let [size (count board)]
-    (println (apply str (map-indexed #(format-layer %1 %2 size) board)))))
+    (println)
+    (println (apply str (map-indexed #(format-layer %1 %2 size) board)))
+    (println)))
 
 (defn display-board [board]
   (if (vector? (get-in board [0 0] nil))

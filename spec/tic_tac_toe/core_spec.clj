@@ -104,22 +104,6 @@
    :players             [{:character "X" :play-type :computer :difficulty :medium}
                          {:character "O" :play-type :computer :difficulty :easy}]})
 
-(def state-easy-initial-4
-  {:interface           :tui
-   :board               empty-4-board
-   :active-player-index 0
-   :status              :in-progress
-   :players             [{:character "X" :play-type :computer :difficulty :easy}
-                         {:character "O" :play-type :computer :difficulty :medium}]})
-
-(def state-center-x
-  {:interface           :tui
-   :board               center-x-board
-   :active-player-index 0
-   :status              :in-progress
-   :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
-
 (def state-center-x-mid-turn
   {:interface           :tui
    :board               center-x-board

@@ -16,7 +16,7 @@
                   console/exit-message             (stub :print-dup)
                   tic-tac-toe.persistence/savefile test-persistence/test-file
                   core/update-state                (stub :update-state)
-                  ;game-loop                        (stub :game-loop {:return nil})
+                  game-loop                        (stub :game-loop {:return nil})
                   initialize-state                 (stub :initialize-new)
                   console/play-again?              (stub :play-again {:return false})]
       (let [saved-state    (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
@@ -36,7 +36,7 @@
                   core/update-state                (stub :update-state)
                   initialize-state                 (stub :initialize-new)
                   console/play-again?              (stub :play-again {:return false})
-                  ;game-loop                        (stub :game-loop {:return nil})
+                  game-loop                        (stub :game-loop {:return nil})
                   console/exit-message             (stub :print-dup)]
       (let [saved-state    (test-core/state-create {:interface           :gui :status :in-progress :board [["X" "O" "X"]
                                                                                                            [4 "X" 6]
@@ -55,7 +55,7 @@
                   core/update-state                (stub :update-state)
                   initialize-state                 (stub :initialize-new)
                   console/play-again?              (stub :play-again {:return false})
-                  ;game-loop                        (stub :game-loop {:return nil})
+                  game-loop                        (stub :game-loop {:return nil})
                   console/exit-message             (stub :print-dup)]
       (let [new-game-state (test-core/state-create {:status :config :interface :tui})]
         (persistence/delete-save)                           ;ensures no residual save found
@@ -72,7 +72,7 @@
                   console/play-again?               (stub :play-again {:return false})
                   persistence/save-game             (stub :save-dup)
                   persistence/load-game             (stub :load {:return nil})
-                  ;game-loop                        (stub :game-loop {:return nil})
+                  game-loop                        (stub :game-loop {:return nil})
                   console/exit-message             (stub :print-dup)]
       (core/start-game {:interface :tui})
       (should-have-invoked :game-loop {:with [test-core/state-initial]})))
@@ -87,7 +87,7 @@
                   core/update-state                 (stub :update-state)
                   persistence/save-game             (stub :save-dup)
                   persistence/load-game             (stub :load {:return nil})
-                  ;game-loop                        (stub :game-loop {:return nil})
+                  game-loop                        (stub :game-loop {:return nil})
                   console/exit-message             (stub :print-dup)]
       (core/start-game {:interface :tui})
       (should-have-invoked :game-loop {:with [test-core/state-computer-2-4-empty]})))
@@ -98,17 +98,10 @@
       (core/take-turn test-core/state-center-x-mid-turn)
       (should-have-invoked :human-turn)))
 
-  (it "lets a player take a turn, repeatedly asks for input until valid play is selected"
-    (with-redefs [console/print-number-prompt (stub :print-dup)
-                  console/announce-player     (stub :print-dup-announce)]
-      (should= test-core/state-center-x
-               (with-in-str "0\n45\njunk\n5\n" (human-turn-tui (assoc test-core/state-initial :active-player-index 0))))
-      (should-have-invoked :print-dup {:times 4})))
-
   (it "lets a player take a turn on a 4x board, repeatedly asks for input until valid play selected"
     (with-redefs [console/print-number-prompt (stub :print-dup)
                   console/announce-player     (stub :print-dup-announce)]
       (should= test-core/state-4-first-x
-               (with-in-str "0\n45\njunk\n6\n" (human-turn-tui test-core/state-4-initial)))
+               (with-in-str "0\n45\njunk\n6\n" (core/take-human-turn test-core/state-4-initial)))
       (should-have-invoked :print-dup {:times 4})))
   )

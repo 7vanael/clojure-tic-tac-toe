@@ -12,24 +12,24 @@
              (with-out-str (welcome-message))))
 
   (it "prints the board state"
-    (should= "  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n"
+    (should= "\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n\n"
              (with-out-str (display-board test-board/empty-board)))
 
-    (should= "  1 |  2 |  3 \n----|----|----\n  4 |  X |  6 \n----|----|----\n  7 |  8 |  9 \n"
+    (should= "\n  1 |  2 |  3 \n----|----|----\n  4 |  X |  6 \n----|----|----\n  7 |  8 |  9 \n\n"
              (with-out-str (display-board test-board/center-x-board))))
 
   (it "prints the board state for a 4x board"
-    (should= "  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  6 |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n"
+    (should= "\n  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  6 |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n\n"
              (with-out-str (display-board test-board/empty-4-board)))
 
-    (should= "  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  X |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n"
+    (should= "\n  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  X |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n\n"
              (with-out-str (display-board test-board/first-X-4-board))))
 
   (it "prints the board state for a 3d board"
-    (should= "\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n"
+    (should= "\n\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n\n"
              (with-out-str (display-board test-board/empty-3d-board)))
 
-    (should= "\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  X |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n"
+    (should= "\n\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  X |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n\n"
              (with-out-str (display-board test-board/first-x-3d-board))))
 
   (it "prints the number prompt"
