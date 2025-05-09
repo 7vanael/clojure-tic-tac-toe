@@ -106,3 +106,10 @@
         board/evaluate-board
         core/change-player
         persistence/save-game)))
+
+(defmethod multis/draw-state :board-ready [state]
+  (multis/draw-state (assoc state :status :in-progress)))
+
+(defmethod core/update-state [:gui :board-ready] [state]
+  ;; Simply transition to the real game state after drawing
+  (assoc state :status :in-progress))

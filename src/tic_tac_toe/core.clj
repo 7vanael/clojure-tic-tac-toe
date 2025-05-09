@@ -7,10 +7,6 @@
 
 (defmulti update-state get-update-state)
 
-#_(defmethod update-state :default [state]
-  (println "Warning: No specific handler for state combination:"
-           (:interface state) (:status state)))
-
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
 
