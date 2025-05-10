@@ -6,6 +6,19 @@
             [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.board_spec :as test-board]))
 
+(def cells-3d
+  [{:x 30, :y 174, :z 0, :value 1} {:x 90, :y 174, :z 0, :value 2} {:x 150, :y 174, :z 0, :value 3}
+   {:x 30, :y 234, :z 0, :value 4} {:x 90, :y 234, :z 0, :value 5} {:x 150, :y 234, :z 0, :value 6}
+   {:x 30, :y 294, :z 0, :value 7} {:x 90, :y 294, :z 0, :value 8} {:x 150, :y 294, :z 0, :value 9}
+
+   {:x 228, :y 174, :z 1, :value 10} {:x 288, :y 174, :z 1, :value 11} {:x 348, :y 174, :z 1, :value 12}
+   {:x 228, :y 234, :z 1, :value 13} {:x 288, :y 234, :z 1, :value 14} {:x 348, :y 234, :z 1, :value 15}
+   {:x 228, :y 294, :z 1, :value 16} {:x 288, :y 294, :z 1, :value 17} {:x 348, :y 294, :z 1, :value 18}
+
+   {:x 426, :y 174, :z 2, :value 19} {:x 486, :y 174, :z 2, :value 20} {:x 546, :y 174, :z 2, :value 21}
+   {:x 426, :y 234, :z 2, :value 22} {:x 486, :y 234, :z 2, :value 23} {:x 546, :y 234, :z 2, :value 24}
+   {:x 426, :y 294, :z 2, :value 25} {:x 486, :y 294, :z 2, :value 26} {:x 546, :y 294, :z 2, :value 27}])
+
 (describe "in-progress"
   (with-stubs)
 
@@ -44,13 +57,13 @@
 
       (it "gets 3 sets of horizontal and vertical lines for a 3x3x3 grid"
         (should= [[0 162 180 162] [0 222 180 222] [0 282 180 282] [0 342 180 342]
-                  [0 162 0 702] [60 162 60 702] [120 162 120 702] [180 162 180 702]
+                  [0 162 0 342] [60 162 60 342] [120 162 120 342] [180 162 180 342]
 
                   [198 162 378 162] [198 222 378 222] [198 282 378 282] [198 342 378 342]
-                  [198 162 198 702] [258 162 258 702] [318 162 318 702] [378 162 378 702]
+                  [198 162 198 342] [258 162 258 342] [318 162 318 342] [378 162 378 342]
 
                   [396 162 576 162] [396 222 576 222] [396 282 576 282] [396 342 576 342]
-                  [396 162 396 702] [456 162 456 702] [516 162 516 702] [576 162 576 702]]
+                  [396 162 396 342] [456 162 456 342] [516 162 516 342] [576 162 576 342]]
                  (get-lines-3d 3)))
       )
     )
@@ -76,21 +89,16 @@
                ;dependent on the set screen size defined in gui-util, usable-screen =
                (generate-cells [[[1 2] [3 4]] [[5 6] [7 8]] [[9 10] [11 12]]] 10 [0 0]))
 
-      (should= [{:x 30, :y 174, :z 0, :value 1} {:x 90, :y 174, :z 0, :value 2} {:x 150, :y 174, :z 0, :value 3}
-                {:x 30, :y 234, :z 0, :value 4} {:x 90, :y 234, :z 0, :value 5} {:x 150, :y 234, :z 0, :value 6}
-                {:x 30, :y 294, :z 0, :value 7} {:x 90, :y 294, :z 0, :value 8} {:x 150, :y 294, :z 0, :value 9}
-
-                {:x 228, :y 174, :z 1, :value 10} {:x 288, :y 174, :z 1, :value 11} {:x 348, :y 174, :z 1, :value 12}
-                {:x 228, :y 234, :z 1, :value 13} {:x 288, :y 234, :z 1, :value 14} {:x 348, :y 234, :z 1, :value 15}
-                {:x 228, :y 294, :z 1, :value 16} {:x 288, :y 294, :z 1, :value 17} {:x 348, :y 294, :z 1, :value 18}
-
-                {:x 426, :y 174, :z 2, :value 19} {:x 486, :y 174, :z 2, :value 20} {:x 546, :y 174, :z 2, :value 21}
-                {:x 426, :y 234, :z 2, :value 22} {:x 486, :y 234, :z 2, :value 23} {:x 546, :y 234, :z 2, :value 24}
-                {:x 426, :y 294, :z 2, :value 25} {:x 486, :y 294, :z 2, :value 26} {:x 546, :y 294, :z 2, :value 27}]
+      (should= cells-3d
                (generate-cells test-board/empty-3d-board 60 [0 144])))
     )
 
   (context "mouse-click"
+
+    (it "identifies which square was clicked on, if any"
+      (should= {:x 288, :y 234, :z 1, :value 14} (find-clicked-cell cells-3d 60 288 234))
+      (should-not (find-clicked-cell cells-3d 60 288 670)))
+
     (it "does not update if invalid play clicked"
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                     :active-player-index 0

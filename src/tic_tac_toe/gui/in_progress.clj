@@ -33,7 +33,7 @@
 (defn layer-lines [size z-layer]
   (let [layer-width (/ (- usable-screen (* 2 layer-margin)) 3)
         start-y     (+ (* util/title-offset-y 2) layer-margin)
-        end-y       (- util/screen-height layer-margin)
+        end-y       (+ start-y layer-width)
         start-x     (* z-layer (+ layer-margin layer-width))
         end-x       (+ start-x layer-width)
         cell-size   (/ layer-width size)
@@ -105,9 +105,10 @@
 
 (defmethod multis/draw-state :in-progress [{:keys [board active-player-index players] :as state}]
   (let [character     (get-in players [active-player-index :character])
+        is-3d?        (board-3d? board)
         title-text    (str character "'s turn")
         lines         (get-lines board)
-        cell-size     (/ usable-screen (count board))
+        cell-size     (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
         cells         (generate-cells board cell-size [grid-origin-x grid-origin-y])
         updated-state (assoc state :cells cells)]
     (q/background 240)
@@ -120,17 +121,27 @@
     (draw-grid cells)
     updated-state))
 
+(defn cell-contains-point? [{cell-x :x cell-y :y} x y half-size]
+  (and (<= (- cell-x half-size) x (+ cell-x half-size))
+       (<= (- cell-y half-size) y (+ cell-y half-size))))
 
-(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players] :as state} {:keys [x y]}]
+(defn find-clicked-cell [cells cell-size x y]
+  (let [half-size (/ cell-size 2)]
+    (first (filter #(cell-contains-point? % x y half-size) cells))))
+
+(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players cells] :as state} {:keys [x y]}]
   (let [play-options (set (board/play-options board))
-        cell-size    (/ usable-screen (count board))
+        is-3d?       (board-3d? board)
+        cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
+        clicked-cell (:value (find-clicked-cell cells cell-size x y))
         relative-x   (- x grid-origin-x)
         relative-y   (- y grid-origin-y)
         clicked-col  (int (/ relative-x cell-size))
         clicked-row  (int (/ relative-y cell-size))
-        value        (get-in board [clicked-row clicked-col])
+        value        (:value clicked-cell)
         player-char  (get-in players [active-player-index :character])
-        player-type  (get-in players [active-player-index :play-type])]
+        player-type  (get-in players [active-player-index :play-type])
+        ]
     (if (and (contains? play-options value) (= :human player-type))
       (-> state
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
