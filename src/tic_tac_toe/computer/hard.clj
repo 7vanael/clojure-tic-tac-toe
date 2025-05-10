@@ -24,9 +24,9 @@
   (let [open-spaces (util/get-possible-moves board)]
     (if (done? open-spaces board char opp-char depth max-depth)
       (eval-board board depth char opp-char)
-      (let [next-char (if (= current-player char) opp-char char)
+      (let [next-char   (if (= current-player char) opp-char char)
             next-config (assoc config :current-player next-char :depth (inc depth))
-            outcomes  (map #(minimax (assoc-in board % current-player) next-config) open-spaces)]
+            outcomes    (map #(minimax (assoc-in board % current-player) next-config) open-spaces)]
         (if (= current-player char)
           (apply max outcomes)
           (apply min outcomes))))))
@@ -36,12 +36,14 @@
         char      (get-in players [active-player-index :character])
         opp-char  (if (= "X" char) "O" "X")
         max-depth (calc-max-depth (count (flatten board)))
-        config {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}]
+        config    {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}]
     (map #(vector % (minimax (board/take-square board % char) config)) moves)))
 
 (defn hard [{:keys [board active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])
-        next-play (first (apply max-key second (shuffle (eval-moves state))))]
+        next-play (if (and (> (count (flatten board)) 16) (board/available? board [1 1 1]))
+                    [1 1 1]
+                    (first (apply max-key second (shuffle (eval-moves state)))))]
     (assoc state :board (board/take-square board next-play character))))
 
 (defmethod core/take-computer-turn :hard [state]

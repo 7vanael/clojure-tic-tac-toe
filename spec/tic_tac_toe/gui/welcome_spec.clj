@@ -12,6 +12,8 @@
 
   (it "moves to initial config page from welcome page after a mouse-click if no save found"
     (with-redefs [tic-tac-toe.persistence/savefile test-persistence/test-file]
+      (persistence/delete-save);arranging, no starting save
+
       (let [event     {:x 100 :y 100}
             new-state (multis/mouse-clicked test-gui/pre-state event)]
         (should= :config-x-type (:status new-state)))))
@@ -27,5 +29,6 @@
         (persistence/save-game saved-state)
 
         (let [new-state (multis/mouse-clicked test-gui/pre-state event)]
-          (should= :found-save (:status new-state))))))
+          (should= :found-save (:status new-state))))
+      (persistence/delete-save)));cleanup
   )

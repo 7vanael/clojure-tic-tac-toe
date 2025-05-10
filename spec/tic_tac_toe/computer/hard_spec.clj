@@ -2,7 +2,8 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.computer.hard :refer :all]
             [tic-tac-toe.board_spec :as test-board]
-            [tic-tac-toe.core :as core]))
+            [tic-tac-toe.core :as core]
+            [tic-tac-toe.core-spec :as test-core]))
 
 (def board-one-remaining
   [["X" "O" 3]
@@ -89,6 +90,30 @@
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :computer :difficulty :hard}]})
 
+(def split-board
+  [["X" "X" 3]
+   ["O" "X" 6]
+   ["O" 8 9]])
+
+(def blocked-split-1
+  [["X" "X" 3]
+   ["O" "X" 6]
+   ["O" 8 "O"]])
+
+(def blocked-split-2
+  [["X" "X" "O"]
+   ["O" "X" 6]
+   ["O" 8 9]])
+
+(def state-split
+  (test-core/state-create {:interface :tui :board split-board :active-player-index 1 :x-type :human :o-type :computer :o-difficulty :hard :status :in-progress}))
+
+(def state-split-blocked-1
+  (test-core/state-create {:interface :tui :board blocked-split-1 :active-player-index 1 :x-type :human :o-type :computer :o-difficulty :hard :status :in-progress}))
+
+(def state-split-blocked-2
+  (test-core/state-create {:interface :tui :board blocked-split-2 :active-player-index 1 :x-type :human :o-type :computer :o-difficulty :hard :status :in-progress}))
+
 (describe "computer- hard mode"
   (with-stubs)
 
@@ -146,4 +171,9 @@
 
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (core/take-turn state-o-about-to-win)))
+
+  #_(it "blocks a fork 1"
+    (should= (:board state-split-blocked-1) (:board (hard state-split))))
+  #_(it "blocks a fork 2"
+    (should= (:board state-split-blocked-2) (:board (hard state-split))))
   )
