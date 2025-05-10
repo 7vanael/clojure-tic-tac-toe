@@ -22,13 +22,12 @@
   (map #(->horiz-line-points start-y start-x end-x cell-size %)
        (range (inc count))))
 
-(defn ->vert-line-points [cell-size start-y end-y i]
-  (let [x (* i cell-size)]
+(defn ->vert-line-points [start-x cell-size start-y end-y i]
+  (let [x (+ start-x (* i cell-size))]
     [x start-y x end-y]))
 
-
-(defn get-vertical-lines [start-y end-y cell-size count]
-  (map #(->vert-line-points cell-size start-y end-y %)
+(defn get-vertical-lines [start-y end-y cell-size count start-x]
+  (map #(->vert-line-points start-x cell-size start-y end-y %)
        (range (inc count))))
 
 (defn layer-lines [size z-layer]
@@ -39,7 +38,7 @@
         end-x (+ start-x layer-width)
         cell-size (/ layer-width size)
         horiz-lines (get-horizontal-lines start-y start-x end-x cell-size size)
-        vert-lines (get-vertical-lines start-y end-y cell-size size)]
+        vert-lines (get-vertical-lines start-y end-y cell-size size start-x)]
     (concat horiz-lines vert-lines)))
 
 (defn get-lines-3d [size]
@@ -53,12 +52,12 @@
         end-x           board-dimension
         cell-size       (/ board-dimension (count board))
         horiz-lines     (get-horizontal-lines start-y start-x end-x cell-size (count board))
-        vert-lines      (get-vertical-lines start-y end-y cell-size (count board))]
+        vert-lines      (get-vertical-lines start-y end-y cell-size (count board) start-x)]
     (concat horiz-lines vert-lines)))
 
 (defn get-lines [board]
   (if (board-3d? board)
-    board;(get-lines-3d board)
+    (get-lines-3d (count board))
     (get-lines-2d board)))
 
 (defn draw-grid [cells]
