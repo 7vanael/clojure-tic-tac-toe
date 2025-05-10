@@ -55,7 +55,7 @@
       )
     )
   (context "cells"
-    (it "generates maps for each cell containing the center point coordinates & value"
+    (it "generates maps for each cell containing the center point coordinates & value in a 2d grid"
       (should= [{:x 5, :y 5, :value 1} {:x 15, :y 5, :value 2}
                 {:x 5, :y 15, :value 3} {:x 15, :y 15, :value 4}]
                (generate-cells [[1 2] [3 4]] 10 [0 0]))
@@ -63,6 +63,31 @@
                 {:x 96, :y 432, :value 4} {:x 288, :y 432, :value 5} {:x 480, :y 432, :value 6}
                 {:x 96, :y 624, :value 7} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}]
                (generate-cells test-board/empty-board 192 [0 144])))
+
+    (it "generates maps for each cell containing the center point coordinates & value in a 3d grid"
+      (should= [{:x 5, :y 5, :z 0, :value 1} {:x 15, :y 5, :z 0, :value 2}
+                {:x 5, :y 15, :z 0, :value 3} {:x 15, :y 15, :z 0, :value 4}
+
+                {:x 203, :y 5, :z 1, :value 5} {:x 213, :y 5, :z 1, :value 6}
+                {:x 203, :y 15, :z 1, :value 7} {:x 213, :y 15, :z 1, :value 8}
+
+                {:x 401, :y 5, :z 2, :value 9} {:x 411, :y 5, :z 2, :value 10}
+                {:x 401, :y 15, :z 2, :value 11} {:x 411, :y 15, :z 2, :value 12}]
+               ;dependent on the set screen size defined in gui-util, usable-screen =
+               (generate-cells [[[1 2] [3 4]] [[5 6] [7 8]] [[9 10] [11 12]]] 10 [0 0]))
+
+      (should= [{:x 30, :y 174, :z 0, :value 1} {:x 90, :y 174, :z 0, :value 2} {:x 150, :y 174, :z 0, :value 3}
+                {:x 30, :y 234, :z 0, :value 4} {:x 90, :y 234, :z 0, :value 5} {:x 150, :y 234, :z 0, :value 6}
+                {:x 30, :y 294, :z 0, :value 7} {:x 90, :y 294, :z 0, :value 8} {:x 150, :y 294, :z 0, :value 9}
+
+                {:x 228, :y 174, :z 1, :value 10} {:x 288, :y 174, :z 1, :value 11} {:x 348, :y 174, :z 1, :value 12}
+                {:x 228, :y 234, :z 1, :value 13} {:x 288, :y 234, :z 1, :value 14} {:x 348, :y 234, :z 1, :value 15}
+                {:x 228, :y 294, :z 1, :value 16} {:x 288, :y 294, :z 1, :value 17} {:x 348, :y 294, :z 1, :value 18}
+
+                {:x 426, :y 174, :z 2, :value 19} {:x 486, :y 174, :z 2, :value 20} {:x 546, :y 174, :z 2, :value 21}
+                {:x 426, :y 234, :z 2, :value 22} {:x 486, :y 234, :z 2, :value 23} {:x 546, :y 234, :z 2, :value 24}
+                {:x 426, :y 294, :z 2, :value 25} {:x 486, :y 294, :z 2, :value 26} {:x 546, :y 294, :z 2, :value 27}]
+               (generate-cells test-board/empty-3d-board 60 [0 144])))
     )
 
   (context "mouse-click"

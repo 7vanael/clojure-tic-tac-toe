@@ -32,13 +32,13 @@
 
 (defn layer-lines [size z-layer]
   (let [layer-width (/ (- usable-screen (* 2 layer-margin)) 3)
-        start-y (+ (* util/title-offset-y 2) layer-margin)
-        end-y (- util/screen-height layer-margin)
-        start-x (* z-layer (+ layer-margin layer-width))
-        end-x (+ start-x layer-width)
-        cell-size (/ layer-width size)
+        start-y     (+ (* util/title-offset-y 2) layer-margin)
+        end-y       (- util/screen-height layer-margin)
+        start-x     (* z-layer (+ layer-margin layer-width))
+        end-x       (+ start-x layer-width)
+        cell-size   (/ layer-width size)
         horiz-lines (get-horizontal-lines start-y start-x end-x cell-size size)
-        vert-lines (get-vertical-lines start-y end-y cell-size size start-x)]
+        vert-lines  (get-vertical-lines start-y end-y cell-size size start-x)]
     (concat horiz-lines vert-lines)))
 
 (defn get-lines-3d [size]
@@ -80,9 +80,27 @@
        :y     (+ first-y (* row cell-size))
        :value (get-in board [row col])})))
 
+(defn layer-cells [board cell-size z-layer [origin-x origin-y]]
+  (let [dimension     (count (get board 0))
+        layer-width   (/ (- usable-screen (* 2 layer-margin)) 3)
+        layer-start-x (+ origin-x (* z-layer (+ layer-width layer-margin)))
+        [first-x first-y] [(+ layer-start-x (/ cell-size 2))
+                           (+ origin-y (/ cell-size 2))]]
+    (for [row (range dimension)
+          col (range dimension)]
+      {:x     (+ first-x (* col cell-size))
+       :y     (+ first-y (* row cell-size))
+       :z     z-layer
+       :value (get-in board [z-layer row col])
+       ;:coordinates [z-layer row col]
+       })))
+
+(defn generate-cells-3d [board cell-size [origin-x origin-y]]
+  (mapcat #(layer-cells board cell-size % [origin-x origin-y]) (range 3)))
+
 (defn generate-cells [board cell-size [origin-x origin-y]]
   (if (board-3d? board)
-    board;(generate-cells-3d board cell-size [origin-x origin-y])
+    (generate-cells-3d board cell-size [origin-x origin-y])
     (generate-cells-2d board cell-size [origin-x origin-y])))
 
 (defmethod multis/draw-state :in-progress [{:keys [board active-player-index players] :as state}]
