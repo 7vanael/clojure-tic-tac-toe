@@ -1,7 +1,6 @@
 (ns tic-tac-toe.gui.gui-util
   (:require [quil.core :as q]))
 
-
 (def initial-state
   {:interface           :gui
    :board               nil

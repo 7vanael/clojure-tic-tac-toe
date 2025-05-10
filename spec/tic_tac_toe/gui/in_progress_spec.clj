@@ -19,6 +19,16 @@
    {:x 426, :y 234, :z 2, :value 22} {:x 486, :y 234, :z 2, :value 23} {:x 546, :y 234, :z 2, :value 24}
    {:x 426, :y 294, :z 2, :value 25} {:x 486, :y 294, :z 2, :value 26} {:x 546, :y 294, :z 2, :value 27}])
 
+(def cells-center-x-corner-o
+  [{:x 96, :y 240, :value "O"} {:x 288, :y 240, :value 2} {:x 480, :y 240, :value 3}
+   {:x 96, :y 432, :value 4} {:x 288, :y 432, :value "X"} {:x 480, :y 432, :value 6}
+   {:x 96, :y 624, :value 7} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}])
+
+(def cells-center-x-corner-xo
+  [{:x 96, :y 240, :value "O"} {:x 288, :y 240, :value 2} {:x 480, :y 240, :value 3}
+   {:x 96, :y 432, :value 4} {:x 288, :y 432, :value "X"} {:x 480, :y 432, :value 6}
+   {:x 96, :y 624, :value "X"} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}])
+
 (describe "in-progress"
   (with-stubs)
 
@@ -104,7 +114,8 @@
                                                     :active-player-index 0
                                                     :status              :in-progress
                                                     :x-type              :human
-                                                    :o-type              :computer})
+                                                    :o-type              :computer
+                                                    :cells               cells-center-x-corner-o})
             event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
                             :y (+ grid-origin-y (/ usable-screen 2))}]
         (should= starting-state (multis/mouse-clicked starting-state event)))
@@ -115,7 +126,8 @@
                                                     :active-player-index 0
                                                     :status              :in-progress
                                                     :x-type              :computer
-                                                    :o-type              :computer})
+                                                    :o-type              :computer
+                                                    :cells               cells-center-x-corner-o})
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
                             :y (+ grid-origin-y (/ (* 2.5 usable-screen) 3))}]
         (should= starting-state (multis/mouse-clicked starting-state event)))
@@ -126,14 +138,16 @@
                                                     :active-player-index 0
                                                     :status              :in-progress
                                                     :x-type              :human
-                                                    :o-type              :computer})
+                                                    :o-type              :computer
+                                                    :cells               cells-center-x-corner-o})
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
                             :y (+ grid-origin-y (/ (* 2.5 usable-screen) 3))}
             new-state      (test-core/state-create {:board               test-board/center-x-corner-xo-board
                                                     :active-player-index 1
                                                     :status              :in-progress
                                                     :x-type              :human
-                                                    :o-type              :computer})]
+                                                    :o-type              :computer
+                                                    :cells               cells-center-x-corner-o})]
         (should= new-state (multis/mouse-clicked starting-state event))))
     )
   )

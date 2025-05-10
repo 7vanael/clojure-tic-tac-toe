@@ -2,7 +2,7 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :refer :all]))
 
-(defn state-create [{:keys [interface board active-player-index status x-type o-type x-difficulty o-difficulty]
+(defn state-create [{:keys [interface board active-player-index status x-type o-type x-difficulty o-difficulty cells]
                      :or   {interface           :gui
                             board               nil
                             active-player-index 0
@@ -11,12 +11,13 @@
                             o-type              nil
                             x-difficulty        nil
                             o-difficulty        nil}}]
-  {:interface           interface
-   :board               board
-   :active-player-index active-player-index
-   :status              status
-   :players             [{:character "X" :play-type x-type :difficulty x-difficulty}
-                         {:character "O" :play-type o-type :difficulty o-difficulty}]})
+  (cond-> {:interface           interface
+           :board               board
+           :active-player-index active-player-index
+           :status              status
+           :players             [{:character "X" :play-type x-type :difficulty x-difficulty}
+                                 {:character "O" :play-type o-type :difficulty o-difficulty}]}
+          (some? cells) (assoc :cells cells)))
 
 (def empty-board
   [[1 2 3]
@@ -97,7 +98,7 @@
                          {:character "O" :play-type :human :difficulty nil}]})
 
 (def state-medium-initial-4
-  {:interface :tui
+  {:interface           :tui
    :board               empty-4-board
    :active-player-index 0
    :status              "in-progress"
@@ -167,7 +168,7 @@
 
   (it "does not change the active player if the game is over"
     (should= (state-create {:active-player-index 0 :x-type :human :o-type :computer :o-difficulty :medium
-                            :board empty-board :status :winner})
+                            :board               empty-board :status :winner})
              (change-player (state-create {:active-player-index 0 :x-type :human :o-type :computer :o-difficulty :medium
-                                           :board empty-board :status :winner}))))
+                                           :board               empty-board :status :winner}))))
   )

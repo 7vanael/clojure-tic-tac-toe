@@ -129,26 +129,29 @@
   (let [half-size (/ cell-size 2)]
     (first (filter #(cell-contains-point? % x y half-size) cells))))
 
-(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players cells] :as state} {:keys [x y]}]
+(defn make-move-if-valid [{:keys [board players active-player-index] :as state} value]
   (let [play-options (set (board/play-options board))
-        is-3d?       (board-3d? board)
-        cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        clicked-cell (:value (find-clicked-cell cells cell-size x y))
-        relative-x   (- x grid-origin-x)
-        relative-y   (- y grid-origin-y)
-        clicked-col  (int (/ relative-x cell-size))
-        clicked-row  (int (/ relative-y cell-size))
-        value        (:value clicked-cell)
-        player-char  (get-in players [active-player-index :character])
-        player-type  (get-in players [active-player-index :play-type])
-        ]
-    (if (and (contains? play-options value) (= :human player-type))
+        player-char  (get-in players [active-player-index :character])]
+    (if (contains? play-options value)
       (-> state
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           board/evaluate-board
           core/change-player
           persistence/save-game)
       state)))
+
+(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players cells] :as state} {:keys [x y]}]
+  (let [player-type (get-in players [active-player-index :play-type])
+        is-3d?      (board-3d? board)
+        cell-size   (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))]
+    ;(prn "cells:" cells)
+    (if (not= :human player-type)
+      state
+      (if-let [clicked-cell (find-clicked-cell cells cell-size x y)]
+        (do
+          ;(prn "clicked-cell:" clicked-cell)
+          (make-move-if-valid state (:value clicked-cell)))
+        state))))
 
 (defmethod core/take-human-turn :gui [state]
   (core/update-state state))
