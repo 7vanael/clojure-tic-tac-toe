@@ -6,24 +6,9 @@
 
 
 
-(def center-x (/ util/screen-width 2))
-(def start-y (- util/screen-height util/screen-width))
-(def button-offsets-y (/ util/screen-width 4))
-
-(def button-easy-y-center (+ start-y button-offsets-y))
-(def button-medium-y-center (+ button-easy-y-center button-offsets-y))
-(def button-hard-y-center (+ button-medium-y-center button-offsets-y))
-
-(def easy-rect [center-x button-easy-y-center util/button-width util/button-height])
-(def medium-rect [center-x button-medium-y-center util/button-width util/button-height])
-(def hard-rect [center-x button-hard-y-center util/button-width util/button-height])
-
-(defn draw-difficulty-buttons []
-  (util/draw-button "Easy" easy-rect)
-  (util/draw-button "Medium" medium-rect)
-  (util/draw-button "Hard" hard-rect))
-
 (def type-labels ["Human" "Computer"])
+
+(def difficulty-options ["Easy" "Medium" "Hard"])
 
 
 (defmethod multis/draw-state :config-x-type [state]
@@ -31,7 +16,7 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player X Type" center-x util/title-offset-y)
+  (q/text "Choose Player X Type" util/center-x util/title-offset-y)
   (util/draw-2-options-buttons type-labels))
 
 (defmethod core/update-state [:gui :config-x-type] [state]
@@ -53,22 +38,22 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player X Computer Difficulty" center-x util/title-offset-y)
-  (draw-difficulty-buttons))
+  (q/text "Choose Player X Computer Difficulty" util/center-x util/title-offset-y)
+  (util/draw-3-buttons [difficulty-options]))
 
 (defmethod core/update-state [:gui :config-x-difficulty] [state]
   state)
 
 (defmethod multis/mouse-clicked :config-x-difficulty [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] easy-rect)
+  (cond (util/button-clicked? [x y] util/opt1-of-3-rect)
         (-> state
             (assoc-in [:players 0 :difficulty] :easy)
             (assoc :status :config-o-type))
-        (util/button-clicked? [x y] medium-rect)
+        (util/button-clicked? [x y] util/opt2-of-3-rect)
         (-> state
             (assoc-in [:players 0 :difficulty] :medium)
             (assoc :status :config-o-type))
-        (util/button-clicked? [x y] hard-rect)
+        (util/button-clicked? [x y] util/opt3-of-3-rect)
         (-> state
             (assoc-in [:players 0 :difficulty] :hard)
             (assoc :status :config-o-type))
@@ -79,7 +64,7 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player O Type" center-x util/title-offset-y)
+  (q/text "Choose Player O Type" util/center-x util/title-offset-y)
   (util/draw-2-options-buttons type-labels))
 
 (defmethod core/update-state [:gui :config-o-type] [state]
@@ -101,22 +86,22 @@
   (q/fill 0)
   (q/text-align :center :center)
   (q/text-size 28)
-  (q/text "Choose Player O Computer Difficulty" center-x util/title-offset-y)
-  (draw-difficulty-buttons))
+  (q/text "Choose Player O Computer Difficulty" util/center-x util/title-offset-y)
+  (util/draw-3-buttons difficulty-options))
 
 (defmethod core/update-state [:gui :config-o-difficulty] [state]
   state)
 
 (defmethod multis/mouse-clicked :config-o-difficulty [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] easy-rect)
+  (cond (util/button-clicked? [x y] util/opt1-of-3-rect)
         (-> state
             (assoc-in [:players 1 :difficulty] :easy)
             (assoc :status :select-board))
-        (util/button-clicked? [x y] medium-rect)
+        (util/button-clicked? [x y] util/opt2-of-3-rect)
         (-> state
             (assoc-in [:players 1 :difficulty] :medium)
             (assoc :status :select-board))
-        (util/button-clicked? [x y] hard-rect)
+        (util/button-clicked? [x y] util/opt3-of-3-rect)
         (-> state
             (assoc-in [:players 1 :difficulty] :hard)
             (assoc :status :select-board))

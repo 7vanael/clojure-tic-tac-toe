@@ -5,7 +5,7 @@
             [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]))
 
-(def type-labels ["3 X 3" "4 X 4"])
+(def type-labels ["3 X 3" "4 X 4" "3 X 3 X 3"])
 
 (defmethod multis/draw-state :select-board [state]
   (q/background 240)
