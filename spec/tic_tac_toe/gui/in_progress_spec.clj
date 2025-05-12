@@ -81,11 +81,11 @@
     (it "generates maps for each cell containing the center point coordinates & value in a 2d grid"
       (should= [{:x 5, :y 5, :value 1} {:x 15, :y 5, :value 2}
                 {:x 5, :y 15, :value 3} {:x 15, :y 15, :value 4}]
-               (generate-cells [[1 2] [3 4]] 10 [0 0]))
+               (generate-cells-2d [[1 2] [3 4]] 10 [0 0]))
       (should= [{:x 96, :y 240, :value 1} {:x 288, :y 240, :value 2} {:x 480, :y 240, :value 3}
                 {:x 96, :y 432, :value 4} {:x 288, :y 432, :value 5} {:x 480, :y 432, :value 6}
                 {:x 96, :y 624, :value 7} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}]
-               (generate-cells test-board/empty-board 192 [0 144])))
+               (generate-cells-2d test-board/empty-board 192 [0 144])))
 
     (it "generates maps for each cell containing the center point coordinates & value in a 3d grid"
       (should= [{:x 5, :y 5, :z 0, :value 1} {:x 15, :y 5, :z 0, :value 2}
@@ -97,10 +97,10 @@
                 {:x 401, :y 5, :z 2, :value 9} {:x 411, :y 5, :z 2, :value 10}
                 {:x 401, :y 15, :z 2, :value 11} {:x 411, :y 15, :z 2, :value 12}]
                ;dependent on the set screen size defined in gui-util, usable-screen =
-               (generate-cells [[[1 2] [3 4]] [[5 6] [7 8]] [[9 10] [11 12]]] 10 [0 0]))
+               (generate-cells-3d [[[1 2] [3 4]] [[5 6] [7 8]] [[9 10] [11 12]]] 10 [0 0]))
 
       (should= cells-3d
-               (generate-cells test-board/empty-3d-board 60 [0 144])))
+               (generate-cells-3d test-board/empty-3d-board 60 [0 144])))
     )
 
   (context "mouse-click"

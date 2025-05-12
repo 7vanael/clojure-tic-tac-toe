@@ -31,7 +31,8 @@
       (console/display-board (:board current-state)))
     (let [next-state (core/update-state current-state)]
       (if (= :game-over (:status next-state))
-        next-state
+        (do (console/display-board (:board next-state))
+          next-state)
         (recur next-state)))))
 
 (def player-options

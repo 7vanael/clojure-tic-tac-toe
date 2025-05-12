@@ -62,11 +62,10 @@
     (get-lines-2d board)))
 
 (defn draw-grid [cells]
-  (doseq [{:keys [x y value hovering]} cells]
+  (doseq [{:keys [x y value]} cells]
     (when (or (= value "X") (= value "O"))
-      (q/text value x y))
-    (when hovering
-      (q/fill 23, 214, 204))))
+      (q/text-align :center :center)
+      (q/text value x y))))
 
 (defn draw-lines [lines]
   (q/stroke 0)
@@ -103,26 +102,19 @@
 (defn generate-cells-3d [board cell-size [origin-x origin-y]]
   (mapcat #(layer-cells board cell-size % [origin-x origin-y]) (range 3)))
 
-(defn generate-cells [board cell-size [origin-x origin-y]]
-  (if (board-3d? board)
-    (generate-cells-3d board cell-size [origin-x origin-y])
-    (generate-cells-2d board cell-size [origin-x origin-y])))
-
 (defmethod multis/draw-state :in-progress [{:keys [board active-player-index players cells] :as state}]
   (let [character  (get-in players [active-player-index :character])
         is-3d?     (board-3d? board)
         title-text (str character "'s turn")
         lines      (get-lines board)
-        cell-size  (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        ;updated-state (assoc state :cells cells)
-        ]
+        cell-size  (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))]
     (q/background 240)
     (q/fill 0)
     (q/text-align :center :center)
     (q/text-size 28)
     (q/text title-text (/ util/screen-width 2) util/title-offset-y)
     (draw-lines lines)
-    (q/text-size (/ cell-size 2))
+    (q/text-size (if is-3d? (/ cell-size 3) (/ cell-size 2)))
     (draw-grid cells)))
 
 
@@ -130,41 +122,10 @@
   (let [half-size (/ cell-size 2)]
     (first (filter #(cell-contains-point? % x y half-size) cells))))
 
-(defn make-move-if-valid [{:keys [board players active-player-index] :as state} value]
-  (let [play-options (set (board/play-options board))
-        player-char  (get-in players [active-player-index :character])]
-    (if (contains? play-options value)
-      (-> state
-          (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
-          board/evaluate-board
-          core/change-player
-          persistence/save-game)
-      state)))
-
-#_(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players cells] :as state} {:keys [x y]}]
-    (let [player-type (get-in players [active-player-index :play-type])
-          is-3d?      (board-3d? board)
-          cell-size   (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))]
-      ;(prn "cells:" cells)
-      (if (not= :human player-type)
-        state
-        (if-let [clicked-cell (find-clicked-cell cells cell-size x y)]
-          (do
-            (prn "clicked-cell:" clicked-cell)
-            (make-move-if-valid state (:value clicked-cell)))
-          state))))
-
-;relative-x   (- x grid-origin-x)
-;relative-y   (- y grid-origin-y-2d)
-;clicked-col  (int (/ relative-x cell-size))
-;clicked-row  (int (/ relative-y cell-size))
-;value        (get-in board [clicked-row clicked-col])
-
 (defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players cells] :as state} {:keys [x y]}]
   (let [play-options (set (board/play-options board))
         is-3d?       (board-3d? board)
         cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        cells        (generate-cells board cell-size [grid-origin-x grid-origin-y-2d])
         clicked-cell (find-clicked-cell cells cell-size x y)
         value        (:value clicked-cell)
         player-char  (get-in players [active-player-index :character])
@@ -183,7 +144,7 @@
 (defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state}]
   (let [is-3d?       (board-3d? board)
         cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        cells        (generate-cells board cell-size [grid-origin-x grid-origin-y-2d])
+        cells        (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d]) (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))
         new-state (assoc state :cells cells)]
     (if (core/currently-human? state)
     new-state
@@ -198,9 +159,3 @@
 
 (defmethod core/update-state [:gui :board-ready] [state]
   (assoc state :status :in-progress))
-
-#_(defmethod core/update-state [:gui :board-ready] [{:keys [board] :as state}]
-    (let [is-3d?    (board-3d? board)
-          cell-size (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-          cells     (generate-cells board cell-size [grid-origin-x grid-origin-y-2d])]
-      (assoc state :status :in-progress :cells cells)))
