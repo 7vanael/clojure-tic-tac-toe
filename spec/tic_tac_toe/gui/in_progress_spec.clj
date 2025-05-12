@@ -34,7 +34,7 @@
 
   (it "can tell if the board is 3d or not"
     (should= true (board-3d? [[[1 2] [3 4]] [[5 6] [7 8]]]))
-    (should= false (board-3d? [[1 2 3] [4 5 6] [7 8 9]]))
+    (should= false (board-3d? [[1 2 3] [4 5 6] [7 8 9]])))
 
 
     (context "board-ready"
@@ -76,7 +76,7 @@
                   [396 162 396 342] [456 162 456 342] [516 162 516 342] [576 162 576 342]]
                  (get-lines-3d 3)))
       )
-    )
+
   (context "cells"
     (it "generates maps for each cell containing the center point coordinates & value in a 2d grid"
       (should= [{:x 5, :y 5, :value 1} {:x 15, :y 5, :value 2}
@@ -117,7 +117,7 @@
                                                     :o-type              :computer
                                                     :cells               cells-center-x-corner-o})
             event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
-                            :y (+ grid-origin-y (/ usable-screen 2))}]
+                            :y (+ grid-origin-y-2d (/ usable-screen 2))}]
         (should= starting-state (multis/mouse-clicked starting-state event)))
       )
 
@@ -129,7 +129,7 @@
                                                     :o-type              :computer
                                                     :cells               cells-center-x-corner-o})
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
-                            :y (+ grid-origin-y (/ (* 2.5 usable-screen) 3))}]
+                            :y (+ grid-origin-y-2d (/ (* 2.5 usable-screen) 3))}]
         (should= starting-state (multis/mouse-clicked starting-state event)))
       )
 
@@ -141,7 +141,7 @@
                                                     :o-type              :computer
                                                     :cells               cells-center-x-corner-o})
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
-                            :y (+ grid-origin-y (/ (* 2.5 usable-screen) 3))}
+                            :y (+ grid-origin-y-2d (/ (* 2.5 usable-screen) 3))}
             new-state      (test-core/state-create {:board               test-board/center-x-corner-xo-board
                                                     :active-player-index 1
                                                     :status              :in-progress

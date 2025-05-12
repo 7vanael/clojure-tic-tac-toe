@@ -39,7 +39,7 @@
   (q/text-align :center :center)
   (q/text-size 28)
   (q/text "Choose Player X Computer Difficulty" util/center-x util/title-offset-y)
-  (util/draw-3-buttons [difficulty-options]))
+  (util/draw-3-buttons difficulty-options))
 
 (defmethod core/update-state [:gui :config-x-difficulty] [state]
   state)
