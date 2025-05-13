@@ -172,8 +172,8 @@
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (core/take-turn state-o-about-to-win)))
 
-  #_(it "blocks a fork 1"
+  (it "blocks a fork 1"
     (should= (:board state-split-blocked-1) (:board (hard state-split))))
-  #_(it "blocks a fork 2"
+  (it "blocks a fork 2"
     (should= (:board state-split-blocked-2) (:board (hard state-split))))
   )
