@@ -173,7 +173,5 @@
     (should= state-o-blocked (core/take-turn state-o-about-to-win)))
 
   (it "blocks a fork 1"
-    (should= (:board state-split-blocked-1) (:board (hard state-split))))
-  (it "blocks a fork 2"
-    (should= (:board state-split-blocked-2) (:board (hard state-split))))
+    (should-contain (:board (hard state-split))  #{(:board state-split-blocked-1) (:board state-split-blocked-2)} ))
   )

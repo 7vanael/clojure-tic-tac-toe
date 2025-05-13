@@ -91,7 +91,7 @@
     ["X" "O" "X"]
     [25 "X" "O"]]])
 
-(def tie-3d
+(def full-3d
   [[["X" "O" "O"]
     ["O" "X" "X"]
     ["X" "O" "O"]]
@@ -238,7 +238,7 @@
     (should (any-space-available? not-full-board-x-column-win))
     (should (any-space-available? cube-diag-board))
     (should (any-space-available? first-x-3d-board))
-    (should-not (any-space-available? tie-3d)))
+    (should-not (any-space-available? full-3d)))
 
   (it "checks if there is a player with an entire row"
     (should= true (win-row? not-full-board-x-row-win "X"))
@@ -290,6 +290,24 @@
   (it "gets the diagonal starts & steps for x-plane diagonals (for 0 x)"
     (should= [[[0 0 0] [1 0 1]]
               [[0 0 2] [1 0 -1]]] (x-plane-diags 0 3)))
+
+  (it "gets the coordinates of a line when given the board, start and step"
+    (should= [[0 0] [0 1] [0 2]] (->line-coordinates [[1 2 3] [4 5 6] [7 8 9]] [0 0] [0 1])))
+
+  (it "gets all lines (rows/cols/diags) from a 2d board"
+    (should= [[[0 0] [0 1] [0 2]] [[1 0] [1 1] [1 2]] [[2 0] [2 1] [2 2]]
+              [[0 0] [1 0] [2 0]] [[0 1] [1 1] [2 1]] [[0 2] [1 2] [2 2]]
+              [[0 0] [1 1] [2 2]] [[0 2] [1 1] [2 0]]]
+             (get-all-lines empty-board))
+    (should= [[[0 0] [0 1] [0 2] [0 3]] [[1 0] [1 1] [1 2] [1 3]] [[2 0] [2 1] [2 2] [2 3]]
+              [[3 0] [3 1] [3 2] [3 3]] [[0 0] [1 0] [2 0] [3 0]] [[0 1] [1 1] [2 1] [3 1]]
+              [[0 2] [1 2] [2 2] [3 2]] [[0 3] [1 3] [2 3] [3 3]] [[0 0] [1 1] [2 2] [3 3]]
+              [[0 3] [1 2] [2 1] [3 0]]]
+             (get-all-lines empty-4-board)))
+
+  (it "gets all lines from a 3d board"
+    (should= []
+             (get-all-lines empty-3d-board)))
 
   (it "gets the values from a line given a board, a starting position and a step"
     (let [start [0 0 0]

@@ -40,8 +40,11 @@
         y                (rem one-board single-dimension)]
     [z x y]))
 
+(defn board-3d? [board]
+  (vector? (first (first board))))
+
 (defn get-board-complexity [board]
-  (if (vector? (first (first board))) 3 2))
+  (if (board-3d? board) 3 2))
 
 (defn space->coordinates [number board]
   (if (= 2 (get-board-complexity board))
@@ -88,9 +91,12 @@
         z-line-coordinates (take (count board) (iterate (partial next-location step) start))]
     (map #(get-in board %) z-line-coordinates)))
 
+(defn get-z-lines [board]
+  (let [xy-pairs (mapcat #(map (partial vector %) (range (count board))) (range (count board)))]
+    (map #(get-z-line board %) xy-pairs)))
+
 (defn win-3d-z-line? [board character]
-  (let [xy-pairs (mapcat #(map (partial vector %) (range (count board))) (range (count board)))
-        z-lines  (map #(get-z-line board %) xy-pairs)]
+  (let [z-lines  (get-z-lines board)]
     (some #(all-matching? % character) z-lines)))
 
 (defn z-plane-diags [z size]
@@ -105,20 +111,78 @@
   [[[0 x 0] [1 0 1]]
    [[0 x (dec size)] [1 0 -1]]])
 
+(defn cube->diag-start-steps [size]
+  [[[0 0 0] [1 1 1]]
+   [[0 0 (dec size)] [1 1 -1]]
+   [[0 (dec size) 0] [1 -1 1]]
+   [[0 (dec size) (dec size)] [1 -1 -1]]])
+
+(defn ->line-coordinates [board start step]
+  (take (count board) (iterate (partial next-location step) start)))
+
+(defn get-rows [board]
+  (mapv #(->line-coordinates board [% 0] [0 1]) (range (count board))))
+
+(defn get-cols [board]
+  (mapv #(->line-coordinates board [0 %] [1 0]) (range (count board))))
+
+(defn get-diags [board]
+  [(->line-coordinates board [0 0] [1 1])
+   (->line-coordinates board [0 (dec (count board))] [1 -1])])
+
+(defn get-all-lines-2d [board]
+    (concat (get-rows board) (get-cols board) (get-diags board)))
+
+(defn cube-diags [size]
+  (cube->diag-start-steps size))
+
+(defn plane-x-diags [size]
+  (mapcat #(x-plane-diags % size) (range size)))
+
+(defn plane-y-diags [size]
+  (mapcat #(y-plane-diags % size) (range size)))
+
+(defn plane-z-diags [size]
+  (mapcat #(z-plane-diags % size) (range size)))
+
+(defn get-all-3d-diags [size]
+  (concat (cube-diags size) (plane-x-diags size) (plane-y-diags size) (plane-z-diags size)))
+
+(defn get-all-lines-3d [board]
+  (let [size (count board)
+        diags (get-all-3d-diags size)
+        z-lines (get-z-lines board)
+        panel-lines (mapv #(get-all-lines-2d %) board)]
+    (concat diags z-lines panel-lines)))
+
+(defn get-all-lines [board]
+    (if (board-3d? board)
+      (get-all-lines-3d board)
+      (get-all-lines-2d board)))
+
 (defn start-step->values [board start step]
-  (let [coordinates (take (count board) (iterate (partial next-location step) start))]
-    (map #(get-in board %) coordinates)))
+    (map #(get-in board %) (->line-coordinates board start step)))
+
+(defn winning-spaces [board line char]
+  (let [values                        (map #(get-in board %) line)
+        avail-options                 (filter #(available? board %) line)
+        already-claimed-pos-in-line   (count (filter #(= char %) values))
+        size                          (count board)
+        only-one-space-left           (= 1 (count avail-options))
+        all-but-one-space-is-matching (= (dec size) already-claimed-pos-in-line)]
+    (when (and only-one-space-left all-but-one-space-is-matching)
+      (first avail-options))))
+
+;score is what score you want assigned to all winning-moves
+; pass in opponent's-char to find blocking moves instead
+(defn winning-moves [board char score]
+  (let [all-lines          (get-all-lines board)
+        winnable-positions (keep #(winning-spaces board % char) all-lines)]
+    (mapv (fn [space] [space score]) winnable-positions)))
 
 (defn win-3d-diag? [board character]
   (let [size          (count board)
-        cube-diags    [[[0 0 0] [1 1 1]]
-                       [[0 0 (dec size)] [1 1 -1]]
-                       [[0 (dec size) 0] [1 -1 1]]
-                       [[0 (dec size) (dec size)] [1 -1 -1]]]
-        plane-x-diags (mapcat #(x-plane-diags % size) (range size))
-        plane-y-diags (mapcat #(y-plane-diags % size) (range size))
-        plane-z-diags (mapcat #(z-plane-diags % size) (range size))
-        all-diags     (concat cube-diags plane-x-diags plane-y-diags plane-z-diags)
+        all-diags     (get-all-3d-diags size)
         diag-values   (map #(start-step->values board (first %) (second %)) all-diags)]
     (boolean (some #(all-matching? % character) diag-values)))) ;nil -> false for consistency with 2d
 

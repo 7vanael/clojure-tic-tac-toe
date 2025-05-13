@@ -31,13 +31,26 @@
           (apply max outcomes)
           (apply min outcomes))))))
 
+(defn blocking-move [board char]
+  #_(let [lines (board/get-all-lines board)]
+    ;;which move is a block?
+    ))
+
 (defn eval-moves [{:keys [board active-player-index players]}]
-  (let [moves     (util/get-possible-moves board)
-        char      (get-in players [active-player-index :character])
-        opp-char  (if (= "X" char) "O" "X")
-        max-depth (calc-max-depth (count (flatten board)))
-        config    {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}]
-    (map #(vector % (minimax (board/take-square board % char) config)) moves)))
+  (let [moves        (util/get-possible-moves board)
+        char         (get-in players [active-player-index :character])
+        opp-char     (if (= "X" char) "O" "X")
+        max-depth    (calc-max-depth (count (flatten board)))
+        config       {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}
+        scored-moves (map #(vector % (minimax (board/take-square board % char) config)) moves)
+        ;best-score   (second (apply max-key second))
+        ;blocking-moves
+        ]
+    #_(if (< 0 best-score)
+      blocking-move
+      scored-moves)
+    scored-moves
+    ))
 
 (defn hard [{:keys [board active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])
