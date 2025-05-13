@@ -276,12 +276,13 @@
     (should= true (win-3d-panel? conventional-row-3d-board "X"))
     (should-not (win-3d-panel? empty-3d-board "X")))
 
-  (it "gets a z-line from a board"
-    (should= [1 10 "X"] (get-z-line not-full-3d [0 0])))
+  (it "gets coordinates for a z-line in a board"
+    (should= [[0 0 0] [1 0 0] [2 0 0]] (get-z-line 3 [0 0])))
 
   (it "checks for a z-line win in 3-d board"
     (should (win-3d-z-line? z-line-board "X"))
-    (should-not (win-3d-z-line? z-diag-board "O")))
+    (should (win-3d-z-line? z-diag-board "O"))
+    (should-not (win-3d-z-line? empty-3d-board "X")))
 
   (it "gets the diagonal starts & steps for y-plane diagonals (for 1 y)"
     (should= [[[0 0 1] [1 1 0]]
@@ -306,8 +307,33 @@
              (get-all-lines empty-4-board)))
 
   (it "gets all lines from a 3d board"
-    (should= []
-             (get-all-lines empty-3d-board)))
+    (should= [([0 0 0] [1 1 1] [2 2 2]) ([0 0 2] [1 1 1] [2 2 0])
+              ([0 2 0] [1 1 1] [2 0 2]) ([0 2 2] [1 1 1] [2 0 0])
+
+              ([0 0 0] [1 0 1] [2 0 2]) ([0 0 2] [1 0 1] [2 0 0]) ([0 1 0] [1 1 1] [2 1 2])
+              ([0 1 2] [1 1 1] [2 1 0]) ([0 2 0] [1 2 1] [2 2 2]) ([0 2 2] [1 2 1] [2 2 0])
+
+              ([0 0 0] [1 1 0] [2 2 0]) ([2 0 0] [1 1 0] [0 2 0]) ([0 0 1] [1 1 1] [2 2 1])
+              ([2 0 1] [1 1 1] [0 2 1]) ([0 0 2] [1 1 2] [2 2 2]) ([2 0 2] [1 1 2] [0 2 2])
+
+              ([0 0 0] [0 1 1] [0 2 2]) ([0 0 2] [0 1 1] [0 2 0]) ([1 0 0] [1 1 1] [1 2 2])
+              ([1 0 2] [1 1 1] [1 2 0]) ([2 0 0] [2 1 1] [2 2 2]) ([2 0 2] [2 1 1] [2 2 0])
+
+              ([0 0 0] [1 0 0] [2 0 0]) ([0 0 1] [1 0 1] [2 0 1]) ([0 0 2] [1 0 2] [2 0 2])
+              ([0 1 0] [1 1 0] [2 1 0]) ([0 1 1] [1 1 1] [2 1 1]) ([0 1 2] [1 1 2] [2 1 2])
+              ([0 2 0] [1 2 0] [2 2 0]) ([0 2 1] [1 2 1] [2 2 1]) ([0 2 2] [1 2 2] [2 2 2])
+
+              [[0 0 0] [0 0 1] [0 0 2]] [[0 1 0] [0 1 1] [0 1 2]] [[0 2 0] [0 2 1] [0 2 2]]
+
+              [[0 0 0] [0 1 0] [0 2 0]] [[0 0 1] [0 1 1] [0 2 1]] [[0 0 2] [0 1 2] [0 2 2]]
+
+              [[0 0 0] [0 1 1] [0 2 2]] [[0 0 2] [0 1 1] [0 2 0]] [[1 0 0] [1 0 1] [1 0 2]]
+              [[1 1 0] [1 1 1] [1 1 2]] [[1 2 0] [1 2 1] [1 2 2]] [[1 0 0] [1 1 0] [1 2 0]]
+              [[1 0 1] [1 1 1] [1 2 1]] [[1 0 2] [1 1 2] [1 2 2]] [[1 0 0] [1 1 1] [1 2 2]]
+              [[1 0 2] [1 1 1] [1 2 0]] [[2 0 0] [2 0 1] [2 0 2]] [[2 1 0] [2 1 1] [2 1 2]]
+              [[2 2 0] [2 2 1] [2 2 2]] [[2 0 0] [2 1 0] [2 2 0]] [[2 0 1] [2 1 1] [2 2 1]]
+              [[2 0 2] [2 1 2] [2 2 2]] [[2 0 0] [2 1 1] [2 2 2]] [[2 0 2] [2 1 1] [2 2 0]]]
+             (get-all-lines-3d empty-3d-board)))
 
   (it "gets the values from a line given a board, a starting position and a step"
     (let [start [0 0 0]
@@ -327,7 +353,7 @@
     (should= true (winner? z-diag-board "X"))
     (should= true (winner? z-line-board "X"))
     (should= true (winner? cube-diag-board "X"))
-    (should= false (winner? not-full-3d "X")))
+    (should= false (winner? first-x-3d-board "X")))
 
   (it "updates status to winner if a player has won"
     (should= (test-core/state-create {:board not-full-board-x-row-win :active-player-index 0 :status :winner})

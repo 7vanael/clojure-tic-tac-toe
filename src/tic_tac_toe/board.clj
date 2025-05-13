@@ -85,19 +85,19 @@
 (defn win-3d-panel? [board character]
   (some #(winner-2d? % character) board))
 
-(defn get-z-line [board [x y]]
+(defn get-z-line [size [x y]]
   (let [start              [0 x y]
-        step               [1 0 0]
-        z-line-coordinates (take (count board) (iterate (partial next-location step) start))]
-    (map #(get-in board %) z-line-coordinates)))
+        step               [1 0 0]]
+    (take size (iterate (partial next-location step) start))))
 
-(defn get-z-lines [board]
-  (let [xy-pairs (mapcat #(map (partial vector %) (range (count board))) (range (count board)))]
-    (map #(get-z-line board %) xy-pairs)))
+(defn get-z-lines [size]
+  (let [xy-pairs (mapcat #(map (partial vector %) (range size)) (range size))]
+    (map #(get-z-line size %) xy-pairs)))
 
 (defn win-3d-z-line? [board character]
-  (let [z-lines  (get-z-lines board)]
-    (some #(all-matching? % character) z-lines)))
+  (let [z-lines  (get-z-lines (count board))
+        z-values (map #(get-in board %) z-lines)]
+    (some #(all-matching? % character) z-values)))
 
 (defn z-plane-diags [z size]
   [[[z 0 0] [0 1 1]]
@@ -133,9 +133,6 @@
 (defn get-all-lines-2d [board]
     (concat (get-rows board) (get-cols board) (get-diags board)))
 
-(defn cube-diags [size]
-  (cube->diag-start-steps size))
-
 (defn plane-x-diags [size]
   (mapcat #(x-plane-diags % size) (range size)))
 
@@ -145,15 +142,41 @@
 (defn plane-z-diags [size]
   (mapcat #(z-plane-diags % size) (range size)))
 
+(defn get-all-3d-line-specs [size]
+  (vec (concat (cube->diag-start-steps size) (plane-x-diags size)
+               (plane-y-diags size) (plane-z-diags size))))
+
+(defn cube-diags [size]
+  (cube->diag-start-steps size))
+
 (defn get-all-3d-diags [size]
   (concat (cube-diags size) (plane-x-diags size) (plane-y-diags size) (plane-z-diags size)))
 
+(defn get-panel-rows [z panel]
+  (mapv #(->line-coordinates panel [z % 0] [0 0 1]) (range (count panel))))
+
+(defn get-panel-cols [z panel]
+  (mapv #(->line-coordinates panel [z 0 %] [0 1 0]) (range (count panel))))
+
+(defn get-panel-diags [z panel]
+  [(->line-coordinates panel [z 0 0] [0 1 1])
+   (->line-coordinates panel [z 0 (dec (count panel))] [0 1 -1])])
+
+(defn get-panel-lines [z panel]
+  (vec (concat (get-panel-cols z panel)
+               (get-panel-diags z panel)
+               (get-panel-rows z panel))))
+
+(defn get-panel-lines-with-z [board]
+  (vec (apply concat (map-indexed get-panel-lines board))))
+
 (defn get-all-lines-3d [board]
   (let [size (count board)
-        diags (get-all-3d-diags size)
-        z-lines (get-z-lines board)
-        panel-lines (mapv #(get-all-lines-2d %) board)]
-    (concat diags z-lines panel-lines)))
+        specs-3d-lines (get-all-3d-line-specs size)
+        cube-lines (mapv #(->line-coordinates board (first %) (second %)) specs-3d-lines)
+        z-lines  (get-z-lines size)
+        panel-lines (get-panel-lines-with-z board)]
+    (vec (concat cube-lines z-lines panel-lines))))
 
 (defn get-all-lines [board]
     (if (board-3d? board)

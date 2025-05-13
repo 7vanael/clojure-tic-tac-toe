@@ -8,7 +8,6 @@
         (board/winner? board opp-char) (- depth 10)
         :else 0))
 
-
 (defn done? [open-spaces board char opp-char depth max-depth]
   (or (= depth max-depth)
       (empty? open-spaces)
@@ -33,8 +32,8 @@
 
 (defn blocking-move [board char]
   #_(let [lines (board/get-all-lines board)]
-    ;;which move is a block?
-    ))
+      ;;which move is a block?
+      ))
 
 (defn eval-moves [{:keys [board active-player-index players]}]
   (let [moves        (util/get-possible-moves board)
@@ -43,12 +42,7 @@
         max-depth    (calc-max-depth (count (flatten board)))
         config       {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}
         scored-moves (map #(vector % (minimax (board/take-square board % char) config)) moves)
-        ;best-score   (second (apply max-key second))
-        ;blocking-moves
-        ]
-    #_(if (< 0 best-score)
-      blocking-move
-      scored-moves)
+        all-losing   (every? #(= (second %) -10) scored-moves)]
     scored-moves
     ))
 
