@@ -8,7 +8,6 @@
         (board/winner? board opp-char) (- depth 10)
         :else 0))
 
-
 (defn done? [open-spaces board char opp-char depth max-depth]
   (or (= depth max-depth)
       (empty? open-spaces)
@@ -31,24 +30,33 @@
           (apply max outcomes)
           (apply min outcomes))))))
 
-(defn blocking-move [board char]
-  #_(let [lines (board/get-all-lines board)]
-    ;;which move is a block?
-    ))
+(defn winning-spaces [board line char]
+  (let [values                        (map #(get-in board %) line)
+        avail-options                 (filter #(board/available? board %) line)
+        already-claimed-pos-in-line   (count (filter #(= char %) values))
+        size                          (count board)
+        only-one-space-left           (= 1 (count avail-options))
+        all-but-one-space-is-matching (= (dec size) already-claimed-pos-in-line)]
+    (when (and only-one-space-left all-but-one-space-is-matching)
+      (first avail-options))))
+
+(defn winning-moves [board char score]
+  (let [all-lines          (board/get-all-lines board)
+        winnable-positions (keep #(winning-spaces board % char) all-lines)]
+    (mapv (fn [space] [space score]) winnable-positions)))
 
 (defn eval-moves [{:keys [board active-player-index players]}]
-  (let [moves        (util/get-possible-moves board)
-        char         (get-in players [active-player-index :character])
-        opp-char     (if (= "X" char) "O" "X")
-        max-depth    (calc-max-depth (count (flatten board)))
-        config       {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}
-        scored-moves (map #(vector % (minimax (board/take-square board % char) config)) moves)
-        ;best-score   (second (apply max-key second))
-        ;blocking-moves
-        ]
-    #_(if (< 0 best-score)
-      blocking-move
-      scored-moves)
+  (let [moves          (util/get-possible-moves board)
+        char           (get-in players [active-player-index :character])
+        opp-char       (if (= "X" char) "O" "X")
+        max-depth      (calc-max-depth (count (flatten board)))
+        config         {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}
+        scored-moves   (map #(vector % (minimax (board/take-square board % char) config)) moves)
+        best-score     (second (apply max-key second scored-moves))
+        blocking-moves (winning-moves board opp-char 5)]
+    (if (< 0 best-score)
+        blocking-moves
+        scored-moves)
     scored-moves
     ))
 

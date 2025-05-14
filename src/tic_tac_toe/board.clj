@@ -99,6 +99,11 @@
   (let [z-lines  (get-z-lines board)]
     (some #(all-matching? % character) z-lines)))
 
+(defn z-line-lines [[x y] size]
+  (let [start              [0 x y]
+        step               [1 0 0]]
+    (vec (take size (iterate (partial next-location step) start)))))
+
 (defn z-plane-diags [z size]
   [[[z 0 0] [0 1 1]]
    [[z 0 (dec size)] [0 1 -1]]])
@@ -116,6 +121,10 @@
    [[0 0 (dec size)] [1 1 -1]]
    [[0 (dec size) 0] [1 -1 1]]
    [[0 (dec size) (dec size)] [1 -1 -1]]])
+
+(defn get-zs [board]
+  (let [xy-pairs (mapcat #(map (partial vector %) (range (count board))) (range (count board)))]
+  (mapv #(z-line-lines % (count board)) xy-pairs)))
 
 (defn ->line-coordinates [board start step]
   (take (count board) (iterate (partial next-location step) start)))
@@ -148,12 +157,30 @@
 (defn get-all-3d-diags [size]
   (concat (cube-diags size) (plane-x-diags size) (plane-y-diags size) (plane-z-diags size)))
 
+(defn line-maker [board [start step]]
+  (->line-coordinates board start step))
+
+(defn instructions->line-coords [board instructions]
+  (mapv #(line-maker board %) instructions))
+
+(defn add-z-to-planes [z coords-panel]
+  (map (fn [group]
+         (mapv (fn [coord]
+                (vec (cons z coord))) ; prepend z to each coordinate
+              group))
+       coords-panel))
+
 (defn get-all-lines-3d [board]
   (let [size (count board)
         diags (get-all-3d-diags size)
-        z-lines (get-z-lines board)
-        panel-lines (mapv #(get-all-lines-2d %) board)]
-    (concat diags z-lines panel-lines)))
+        diag-line-coords (instructions->line-coords board diags)
+        z-lines (get-zs board)
+        panel-lines-2ds (mapv #(get-all-lines-2d %) board)
+        panel-lines (apply concat (map-indexed add-z-to-planes panel-lines-2ds))
+        _ (prn "diag-line-coords:" diag-line-coords)
+        _ (prn "z-lines:" z-lines)
+        _ (prn "panel-lines:" panel-lines)]
+    (concat diag-line-coords z-lines panel-lines)))
 
 (defn get-all-lines [board]
     (if (board-3d? board)
@@ -162,23 +189,6 @@
 
 (defn start-step->values [board start step]
     (map #(get-in board %) (->line-coordinates board start step)))
-
-(defn winning-spaces [board line char]
-  (let [values                        (map #(get-in board %) line)
-        avail-options                 (filter #(available? board %) line)
-        already-claimed-pos-in-line   (count (filter #(= char %) values))
-        size                          (count board)
-        only-one-space-left           (= 1 (count avail-options))
-        all-but-one-space-is-matching (= (dec size) already-claimed-pos-in-line)]
-    (when (and only-one-space-left all-but-one-space-is-matching)
-      (first avail-options))))
-
-;score is what score you want assigned to all winning-moves
-; pass in opponent's-char to find blocking moves instead
-(defn winning-moves [board char score]
-  (let [all-lines          (get-all-lines board)
-        winnable-positions (keep #(winning-spaces board % char) all-lines)]
-    (mapv (fn [space] [space score]) winnable-positions)))
 
 (defn win-3d-diag? [board character]
   (let [size          (count board)
