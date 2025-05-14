@@ -54,7 +54,7 @@
         scored-moves   (map #(vector % (minimax (board/take-square board % char) config)) moves)
         best-score     (second (apply max-key second scored-moves))
         blocking-moves (winning-moves board opp-char 5)]
-    (if (< 0 best-score)
+    (if (> 0 best-score)
         blocking-moves
         scored-moves)
     scored-moves
