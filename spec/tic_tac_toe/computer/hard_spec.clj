@@ -91,17 +91,17 @@
                          {:character "O" :play-type :computer :difficulty :hard}]})
 
 (def split-board
-  [["X" "X" 3]
+  [["X" 2 "X"]
    ["O" "X" 6]
    ["O" 8 9]])
 
 (def blocked-split-1
-  [["X" "X" 3]
+  [["X" 2 "X"]
    ["O" "X" 6]
    ["O" 8 "O"]])
 
 (def blocked-split-2
-  [["X" "X" "O"]
+  [["X" "O" "X"]
    ["O" "X" 6]
    ["O" 8 9]])
 
@@ -116,7 +116,6 @@
 
 (describe "computer- hard mode"
   (with-stubs)
-
 
   (it "The computer hard turn method is called if the active player is computer"
     (with-redefs [hard (stub :computer-turn)]
@@ -171,6 +170,9 @@
 
   (it "blocks the opponents imminent win"
     (should= state-o-blocked (core/take-turn state-o-about-to-win)))
+
+  (it "finds the moves that the opponent can win, adds the desired score"
+    (should= [[[0 1] 0] [[2 2] 0]] (winning-moves split-board "X" 0)))
 
   (it "blocks a fork 1"
     (should-contain (:board (hard state-split))  #{(:board state-split-blocked-1) (:board state-split-blocked-2)} ))

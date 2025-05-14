@@ -53,12 +53,10 @@
         config         {:char char :opp-char opp-char :current-player opp-char :depth 0 :max-depth max-depth}
         scored-moves   (map #(vector % (minimax (board/take-square board % char) config)) moves)
         best-score     (second (apply max-key second scored-moves))
-        blocking-moves (winning-moves board opp-char 5)]
-    (if (> 0 best-score)
+        blocking-moves (winning-moves board opp-char 0)]
+    (if (> -7 best-score)
         blocking-moves
-        scored-moves)
-    scored-moves
-    ))
+        scored-moves)))
 
 (defn hard [{:keys [board active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])

@@ -14,7 +14,7 @@
 
 
 (defn debug-overlay [options]
-  (let [debugging true
+  (let [debugging false
         original-draw (:draw options)]
     (assoc options :draw
                    (fn [state]

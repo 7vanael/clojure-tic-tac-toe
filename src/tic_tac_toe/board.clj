@@ -140,7 +140,10 @@
    (->line-coordinates board [0 (dec (count board))] [1 -1])])
 
 (defn get-all-lines-2d [board]
-    (concat (get-rows board) (get-cols board) (get-diags board)))
+    (let [rows (get-rows board)
+          cols (get-cols board)
+          diags (get-diags board)]
+      (concat rows cols diags)))
 
 (defn cube-diags [size]
   (cube->diag-start-steps size))
@@ -166,7 +169,7 @@
 (defn add-z-to-planes [z coords-panel]
   (map (fn [group]
          (mapv (fn [coord]
-                (vec (cons z coord))) ; prepend z to each coordinate
+                (vec (cons z coord)))
               group))
        coords-panel))
 
@@ -176,10 +179,7 @@
         diag-line-coords (instructions->line-coords board diags)
         z-lines (get-zs board)
         panel-lines-2ds (mapv #(get-all-lines-2d %) board)
-        panel-lines (apply concat (map-indexed add-z-to-planes panel-lines-2ds))
-        _ (prn "diag-line-coords:" diag-line-coords)
-        _ (prn "z-lines:" z-lines)
-        _ (prn "panel-lines:" panel-lines)]
+        panel-lines (apply concat (map-indexed add-z-to-planes panel-lines-2ds))]
     (concat diag-line-coords z-lines panel-lines)))
 
 (defn get-all-lines [board]
