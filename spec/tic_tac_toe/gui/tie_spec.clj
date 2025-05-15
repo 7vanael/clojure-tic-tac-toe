@@ -5,23 +5,20 @@
             [tic-tac-toe.gui.tie :refer :all]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.persistence :as persistence]
-            [tic-tac-toe.persistence-spec :as test-persistence])
-  (:import (java.io FileNotFoundException)))
+            [tic-tac-toe.persistence :as persistence]))
 
 (describe "tie- end of game"
   (with-stubs)
+  (redefs-around [spit (stub :spit)])
 
   (it "deletes the save file when the game ends in a draw"
     (with-redefs [println (stub :print-dup)
-                  tic-tac-toe.persistence/savefile test-persistence/test-file]
+                  persistence/delete-save (stub :delete)]
       (let [state (test-core/state-create {:interface :gui :status :tie :board [["X" "O" "X"]
                                                                                 ["O" "X" "O"]
                                                                                 ["O" "X" "O"]]})]
-        (persistence/save-game state)
-        (should-not-throw (slurp test-persistence/test-file))
         (core/update-state state)
-        (should-throw FileNotFoundException (slurp test-persistence/test-file)))))
+        (should-have-invoked :delete))))
 
 
   (it "sets the state to nil and the status to config-x-type if play-again button is clicked"
@@ -34,5 +31,6 @@
     (with-redefs [q/exit (stub :exit)]
       (let [event {:x 432 :y 350}]
         (multis/mouse-clicked (test-core/state-create {:status :tie}) event)
-        (should-have-invoked :exit))))
+        (should-have-invoked :exit))
+      (persistence/delete-save)))
   )

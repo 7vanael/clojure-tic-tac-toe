@@ -138,8 +138,7 @@
           persistence/save-game)
       state)))
 
-(defmethod core/take-human-turn :gui [state]
-  (core/update-state state))
+(defmethod core/take-human-turn :gui [state] state)
 
 (defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state}]
   (let [is-3d?       (board-3d? board)

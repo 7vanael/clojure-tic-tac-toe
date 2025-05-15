@@ -1,7 +1,6 @@
 (ns tic-tac-toe.tui.in_progress_spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.persistence-spec :as test-persistence]
             [tic-tac-toe.tui.in-progress :refer :all]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.core :as core]
@@ -9,57 +8,57 @@
 
 (describe "tui in-progress"
   (with-stubs)
+  (redefs-around [spit (stub :spit)])
 
   (it "checks for a saved game, offers to load it if found"
-    (with-redefs [console/save-found-prompt        (stub :save-found-prompt)
-                  console/welcome-message          (stub :print-dup)
-                  console/exit-message             (stub :print-dup)
-                  tic-tac-toe.persistence/savefile test-persistence/test-file
-                  core/update-state                (stub :update-state)
-                  game-loop                        (stub :game-loop {:return nil})
-                  initialize-state                 (stub :initialize-new)
-                  console/play-again?              (stub :play-again {:return false})]
+    (with-redefs [console/save-found-prompt (stub :save-found-prompt)
+                  console/welcome-message   (stub :print-dup)
+                  console/exit-message      (stub :print-dup)
+                  persistence/load-game     (stub :load {:return (test-core/state-create
+                                                                   {:status              :in-progress :board [["X" "O" "X"] [4 "X" 6] [7 8 "O"]]
+                                                                    :active-player-index 1 :type-x :human :type-o :human})})
+                  core/update-state         (stub :update-state)
+                  game-loop                 (stub :game-loop {:return nil})
+                  initialize-state          (stub :initialize-new)
+                  console/play-again?       (stub :play-again {:return false})]
       (let [saved-state    (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
                                                                                                            [4 "X" 6]
                                                                                                            [7 8 "O"]]
                                                     :active-player-index 1 :type-x :human :type-o :human})
             new-game-state (test-core/state-create {:status :config :interface :tui})]
-        (persistence/save-game saved-state)
-
         (with-in-str "y\n" (core/start-game new-game-state))
         (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save :interface :tui)]}))))
 
   (it "resumes play of a loaded game"
-    (with-redefs [console/save-found-prompt        (stub :save-found-prompt)
-                  println                          (stub :print-dup)
-                  tic-tac-toe.persistence/savefile test-persistence/test-file
-                  core/update-state                (stub :update-state)
-                  initialize-state                 (stub :initialize-new)
-                  console/play-again?              (stub :play-again {:return false})
-                  game-loop                        (stub :game-loop {:return nil})
-                  console/exit-message             (stub :print-dup)]
+    (with-redefs [console/save-found-prompt (stub :save-found-prompt)
+                  println                   (stub :print-dup)
+                  persistence/load-game     (stub :load {:return (test-core/state-create
+                                                                   {:status              :in-progress :board [["X" "O" "X"] [4 "X" 6] [7 8 "O"]]
+                                                                    :active-player-index 1 :type-x :human :type-o :human})})
+                  core/update-state         (stub :update-state)
+                  initialize-state          (stub :initialize-new)
+                  console/play-again?       (stub :play-again {:return false})
+                  game-loop                 (stub :game-loop {:return nil})
+                  console/exit-message      (stub :print-dup)]
       (let [saved-state    (test-core/state-create {:interface           :gui :status :in-progress :board [["X" "O" "X"]
                                                                                                            [4 "X" 6]
                                                                                                            [7 8 "O"]]
                                                     :active-player-index 1 :type-x :human :type-o :human})
             new-game-state (test-core/state-create {:status :config :interface :tui})]
-        (persistence/save-game saved-state)
 
         (with-in-str "y\n" (core/start-game new-game-state))
         (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save :interface :tui)]})
         (should-not-have-invoked :initialize-new))))
 
   (it "proceeds to configuration if no loaded game found"
-    (with-redefs [println                          (stub :print-dup)
-                  tic-tac-toe.persistence/savefile test-persistence/test-file
-                  core/update-state                (stub :update-state)
-                  initialize-state                 (stub :initialize-new)
-                  console/play-again?              (stub :play-again {:return false})
-                  game-loop                        (stub :game-loop {:return nil})
-                  console/exit-message             (stub :print-dup)]
+    (with-redefs [println               (stub :print-dup)
+                  persistence/load-game (stub :load {:return nil})
+                  core/update-state     (stub :update-state)
+                  initialize-state      (stub :initialize-new)
+                  console/play-again?   (stub :play-again {:return false})
+                  game-loop             (stub :game-loop {:return nil})
+                  console/exit-message  (stub :print-dup)]
       (let [new-game-state (test-core/state-create {:status :config :interface :tui})]
-        (persistence/delete-save)                           ;ensures no residual save found
-
         (core/start-game new-game-state)
         (should-have-invoked :initialize-new))))
 
@@ -72,8 +71,8 @@
                   console/play-again?               (stub :play-again {:return false})
                   persistence/save-game             (stub :save-dup)
                   persistence/load-game             (stub :load {:return nil})
-                  game-loop                        (stub :game-loop {:return nil})
-                  console/exit-message             (stub :print-dup)]
+                  game-loop                         (stub :game-loop {:return nil})
+                  console/exit-message              (stub :print-dup)]
       (core/start-game {:interface :tui})
       (should-have-invoked :game-loop {:with [test-core/state-initial]})))
 
@@ -87,8 +86,8 @@
                   core/update-state                 (stub :update-state)
                   persistence/save-game             (stub :save-dup)
                   persistence/load-game             (stub :load {:return nil})
-                  game-loop                        (stub :game-loop {:return nil})
-                  console/exit-message             (stub :print-dup)]
+                  game-loop                         (stub :game-loop {:return nil})
+                  console/exit-message              (stub :print-dup)]
       (core/start-game {:interface :tui})
       (should-have-invoked :game-loop {:with [test-core/state-computer-2-4-empty]})))
 

@@ -11,15 +11,16 @@
 
 (describe "winner- end of game"
   (with-stubs)
+  (redefs-around [spit (stub :spit)])
+
 
   (it "deletes the save file when the game ends in a win"
-    (with-redefs [tic-tac-toe.persistence/savefile test-persistence/test-file]
       (let [state (test-core/state-create {:interface :gui :status :winner :board [["X" "O" "X"]
                                                                                    ["O" "X" "O"]
                                                                                    ["O" "X" "X"]]})]
         (persistence/save-game state)
         (core/update-state state)
-        (should-throw FileNotFoundException (slurp test-persistence/test-file)))))
+        (should-throw FileNotFoundException (slurp persistence/savefile))))
 
 
   (it "sets the state to nil and the status to config-x-type if play-again button is clicked"

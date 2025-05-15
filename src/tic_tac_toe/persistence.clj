@@ -10,8 +10,7 @@
   state)
 
 (defn load-game []
-  (try (with-open [reader (io/reader savefile)]
-         (edn/read-string (slurp reader)))
+  (try (edn/read-string (slurp savefile))
        (catch FileNotFoundException _
          nil)))
 
