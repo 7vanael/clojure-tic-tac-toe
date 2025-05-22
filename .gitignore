@@ -12,3 +12,6 @@ pom.xml
 
 # Game save files
 game-save.edn
+
+# Database files
+.idea/*
