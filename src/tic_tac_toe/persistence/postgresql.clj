@@ -1,5 +1,6 @@
 (ns tic-tac-toe.persistence.postgresql
-  (:require [next.jdbc :as jdbc]
+  (:require [clojure.edn :as edn]
+            [next.jdbc :as jdbc]
             [next.jdbc.result-set :as rs]
             [next.jdbc.sql :as sql]))
 
@@ -24,9 +25,27 @@
                                        :x_difficulty        (if (keyword? x-difficulty) (name x-difficulty) x-difficulty)
                                        :o_type              (name o-type)
                                        :o_difficulty        (if (keyword? o-difficulty) (name o-difficulty) x-difficulty)}
-                            {:return-keys true})]
+                            {:return-keys true :builder-fn rs/as-unqualified-maps})]
     result))
 
-#_(defn load-game)
+(defn parse-game [sql-state]
+  {:board               (edn/read-string (:board sql-state))
+   :active-player-index (:active_player_index sql-state)
+   :status              (keyword (:status sql-state))
+   :players             [{:character "X" :play-type (keyword (:x_type sql-state)) :difficulty (keyword (:x_difficulty sql-state))}
+                         {:character "O" :play-type (keyword (:o_type sql-state)) :difficulty (keyword (:o_difficulty sql-state))}]})
 
-#_(defn delete-save [])                                     ;May not need to implement this one?
+(defn load-game [& [source]]
+  (let [ds (or source data-source)
+        result (sql/query ds ["SELECT * FROM state ORDER BY game_id DESC LIMIT 1"]
+                          {:builder-fn rs/as-unqualified-maps})]
+    (when (seq result)
+      (parse-game (first result)))))
+
+(defn delete-save [& [source]]
+  (let [ds (or source data-source)
+        last-game (sql/query ds ["SELECT game_id FROM state ORDER BY game_id DESC LIMIT 1"]
+                             {:builder-fn rs/as-unqualified-maps})]
+    (when (seq last-game)
+      (let [game-id (:game_id (first last-game))]
+        (sql/delete! ds :state {:game_id game-id})))))
