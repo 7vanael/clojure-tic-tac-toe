@@ -34,7 +34,7 @@
   (q/defsketch tic-tac-toe
     :title "Tic-Tac-Toe"
     :size [util/screen-width util/screen-height]
-    :setup setup
+    :setup #(setup state)
     :update core/update-state
     :draw multis/draw-state
     :mouse-pressed multis/mouse-clicked
