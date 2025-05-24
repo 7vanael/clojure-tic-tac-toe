@@ -74,9 +74,9 @@
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :human}]})
 
-(def state-empty-4
+(def state-empty
   {:interface :tui
-   :board               test-board/empty-4-board
+   :board               test-board/empty-board
    :active-player-index 0
    :status              "in-progress"
    :players             [{:character "X" :play-type :computer :difficulty :hard}
@@ -158,10 +158,10 @@
     (should= [[[0 1] -9] [[2 0] 10]] (eval-moves state-o-could-win)))
 
   (it "randomizes the selected move when all are equally scored"
-    (let [first-result  (core/take-turn state-empty-4)
-          second-result (core/take-turn state-empty-4)
-          third-result (core/take-turn state-empty-4)]
-      (should-not (= first-result second-result third-result))))
+    (with-redefs [minimax (constantly 0)]
+      (let [results (repeatedly 10 #(core/take-turn state-empty))
+            unique-results (set results)]
+      (should (> (count unique-results) 1)))))
 
   (it "scales max-depth to board size"
     (should= 8 (calc-max-depth 9))
