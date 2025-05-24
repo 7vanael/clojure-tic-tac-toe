@@ -3,7 +3,8 @@
             [tic-tac-toe.gui.gui]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.tui.in-progress]
-            [clojure.tools.cli :as cli]))
+            [clojure.tools.cli :as cli]
+            [tic-tac-toe.persistence.postgresql :as psql]))
 
 (defn print-option-info []
   (println "")
@@ -43,4 +44,7 @@
         initial-state  {:status :config :interface interface :save save}]
     (if (seq errors)
       (display-errors errors summary)
-      (core/start-game initial-state))))
+      (do
+        (when (= save :sql)
+            (psql/initialize))
+        (core/start-game initial-state)))))
