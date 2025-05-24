@@ -44,3 +44,7 @@
       (assoc state :active-player-index
                    (if (= (:active-player-index state) 0)
                      1 0)))))
+
+(defmulti save-game :save)
+(defmulti load-game :save)
+(defmulti delete-save :save)

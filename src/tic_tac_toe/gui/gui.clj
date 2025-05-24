@@ -27,8 +27,8 @@
                          (q/text (str capt " " (fn)) 20 (+ (* 20 ind) 20)))
                        (q/pop-style))))))
 
-(defn setup []
-  util/initial-state)
+(defn setup [state]
+  (util/initial-state (:save state)))
 
 (defmethod core/start-game :gui [state]
   (q/defsketch tic-tac-toe

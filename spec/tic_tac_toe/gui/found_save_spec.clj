@@ -18,6 +18,6 @@
     (let [event       {:x 432 :y 350}
           saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human
                                                :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0})
-          new-state   (assoc test-gui/pre-state :status :config-x-type)]
+          new-state   (assoc (test-gui/pre-state :sql) :status :config-x-type)]
       (should= new-state (multis/mouse-clicked saved-state event))))
   )

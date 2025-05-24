@@ -1,18 +1,19 @@
-(ns tic-tac-toe.persistence
+(ns tic-tac-toe.persistence.file
   (:require [clojure.java.io :as io]
-            [clojure.edn :as edn])
+            [clojure.edn :as edn]
+            [tic-tac-toe.core :as core])
   (:import (java.io FileNotFoundException)))
 
 (def savefile "game-save.edn")
 
-(defn save-game [state]
+(defmethod core/save-game :edn [state]
   (spit savefile (dissoc state :interface))
   state)
 
-(defn load-game []
+(defmethod core/load-game :edn [_]
   (try (edn/read-string (slurp savefile))
        (catch FileNotFoundException _
          nil)))
 
-(defn delete-save []
+(defmethod core/delete-save :edn [_]
   (io/delete-file savefile true))

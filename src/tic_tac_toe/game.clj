@@ -5,7 +5,7 @@
             [tic-tac-toe.computer.medium]
             [tic-tac-toe.computer.hard]
             [tic-tac-toe.tui.in-progress]
-            [tic-tac-toe.persistence :as persistence]))
+            [tic-tac-toe.file :as persistence]))
 
 
 #_(defmethod core/update-state [:default] [state]

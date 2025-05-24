@@ -29,7 +29,7 @@
    {:x 96, :y 432, :value 4} {:x 288, :y 432, :value "X"} {:x 480, :y 432, :value 6}
    {:x 96, :y 624, :value "X"} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}])
 
-(describe "in-progress"
+(describe "gui in-progress"
   (with-stubs)
 
   (it "can tell if the board is 3d or not"
@@ -148,6 +148,6 @@
                                                     :x-type              :human
                                                     :o-type              :computer
                                                     :cells               cells-center-x-corner-o})]
-        (should= new-state (multis/mouse-clicked starting-state event))))
+        (should= new-state (dissoc (multis/mouse-clicked starting-state event) :game-id))))
     )
   )

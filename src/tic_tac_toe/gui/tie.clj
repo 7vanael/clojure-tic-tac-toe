@@ -2,8 +2,7 @@
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence :as persistence])
+            [tic-tac-toe.core :as core])
   (:import (java.io FileNotFoundException)))
 
 (def type-labels ["Play Again" "Exit"])
@@ -18,11 +17,11 @@
 
 (defmethod core/update-state [:gui :tie] [state]
   (try
-    (persistence/delete-save)
+    (core/delete-save state)
     (catch FileNotFoundException _))
   state)
 
-(defmethod multis/mouse-clicked :tie [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc-in util/initial-state [:status] :config-x-type)
+(defmethod multis/mouse-clicked :tie [{:keys [save] :as state} {:keys [x y]}]
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc (util/initial-state save) :status :config-x-type)
         (util/button-clicked? [x y] util/opt2-of-2-rect) (q/exit)
         :else state))

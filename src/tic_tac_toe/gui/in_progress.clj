@@ -3,8 +3,7 @@
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence :as persistence]))
+            [tic-tac-toe.core :as core]))
 
 
 (def usable-screen util/screen-width)
@@ -135,7 +134,7 @@
           (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
           board/evaluate-board
           core/change-player
-          persistence/save-game)
+          core/save-game)
       state)))
 
 (defmethod core/take-human-turn :gui [state] state)
@@ -151,7 +150,7 @@
         core/take-turn
         board/evaluate-board
         core/change-player
-        persistence/save-game))))
+        core/save-game))))
 
 (defmethod multis/draw-state :board-ready [state]
   (multis/draw-state (assoc state :status :in-progress)))

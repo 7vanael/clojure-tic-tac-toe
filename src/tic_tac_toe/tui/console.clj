@@ -1,7 +1,6 @@
 (ns tic-tac-toe.tui.console
   (:require [clojure.string :as str]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence :as persistence]))
+            [tic-tac-toe.core :as core]))
 
 (defn welcome-message []
   (println "Welcome to tic-tac-toe!"))
@@ -73,7 +72,7 @@
 
 (defmethod core/update-state [:tui :winner] [{:keys [active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])]
-    (persistence/delete-save)
+    (core/delete-save state)
     (announce-winner character)
     (assoc state :status :game-over)))
 
@@ -81,7 +80,7 @@
   (println "It's a draw! Good game!"))
 
 (defmethod core/update-state [:tui :tie] [state]
-  (persistence/delete-save)
+  (core/delete-save state)
   (announce-draw)
   (assoc state :status :game-over))
 

@@ -1,13 +1,14 @@
 (ns tic-tac-toe.gui.gui-util
   (:require [quil.core :as q]))
 
-(def initial-state
+(defn initial-state [& [save]]
   {:interface           :gui
    :board               nil
    :active-player-index 0
    :status              :welcome
    :players             [{:character "X" :play-type nil :difficulty nil}
-                         {:character "O" :play-type nil :difficulty nil}]})
+                         {:character "O" :play-type nil :difficulty nil}]
+   :save                (or save :sql)})
 
 (def screen-height 720)
 (def title-offset-y 72)
@@ -19,7 +20,7 @@
         min-y (- center-y (/ rect-height 2))
         max-y (+ center-y (/ rect-height 2))]
     (and (>= click-x min-x) (<= click-x max-x)
-       (>= click-y min-y) (<= click-y max-y))))
+         (>= click-y min-y) (<= click-y max-y))))
 
 
 (defn draw-button [label [x y width height]]

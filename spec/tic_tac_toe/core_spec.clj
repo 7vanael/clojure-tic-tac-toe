@@ -2,21 +2,23 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :refer :all]))
 
-(defn state-create [{:keys [interface board active-player-index status x-type o-type x-difficulty o-difficulty cells]
+(defn state-create [{:keys [interface board active-player-index status x-type o-type x-difficulty o-difficulty cells save]
                      :or   {board               nil
                             active-player-index 0
                             status              :welcome
                             x-type              nil
                             o-type              nil
                             x-difficulty        nil
-                            o-difficulty        nil}}]
+                            o-difficulty        nil
+                            save                :sql}}]
   (cond-> {:board               board
            :active-player-index active-player-index
            :status              status
            :players             [{:character "X" :play-type x-type :difficulty x-difficulty}
                                  {:character "O" :play-type o-type :difficulty o-difficulty}]}
           (some? cells) (assoc :cells cells)
-          (some? interface) (assoc :interface interface)))
+          (some? interface) (assoc :interface interface)
+          (some? save) (assoc :save save)))
 
 (def empty-board
   [[1 2 3]
@@ -78,7 +80,8 @@
    :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
-                         {:character "O" :play-type :human :difficulty nil}]})
+                         {:character "O" :play-type :human :difficulty nil}]
+   :save                :sql})
 
 (def state-4-initial
   {:interface           :tui
@@ -118,7 +121,8 @@
    :active-player-index 0
    :status              :in-progress
    :players             [{:character "X" :play-type :computer :difficulty :hard}
-                         {:character "O" :play-type :computer :difficulty :hard}]})
+                         {:character "O" :play-type :computer :difficulty :hard}]
+   :save                :edn})
 
 (describe "core"
   (with-stubs)

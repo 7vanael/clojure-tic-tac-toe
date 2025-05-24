@@ -1,12 +1,11 @@
 (ns tic-tac-toe.gui.welcome
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui_core :as multis]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence :as persistence]))
+            [tic-tac-toe.core :as core]))
 
 
-(defmethod multis/mouse-clicked :welcome [state event]
-  (let [saved-game (persistence/load-game)]
+(defmethod multis/mouse-clicked :welcome [state _]
+  (let [saved-game (core/load-game state)]
     (if (nil? saved-game)
     (assoc state :status :config-x-type)
     (assoc saved-game :status :found-save :interface :gui))))
