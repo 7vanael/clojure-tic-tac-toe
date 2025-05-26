@@ -3,47 +3,42 @@
             [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.tui.in-progress :refer :all]
             [tic-tac-toe.tui.console :as console]
-            [tic-tac-toe.core :as core]))
+            [tic-tac-toe.core :as core]
+            [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
 (describe "tui in-progress"
   (with-stubs)
   (redefs-around [spit (stub :spit)])
+  (before (reset! spec-helper/mock-db nil))
 
   (it "checks for a saved game, offers to load it if found"
-      (with-redefs [console/save-found-prompt (stub :save-found-prompt)
-                    console/welcome-message (stub :print-dup)
-                    console/exit-message (stub :print-dup)
-                    core/load-game (stub :load {:return (test-core/state-create
-                                                          {:status              :in-progress :board [["X" "O" "X"] [4 "X" 6] [7 8 "O"]]
-                                                           :active-player-index 1 :type-x :human :type-o :human})})
-                    core/update-state (stub :update-state)
+      (with-redefs [println (stub :print-dup)
+                    core/update-state (stub :update-state {:invoke (fn [state] state)})
                     game-loop (stub :game-loop {:return nil})
                     initialize-state (stub :initialize-new)
                     console/play-again? (stub :play-again {:return false})]
-        (let [saved-state (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
-                                                                                                          [4 "X" 6]
-                                                                                                          [7 8 "O"]]
-                                                   :active-player-index 1 :type-x :human :type-o :human})
-              new-game-state (test-core/state-create {:status :config :interface :tui :save :sql})]
+        (let [new-game-state (test-core/state-create {:status :config :interface :tui :save :mock})
+              saved-game-state (core/save-game (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
+                                                                                                                               [4 "X" 6]
+                                                                                                                               [7 8 "O"]]
+                                                                        :active-player-index 1 :type-x :human :type-o :human :save :mock}))]
+
           (with-in-str "y\n" (core/start-game new-game-state))
-          (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save :interface :tui)]}))))
+          (should-have-invoked :update-state {:with [(assoc saved-game-state :status :found-save :interface :tui)]}))))
 
   (it "resumes play of a loaded game"
       (with-redefs [console/save-found-prompt (stub :save-found-prompt)
                     println (stub :print-dup)
-                    core/load-game (stub :load {:return (test-core/state-create
-                                                          {:status              :in-progress :board [["X" "O" "X"] [4 "X" 6] [7 8 "O"]]
-                                                           :active-player-index 1 :type-x :human :type-o :human :save :sql})})
-                    core/update-state (stub :update-state)
+                    core/update-state (stub :update-state {:invoke (fn [state] state)})
                     initialize-state (stub :initialize-new)
                     console/play-again? (stub :play-again {:return false})
                     game-loop (stub :game-loop {:return nil})
                     console/exit-message (stub :print-dup)]
-        (let [saved-state (test-core/state-create {:interface           :gui :status :in-progress :board [["X" "O" "X"]
+        (let [saved-state (core/save-game (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
                                                                                                           [4 "X" 6]
                                                                                                           [7 8 "O"]]
-                                                   :active-player-index 1 :type-x :human :type-o :human :save :sql})
-              new-game-state (test-core/state-create {:status :config :interface :tui :save :sql})]
+                                                   :active-player-index 1 :type-x :human :type-o :human :save :mock}))
+              new-game-state (test-core/state-create {:status :config :interface :tui :save :mock})]
 
           (with-in-str "y\n" (core/start-game new-game-state))
           (should-have-invoked :update-state {:with [(assoc saved-state :status :found-save :interface :tui)]})
@@ -72,7 +67,7 @@
                     core/load-game (stub :load {:return nil})
                     game-loop (stub :game-loop {:return nil})
                     console/exit-message (stub :print-dup)]
-        (core/start-game {:interface :tui :save :sql})
+        (core/start-game {:interface :tui :save :mock})
         (should-have-invoked :game-loop {:with [test-core/state-initial]})))
 
   (it "obtains a difficulty level if the play-type chosen is computer"

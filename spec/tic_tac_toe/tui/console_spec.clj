@@ -1,11 +1,14 @@
 (ns tic-tac-toe.tui.console-spec
   (:require [speclj.core :refer :all]
+            [tic-tac-toe.core :as core]
             [tic-tac-toe.tui.console :refer :all]
             [tic-tac-toe.board_spec :refer :all :as test-board]
-            [tic-tac-toe.core-spec :as test-core]))
+            [tic-tac-toe.core-spec :as test-core]
+            [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
 (describe "console"
   (with-stubs)
+  (before (reset! spec-helper/mock-db nil))
 
   (it "prints a welcome message"
     (should= "Welcome to tic-tac-toe!\n"
@@ -58,6 +61,21 @@
   (it "notifies the player that the game is a draw"
     (should= "It's a draw! Good game!\n" (with-out-str (announce-draw))))
 
+  (it "deletes a save when the game ends in a draw"
+    (with-redefs [announce-draw (stub :announce)]
+      (let [saved-state (core/save-game (test-core/state-create {:save                :mock :status :tie :interface :tui :board [["X" "X" "X"]]
+                                                                 :active-player-index 0}))
+            ending-state (core/update-state saved-state)]
+        (should= (assoc saved-state :status :game-over) ending-state)
+        (should= nil (core/load-game ending-state)))))
+
+  (it "deletes a save when the game ends in a win"
+    (with-redefs [announce-winner (stub :announce)]
+      (let [saved-state (core/save-game (test-core/state-create {:save                :mock :status :winner :interface :tui :board [["X" "X" "X"]]
+                                                                 :active-player-index 0}))
+            ending-state (core/update-state saved-state)]
+        (should= (assoc saved-state :status :game-over) ending-state)
+        (should= nil (core/load-game ending-state)))))
 
   (it "announces the winner of a game"
     (should= "X wins! Good game!\n" (with-out-str (announce-winner "X"))))

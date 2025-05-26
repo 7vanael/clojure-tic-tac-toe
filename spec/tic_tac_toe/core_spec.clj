@@ -81,7 +81,7 @@
    :status              :in-progress
    :players             [{:character "X" :play-type :human :difficulty nil}
                          {:character "O" :play-type :human :difficulty nil}]
-   :save                :sql})
+   :save                :mock})
 
 (def state-4-initial
   {:interface           :tui

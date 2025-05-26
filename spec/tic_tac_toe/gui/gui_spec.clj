@@ -17,5 +17,6 @@
 
   (it "initializes a null set-up"
     (should= (pre-state :edn) (setup {:save :edn}))
-    (should= (pre-state :sql) (setup {:save :sql})))
+    (should= (pre-state :sql) (setup {:save :sql}))
+    (should= (pre-state :mock) (setup {:save :mock})))
   )

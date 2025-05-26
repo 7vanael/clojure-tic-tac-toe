@@ -4,7 +4,9 @@
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.computer.hard]
             [tic-tac-toe.computer.easy]
-            [tic-tac-toe.computer.medium]))
+            [tic-tac-toe.computer.medium]
+            [tic-tac-toe.persistence.spec-helper :as spec-helper]
+            ))
 
 (defmethod core/take-human-turn :tui [{:keys [board active-player-index players] :as state}]
   (let [play-options          (board/play-options board)
@@ -67,7 +69,7 @@
   (let [starting-state (if-let [saved-game (core/load-game state)]
                          (core/update-state (assoc saved-game :status :found-save :interface :tui))
                          (initialize-state (:save state)))
-        ending-state   (game-loop starting-state)]
+        _   (game-loop starting-state)]
     (core/delete-save state)
     (when (console/play-again?)
       (core/start-game {:interface :tui :save (:save state)}))
