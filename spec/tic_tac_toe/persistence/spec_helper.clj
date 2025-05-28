@@ -13,9 +13,7 @@
 
 (defmethod core/delete-save :mock [_] (reset! mock-db nil))
 
-
 (describe "mock"
-
 
   (it "saves"
     (should= {:save :mock :foo :bar} (core/save-game {:save :mock :foo :bar}))

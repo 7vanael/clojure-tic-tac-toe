@@ -28,16 +28,16 @@
 
   (it "resumes play of a loaded game"
       (with-redefs [console/save-found-prompt (stub :save-found-prompt)
-                    println (stub :print-dup)
-                    core/update-state (stub :update-state {:invoke (fn [state] state)})
-                    initialize-state (stub :initialize-new)
-                    console/play-again? (stub :play-again {:return false})
-                    game-loop (stub :game-loop {:return nil})
-                    console/exit-message (stub :print-dup)]
-        (let [saved-state (core/save-game (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
-                                                                                                          [4 "X" 6]
-                                                                                                          [7 8 "O"]]
-                                                   :active-player-index 1 :type-x :human :type-o :human :save :mock}))
+                    println                   (stub :print-dup)
+                    core/update-state         (stub :update-state {:invoke (fn [state] state)})
+                    initialize-state          (stub :initialize-new)
+                    console/play-again?       (stub :play-again {:return false})
+                    game-loop                 (stub :game-loop {:return nil})
+                    console/exit-message      (stub :print-dup)]
+        (let [saved-state    (core/save-game (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
+                                                                                                                             [4 "X" 6]
+                                                                                                                             [7 8 "O"]]
+                                                                      :active-player-index 1 :type-x :human :type-o :human :save :mock}))
               new-game-state (test-core/state-create {:status :config :interface :tui :save :mock})]
 
           (with-in-str "y\n" (core/start-game new-game-state))
@@ -82,7 +82,7 @@
                     core/load-game (stub :load {:return nil})
                     game-loop (stub :game-loop {:return nil})
                     console/exit-message (stub :print-dup)]
-        (core/start-game {:interface :tui :save :edn})
+        (core/start-game {:interface :tui :save :mock})
         (should-have-invoked :game-loop {:with [test-core/state-computer-2-4-empty]})))
 
 

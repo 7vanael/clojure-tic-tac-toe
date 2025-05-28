@@ -122,7 +122,7 @@
    :status              :in-progress
    :players             [{:character "X" :play-type :computer :difficulty :hard}
                          {:character "O" :play-type :computer :difficulty :hard}]
-   :save                :edn})
+   :save                :mock})
 
 (describe "core"
   (with-stubs)
