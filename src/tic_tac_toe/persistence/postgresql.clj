@@ -15,7 +15,7 @@
 (defn initialize [& [source]]
   (let [ds (or source data-source)]
     (jdbc/execute! ds
-                   ["CREATE TABLE IF NOT EXISTS state (
+                   ["CREATE TABLE IF NOT EXISTS tictactoe (
         game_id SERIAL PRIMARY KEY,
         board TEXT NOT NULL,
         active_player_index INTEGER NOT NULL,
@@ -43,11 +43,11 @@
    :save                :sql})
 
 (defn update-save [ds sql-state game-id]
-  (sql/update! ds :state sql-state {:game_id game-id})
+  (sql/update! ds :tictactoe sql-state {:game_id game-id})
   {:game_id game-id})
 
 (defn first-save [ds sql-state]
-  (sql/insert! ds :state sql-state
+  (sql/insert! ds :tictactoe sql-state
                {:return-keys true :builder-fn rs/as-unqualified-maps}))
 
 (defmethod core/save-game :sql [{:keys [board active-player-index status players game-id] :as state} & [source]]
@@ -73,7 +73,7 @@
 
 (defmethod core/load-game :sql [_ & [source]]
   (let [ds         (or source data-source)
-        result     (sql/query ds ["SELECT * FROM state ORDER BY game_id DESC LIMIT 1"]
+        result     (sql/query ds ["SELECT * FROM tictactoe ORDER BY game_id DESC LIMIT 1"]
                               {:builder-fn rs/as-unqualified-maps})
         saved-game (delay (parse-game (first result)))]
     (when (seq result)
@@ -81,8 +81,8 @@
 
 (defmethod core/delete-save :sql [_ & [source]]
   (let [ds        (or source data-source)
-        last-game (sql/query ds ["SELECT game_id FROM state ORDER BY game_id DESC LIMIT 1"]
+        last-game (sql/query ds ["SELECT game_id FROM tictactoe ORDER BY game_id DESC LIMIT 1"]
                              {:builder-fn rs/as-unqualified-maps})
         game-id   (delay (:game_id (first last-game)))]
     (when (seq last-game)
-      (sql/delete! ds :state {:game_id @game-id}))))
+      (sql/delete! ds :tictactoe {:game_id @game-id}))))

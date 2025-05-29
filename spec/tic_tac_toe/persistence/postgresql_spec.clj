@@ -16,9 +16,9 @@
 (def test-datasource (jdbc/get-datasource ttt_test_spec))
 
 (defn set-up []
-  (jdbc/execute! test-datasource ["DROP TABLE IF EXISTS state"])
+  (jdbc/execute! test-datasource ["DROP TABLE IF EXISTS tictactoe"])
   (jdbc/execute! test-datasource ["
-  CREATE TABLE IF NOT EXISTS state (
+  CREATE TABLE IF NOT EXISTS tictactoe (
   game_id             SERIAL PRIMARY KEY,
   board               varchar,
   active_player_index int,
@@ -68,7 +68,7 @@
     (should= nil (core/load-game state test-datasource)))
 
   (it "creates the state table if it does not exist"
-    (jdbc/execute! test-datasource ["DROP TABLE IF EXISTS state"])
+    (jdbc/execute! test-datasource ["DROP TABLE IF EXISTS tictactoe"])
     (should-throw (core/load-game state test-datasource))
     (sut/initialize test-datasource)
     (should-not-throw (core/load-game state test-datasource)))
@@ -78,31 +78,31 @@
       (should= 1 (:game-id result))))
 
   (it "updates the database if the game is already saved in it"
-    (let [starting-stored   (sql/query test-datasource ["SELECT * FROM state"] {:builder-fn rs/as-unqualified-maps})
+    (let [starting-stored   (sql/query test-datasource ["SELECT * FROM tictactoe"] {:builder-fn rs/as-unqualified-maps})
           first-saved-state (core/save-game state-first-turn test-datasource)
           game-id           (:game-id first-saved-state)
           next-turn-state   (assoc first-saved-state :board test-core/center-x-board :active-player-index 1)
           ending-state      (core/save-game next-turn-state test-datasource)
           ending-game-id    (:game-id ending-state)
-          ending-stored     (sql/query test-datasource ["SELECT * FROM state"] {:builder-fn rs/as-unqualified-maps})]
+          ending-stored     (sql/query test-datasource ["SELECT * FROM tictactoe"] {:builder-fn rs/as-unqualified-maps})]
       (should= game-id ending-game-id)
       (should= 1 (- (count ending-stored) (count starting-stored)))
       (should= 0 (:active-player-index first-saved-state))
       (should= 1 (:active-player-index ending-state))))
 
   (it "deletes a saved game from the database, no errors if database is empty"
-    (sql/insert! test-datasource :state state2-SQL)
-    (let [games-in-db     (first (sql/query test-datasource ["SELECT * FROM state"] {:builder-fn rs/as-unqualified-maps}))
+    (sql/insert! test-datasource :tictactoe state2-SQL)
+    (let [games-in-db     (first (sql/query test-datasource ["SELECT * FROM tictactoe"] {:builder-fn rs/as-unqualified-maps}))
           number-deleted  (core/delete-save state test-datasource)
-          remaining-games (sql/query test-datasource ["SELECT * FROM state"] {:builder-fn rs/as-unqualified-maps})]
+          remaining-games (sql/query test-datasource ["SELECT * FROM tictactoe"] {:builder-fn rs/as-unqualified-maps})]
       (should= games-in-db (assoc state2-SQL :game_id 1))
       (should= 1 (:next.jdbc/update-count number-deleted))
       (should= nil (seq remaining-games))
       (should-not-throw (core/delete-save state test-datasource))))
 
   (it "loads the last state from the database"
-    (sql/insert! test-datasource :state state-SQL)
-    (sql/insert! test-datasource :state state2-SQL)
+    (sql/insert! test-datasource :tictactoe state-SQL)
+    (sql/insert! test-datasource :tictactoe state2-SQL)
     (should= state2 (core/load-game state test-datasource)))
 
   (it "returns a saved state that matches the loaded state"

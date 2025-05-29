@@ -5,10 +5,7 @@
             [tic-tac-toe.gui.winner :refer :all]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.persistence.file :as persistence]
-            [tic-tac-toe.persistence.file-spec :as test-persistence]
-            [tic-tac-toe.persistence.spec-helper :as spec-helper])
-  (:import (java.io FileNotFoundException)))
+            [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
 (describe "winner- end of game"
   (with-stubs)
