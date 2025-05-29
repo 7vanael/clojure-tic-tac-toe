@@ -24,6 +24,6 @@
   state)
 
 (defmethod multis/mouse-clicked :winner [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc-in util/initial-state [:status] :config-x-type)
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc-in (core/initial-state (:interface state) (:save state)) [:status] :config-x-type)
         (util/button-clicked? [x y] util/opt2-of-2-rect) (q/exit)
         :else state))

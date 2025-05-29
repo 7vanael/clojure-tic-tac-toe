@@ -4,13 +4,8 @@
 
 (def mock-db (atom nil))
 
-(defmethod core/save-game :mock [state]
-  (reset! mock-db state)
-  @mock-db)
-
-(defmethod core/load-game :mock [_]
-  @mock-db)
-
+(defmethod core/save-game :mock [state] (reset! mock-db state))
+(defmethod core/load-game :mock [_] @mock-db)
 (defmethod core/delete-save :mock [_] (reset! mock-db nil))
 
 (describe "mock"

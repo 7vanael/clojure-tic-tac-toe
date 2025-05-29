@@ -38,7 +38,7 @@
                  :o_difficulty        nil})
 
 (def state2 (test-core/state-create {:board  test-core/center-x-corner-xo-board :active-player-index 1
-                                     :status :in-progress :x-type :human :o-type :human}))
+                                     :status :in-progress :x-type :human :o-type :human :save :sql}))
 
 (def state-SQL {:board               (pr-str test-core/first-X-4-board)
                 :active_player_index 1
@@ -54,10 +54,11 @@
                                     :status              :in-progress
                                     :x-type              :human
                                     :o-type              :computer
-                                    :o-difficulty        :hard}))
+                                    :o-difficulty        :hard
+                                    :save                :sql}))
 
 (def state-first-turn (test-core/state-create {:board  test-core/empty-board :interface :tui :active-player-index 0
-                                               :x-type :human :o-type :computer :o-difficulty :easy}))
+                                               :x-type :human :o-type :computer :o-difficulty :easy :save :sql}))
 
 (describe "postgresql persistence"
   (with-stubs)
@@ -105,7 +106,7 @@
     (should= state2 (core/load-game state test-datasource)))
 
   (it "returns a saved state that matches the loaded state"
-    (let [saved-state (core/save-game state2 test-datasource)
+    (let [saved-state  (core/save-game state2 test-datasource)
           loaded-state (core/load-game {:save :sql} test-datasource)]
       (should= (:active-player-index saved-state) (:active-player-index loaded-state))
       (should= (:board saved-state) (:board loaded-state))

@@ -16,7 +16,7 @@
 (describe "gui with Quil"
 
   (it "initializes a null set-up"
-    (should= (pre-state :edn) (setup {:save :edn}))
-    (should= (pre-state :sql) (setup {:save :sql}))
-    (should= (pre-state :mock) (setup {:save :mock})))
+    (should= (pre-state :edn) (setup {:save :edn :interface :gui}))
+    (should= (pre-state :sql) (setup {:save :sql :interface :gui}))
+    (should= (pre-state :mock) (setup {:save :mock :interface :gui})))
   )

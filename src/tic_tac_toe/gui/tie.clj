@@ -21,7 +21,7 @@
     (catch FileNotFoundException _))
   state)
 
-(defmethod multis/mouse-clicked :tie [{:keys [save] :as state} {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc (util/initial-state save) :status :config-x-type)
+(defmethod multis/mouse-clicked :tie [{:keys [interface save] :as state} {:keys [x y]}]
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc (core/initial-state interface save) :status :config-x-type)
         (util/button-clicked? [x y] util/opt2-of-2-rect) (q/exit)
         :else state))

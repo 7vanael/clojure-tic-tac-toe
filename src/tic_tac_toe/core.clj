@@ -1,5 +1,15 @@
 (ns tic-tac-toe.core)
 
+(defn initial-state [interface & [save]]
+  {:interface           interface
+   :board               nil
+   :active-player-index 0
+   :status              :welcome
+   :players             [{:character "X" :play-type nil :difficulty nil}
+                         {:character "O" :play-type nil :difficulty nil}]
+   :save                (or save :sql)})
+
+
 (defmulti start-game :interface)
 
 (defn get-update-state [state]

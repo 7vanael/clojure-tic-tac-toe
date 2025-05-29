@@ -1,15 +1,6 @@
 (ns tic-tac-toe.gui.gui-util
   (:require [quil.core :as q]))
 
-(defn initial-state [& [save]]
-  {:interface           :gui
-   :board               nil
-   :active-player-index 0
-   :status              :welcome
-   :players             [{:character "X" :play-type nil :difficulty nil}
-                         {:character "O" :play-type nil :difficulty nil}]
-   :save                (or save :sql)})
-
 (def screen-height 720)
 (def title-offset-y 72)
 (def screen-width (- screen-height (* title-offset-y 2)))

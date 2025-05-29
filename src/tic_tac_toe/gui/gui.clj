@@ -28,7 +28,7 @@
                        (q/pop-style))))))
 
 (defn setup [state]
-  (util/initial-state (:save state)))
+  (core/initial-state (:interface state) (:save state)))
 
 (defmethod core/start-game :gui [state]
   (q/defsketch tic-tac-toe

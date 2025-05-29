@@ -26,7 +26,7 @@
 
   (it "sets the state to nil and the status to config-x-type if play-again button is clicked"
     (let [event     {:x 144 :y 350}
-          new-state (multis/mouse-clicked (test-core/state-create {:status :tie :board [[1 2 3]] :active-player-index 1 :save :mock}) event)]
+          new-state (multis/mouse-clicked (test-core/state-create {:status :tie :board [[1 2 3]] :active-player-index 1 :interface :gui :save :mock}) event)]
       (should= (test-core/state-create {:status :config-x-type :interface :gui :save :mock})
                new-state)))
 

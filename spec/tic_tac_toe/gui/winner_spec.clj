@@ -29,7 +29,7 @@
 
   (it "if play-again button is clicked; sets the status to config-x-type and clears the board and player info"
     (let [event     {:x 144 :y 350}
-          new-state (multis/mouse-clicked (test-core/state-create {:status :tie :board [[1 2 3]] :active-player-index 1 :save :mock}) event)]
+          new-state (multis/mouse-clicked (test-core/state-create {:status :tie :board [[1 2 3]] :active-player-index 1 :interface :gui :save :mock}) event)]
       (should= (test-core/state-create {:status :config-x-type :interface :gui :save :mock})
                new-state)))
 

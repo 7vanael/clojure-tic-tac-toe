@@ -10,7 +10,7 @@
                             o-type              nil
                             x-difficulty        nil
                             o-difficulty        nil
-                            save                :sql}}]
+                            save                :mock}}]
   (cond-> {:board               board
            :active-player-index active-player-index
            :status              status
