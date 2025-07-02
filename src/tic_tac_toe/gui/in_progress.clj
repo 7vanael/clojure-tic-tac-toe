@@ -146,11 +146,7 @@
         new-state (assoc state :cells cells)]
     (if (core/currently-human? state)
     new-state
-    (-> new-state
-        core/take-turn
-        board/evaluate-board
-        core/change-player
-        core/save-game))))
+    (core/do-update! new-state))))
 
 (defmethod multis/draw-state :board-ready [state]
   (multis/draw-state (assoc state :status :in-progress)))

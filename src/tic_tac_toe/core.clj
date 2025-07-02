@@ -1,4 +1,5 @@
-(ns tic-tac-toe.core)
+(ns tic-tac-toe.core
+  (:require [tic-tac-toe.board :as board]))
 
 (defn initial-state [interface & [save]]
   {:interface           interface
@@ -23,10 +24,14 @@
 (defmulti take-computer-turn get-computer-difficulty)
 
 (defmulti take-human-turn :interface)
-
 (defn currently-human? [{:keys [active-player-index players]}]
   (let [player-type (get-in players [active-player-index :play-type])]
     (= player-type :human)))
+
+(defn active-player-type [{:keys [players active-player-index]}]
+  (get-in players [active-player-index :play-type]))
+
+(defmulti select-box active-player-type)
 
 (defn next-player [board]
   (let [flat-board (flatten board)
@@ -58,3 +63,10 @@
 (defmulti save-game :save)
 (defmulti load-game :save)
 (defmulti delete-save :save)
+
+(defn do-update! [state]
+  (-> state
+      take-turn
+      board/evaluate-board
+      change-player
+      save-game))

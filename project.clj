@@ -11,4 +11,5 @@
                  [org.clojure/tools.cli "1.1.230"]]
   :profiles {:dev {:dependencies [[speclj "3.4.3"]]}}
   :plugins [[speclj "3.3.2"]]
-  :test-paths ["spec"])
+  :test-paths ["spec"]
+  :aot [tic-tac-toe.main])

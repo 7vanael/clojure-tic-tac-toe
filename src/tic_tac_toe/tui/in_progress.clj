@@ -17,12 +17,7 @@
 
 (defmethod core/update-state [:tui :in-progress] [state]
   (console/display-board (:board state))
-  (-> state
-      core/take-turn
-      board/evaluate-board
-      core/change-player
-      core/save-game
-      core/update-state))
+  (core/do-update! state))
 
 (defn game-loop [state]
   (loop [current-state state]
@@ -44,9 +39,9 @@
   {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
 
 (defmethod core/update-state [:tui :select-board] [state]
-  (let [board-size (console/get-board-size board-options)
-        next-status  :ready
-        new-state    (assoc state :board (board/new-board board-size))]
+  (let [board-size  (console/get-board-size board-options)
+        next-status :ready
+        new-state   (assoc state :board (board/new-board board-size))]
     (assoc new-state :status next-status)))
 
 (defmethod core/update-state [:tui :config-o-difficulty] [state]

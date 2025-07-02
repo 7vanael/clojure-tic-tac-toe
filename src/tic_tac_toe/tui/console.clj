@@ -131,13 +131,13 @@
   (doseq [[idx key] (map-indexed vector (keys size-options))]
     (println (str (inc idx) ") " key))))
 
-(defn get-board-size  [size-options]
+(defn get-board-size [size-options]
   (board-size-prompt size-options)
-  (let [input (read-line)
+  (let [input          (read-line)
         size-selection (try (Integer/parseInt input)
                             (catch Exception _
                               nil))
-        option-keys (vec (keys size-options))]
+        option-keys    (vec (keys size-options))]
     (if (and size-selection (>= size-selection 1) (<= size-selection (count size-options)))
       (get size-options (get option-keys (dec size-selection)))
       (get-board-size size-options))))
