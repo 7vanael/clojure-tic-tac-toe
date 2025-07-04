@@ -14,7 +14,7 @@
 
 
 (defn debug-overlay [options]
-  (let [debugging false
+  (let [debugging     true
         original-draw (:draw options)]
     (assoc options :draw
                    (fn [state]
@@ -30,12 +30,28 @@
 (defn setup [state]
   (core/initial-state (:interface state) (:save state)))
 
+(defn ->inspect [x]
+  (prn "->inspect: " x)
+  x)
+
+(defn quil-update [state]
+  (prn "state:" state)
+  (let [new-state (if (q/mouse-pressed?) (assoc state :mouse-click true) (assoc state :mouse-click false))]
+    (prn "(:mouse-click state):" (:mouse-click state))
+    (prn "(q/mouse-pressed?):" (q/mouse-pressed?))
+    ;and/or will return the last value passed in, so this assigns mouse-clicked result to val if present
+    (if-let [val (and (q/mouse-pressed?) (not (:mouse-click state)) (multis/mouse-clicked state {:x (q/mouse-x) :y (q/mouse-y)}))]
+      (core/update-state new-state (->inspect val))
+      new-state)))
+
+(declare tic-tac-toe)
+
 (defmethod core/start-game :gui [state]
   (q/defsketch tic-tac-toe
-    :title "Tic-Tac-Toe"
-    :size [util/screen-width util/screen-height]
-    :setup #(setup state)
-    :update core/update-state
-    :draw multis/draw-state
-    :mouse-pressed multis/mouse-clicked
-    :middleware [m/fun-mode debug-overlay]))
+               :title "Tic-Tac-Toe"
+               :size [util/screen-width util/screen-height]
+               :setup #(setup state)
+               :update quil-update
+               :draw multis/draw-state
+               ;:mouse-pressed multis/mouse-clicked
+               :middleware [m/fun-mode debug-overlay]))

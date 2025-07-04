@@ -7,7 +7,7 @@
 
 (def type-labels ["Play Again" "Exit"])
 
-(defmethod multis/draw-state :tie [state]
+(defmethod multis/draw-state :tie [_]
   (q/background 240)
   (q/fill 0)
   (q/text-align :center :center)
@@ -15,13 +15,16 @@
   (q/text "It's a draw, good game!" (/ util/screen-width 2) util/title-offset-y)
   (util/draw-2-options-buttons type-labels))
 
-(defmethod core/update-state [:gui :tie] [state]
+(defmethod core/update-state [:gui :tie] [{:keys [interface save] :as state} value]
   (try
     (core/delete-save state)
     (catch FileNotFoundException _))
+  (cond (= 1 value) (assoc (core/initial-state interface save) :status :config-x-type)
+        (= 2 value) (q/exit)
+        :else state)
   state)
 
-(defmethod multis/mouse-clicked :tie [{:keys [interface save] :as state} {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (assoc (core/initial-state interface save) :status :config-x-type)
-        (util/button-clicked? [x y] util/opt2-of-2-rect) (q/exit)
-        :else state))
+(defmethod multis/mouse-clicked :tie [_ {:keys [x y]}]
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) 1
+        (util/button-clicked? [x y] util/opt2-of-2-rect) 2
+        :else nil))

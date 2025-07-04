@@ -121,35 +121,28 @@
   (let [half-size (/ cell-size 2)]
     (first (filter #(cell-contains-point? % x y half-size) cells))))
 
-(defmethod multis/mouse-clicked :in-progress [{:keys [board active-player-index players cells] :as state} {:keys [x y]}]
-  (let [play-options (set (board/play-options board))
-        is-3d?       (board-3d? board)
+(defmethod multis/mouse-clicked :in-progress [{:keys [board cells]} {:keys [x y]}]
+  (let [is-3d?       (board-3d? board)
         cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
         clicked-cell (find-clicked-cell cells cell-size x y)
-        value        (:value clicked-cell)
-        player-char  (get-in players [active-player-index :character])
-        player-type  (get-in players [active-player-index :play-type])]
-    (if (and (contains? play-options value) (= :human player-type))
-      (-> state
-          (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
-          board/evaluate-board
-          core/change-player
-          core/save-game)
-      state)))
+        value (:value clicked-cell)]
+    (if (number? value) value nil)))
 
 (defmethod core/take-human-turn :gui [state] state)
 
-(defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state}]
-  (let [is-3d?       (board-3d? board)
-        cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        cells        (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d]) (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))
+(defmethod core/update-state :in-progress [{:keys [board] :as state} value]
+  (let [is-3d?    (board-3d? board)
+        cell-size (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
+        cells     (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d]) (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))
         new-state (assoc state :cells cells)]
-    (if (core/currently-human? state)
-    new-state
-    (core/do-update! new-state))))
+    (if (and (board/available? board value) #_(= :human player-type))
+      (core/do-update! (core/do-take-human-turn state value))
+      state)))
 
+;board-ready state is a mechanism to get the board drawn prior to calling
+; update state. It is only active for a single quil cycle
 (defmethod multis/draw-state :board-ready [state]
   (multis/draw-state (assoc state :status :in-progress)))
 
-(defmethod core/update-state [:gui :board-ready] [state]
+(defmethod core/update-state [:gui :board-ready] [state _]
   (assoc state :status :in-progress))

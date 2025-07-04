@@ -7,6 +7,11 @@
             [tic-tac-toe.board_spec :as test-board]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
+
+;TODO use this mock for testing
+(defmethod core/update-state :testing [state value]
+  (assoc state :status :game-over))
+
 (def cells-3d
   [{:x 30, :y 174, :z 0, :value 1} {:x 90, :y 174, :z 0, :value 2} {:x 150, :y 174, :z 0, :value 3}
    {:x 30, :y 234, :z 0, :value 4} {:x 90, :y 234, :z 0, :value 5} {:x 150, :y 234, :z 0, :value 6}
@@ -43,7 +48,7 @@
     (it "changes the status from board-ready to in-progress, allowing a frame for the board to be drawn"
       (with-redefs [multis/draw-state (stub :draw)]
         (should= (test-core/state-create {:status :in-progress :interface :gui :save :mock})
-                 (core/update-state (test-core/state-create {:status :board-ready :interface :gui :save :mock}))))))
+                 (core/update-state (test-core/state-create {:status :board-ready :interface :gui :save :mock}) nil)))))
 
   (context "lines"
     (it "gets start & end points of a horizontal line for a grid"
@@ -114,6 +119,7 @@
     (it "does not update if invalid play clicked"
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                     :active-player-index 0
+                                                    :interface           :gui
                                                     :status              :in-progress
                                                     :x-type              :human
                                                     :o-type              :computer
@@ -121,26 +127,32 @@
                                                     :save                :mock})
             event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
                             :y (+ grid-origin-y-2d (/ usable-screen 2))}]
-        (should= starting-state (multis/mouse-clicked starting-state event)))
+        (should= nil (multis/mouse-clicked starting-state event)))
       )
 
-    (it "does not update if active player is not human"
+    #_(it "does not update if active player is not human"
+      ;Mouse-click is not responsible for validating player
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                     :active-player-index 0
                                                     :status              :in-progress
+                                                    :interface           :gui
                                                     :x-type              :computer
+                                                    :x-difficulty        :hard
                                                     :o-type              :computer
+                                                    :o-difficulty        :hard
                                                     :cells               cells-center-x-corner-o
                                                     :save                :mock})
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
                             :y (+ grid-origin-y-2d (/ (* 2.5 usable-screen) 3))}]
-        (should= starting-state (multis/mouse-clicked starting-state event)))
+        (should= (:board starting-state) (:board (multis/mouse-clicked starting-state event))))
       )
 
-    (it "does update the board, evaluate it and change players if valid play is selected & player is human"
+    #_(it "does update the board, evaluate it and change players if valid play is selected & player is human"
+        ;Take turn is not responsible for changing active player
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                     :active-player-index 0
                                                     :status              :in-progress
+                                                    :interface           :gui
                                                     :x-type              :human
                                                     :o-type              :computer
                                                     :cells               cells-center-x-corner-o
@@ -149,6 +161,7 @@
                             :y (+ grid-origin-y-2d (/ (* 2.5 usable-screen) 3))}
             new-state      (test-core/state-create {:board               test-board/center-x-corner-xo-board
                                                     :active-player-index 1
+                                                    :interface           :gui
                                                     :status              :in-progress
                                                     :x-type              :human
                                                     :o-type              :computer

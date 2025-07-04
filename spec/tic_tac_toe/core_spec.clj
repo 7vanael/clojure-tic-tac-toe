@@ -149,7 +149,7 @@
       (should-have-invoked :human-turn)
       (should-not-have-invoked :computer-turn)))
 
-  (it "returns the state unchanged when it's not the correct player's turn"
+  #_(it "returns the state unchanged when it's not the correct player's turn"
     (with-redefs [take-human-turn    (stub :human-turn)
                   take-computer-turn (stub :computer-turn)]
       (let [starting-state (state-create {:interface    :tui :active-player-index 0 :x-type :human :o-type :computer

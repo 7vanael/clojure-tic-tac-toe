@@ -5,57 +5,119 @@
             [tic-tac-toe.core-spec :as test-core]))
 
 (describe "configure players"
-  (context "config x"
-           (it "moves to config o type and sets x-type to Human if human button clicked on config-x-type"
-             (let [event     {:x 144 :y 350}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-type}) event)]
-               (should= (test-core/state-create {:status :config-o-type :x-type :human}) new-state)))
+  (context "config x-type"
+    (it "Returns 1 if button 1 is clicked"
+      (let [event {:x 144 :y 350}]
+        (should= 1 (multis/mouse-clicked {:status :config-x-type} event))))
 
-           (it "moves to config x difficulty and sets x-type to computer if computer button clicked on config-x-type"
-             (let [event     {:x 432 :y 350}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-type}) event)]
-               (should= (test-core/state-create {:status :config-x-difficulty :x-type :computer}) new-state)))
+    (it "Returns 2 if button 2 is clicked"
+      (let [event {:x 432 :y 350}]
+        (should= 2 (multis/mouse-clicked {:status :config-x-type} event))))
 
-           (it "moves to config o type if x-difficulty is set to easy"
-             (let [event     {:x 288 :y 288}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
-               (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :easy}) new-state)))
+    (it "Returns nil if no valid button is clicked"
+      (let [event {:x 1 :y 1}]
+        (should-be-nil (multis/mouse-clicked {:status :config-x-type} event))))
+    )
 
-           (it "moves to config o type if x-difficulty is set to medium"
-             (let [event     {:x 288 :y 432}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
-               (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :medium}) new-state)))
+  (context "config o-type"
+    (it "Returns 1 if button 1 is clicked"
+      (let [event {:x 144 :y 350}]
+        (should= 1 (multis/mouse-clicked {:status :config-o-type} event))))
 
-           (it "moves to config o type if x-difficulty is set to hard"
-             (let [event     {:x 288 :y 576}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
-               (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :hard}) new-state)))
-           )
+    (it "Returns 2 if button 2 is clicked"
+      (let [event {:x 432 :y 350}]
+        (should= 2 (multis/mouse-clicked {:status :config-o-type} event))))
 
-  (context "config o"
-           (it "moves to select-board if o-type is set to human"
-             (let [event     {:x 144 :y 350}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-type}) event)]
-               (should= (test-core/state-create {:status :select-board :o-type :human}) new-state)))
+    (it "Returns nil if no valid button is clicked"
+      (let [event {:x 1 :y 1}]
+        (should-be-nil (multis/mouse-clicked {:status :config-o-type} event))))
+    )
 
-           (it "moves to config o difficulty and sets o-type to computer if right side of board clicked on config-o-type"
-             (let [event     {:x 432 :y 350}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-type}) event)]
-               (should= (test-core/state-create {:status :config-o-difficulty :o-type :computer}) new-state)))
+  (context "config x-difficulty"
+    (it "Returns 1 if button 1 is clicked"
+      (let [event {:x 288 :y 288}]
+        (should= 1 (multis/mouse-clicked {:status :config-x-difficulty} event))))
 
-           (it "moves to select-board after o-difficulty is set to easy"
-             (let [event     {:x 288 :y 288}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
-               (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :easy}) new-state)))
+    (it "Returns 2 if button 2 is clicked"
+      (let [event {:x 288 :y 432}]
+        (should= 2 (multis/mouse-clicked {:status :config-x-difficulty} event))))
 
-           (it "moves to select-board after o-difficulty is set to medium"
-             (let [event     {:x 288 :y 432}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
-               (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :medium}) new-state)))
+    (it "Returns 3 if button 3 is clicked"
+      (let [event {:x 288 :y 576}]
+        (should= 3 (multis/mouse-clicked {:status :config-x-difficulty} event))))
 
-           (it "moves to select-board after o-difficulty is set to hard"
-             (let [event     {:x 288 :y 576}
-                   new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
-               (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :hard}) new-state)))
-           )
+    (it "Returns nil if no valid button is clicked"
+      (let [event {:x 1 :y 1}]
+        (should-be-nil (multis/mouse-clicked {:status :config-x-difficulty} event))))
+    )
+
+  (context "config o-difficulty"
+    (it "Returns 1 if button 1 is clicked"
+      (let [event {:x 288 :y 288}]
+        (should= 1 (multis/mouse-clicked {:status :config-o-difficulty} event))))
+
+    (it "Returns 2 if button 2 is clicked"
+      (let [event {:x 288 :y 432}]
+        (should= 2 (multis/mouse-clicked {:status :config-o-difficulty} event))))
+
+    (it "Returns 3 if button 3 is clicked"
+      (let [event {:x 288 :y 576}]
+        (should= 3 (multis/mouse-clicked {:status :config-o-difficulty} event))))
+
+    (it "Returns nil if no valid button is clicked"
+      (let [event {:x 1 :y 1}]
+        (should-be-nil (multis/mouse-clicked {:status :config-o-difficulty} event)))))
+
+  #_(it "moves to config o type and sets x-type to Human if human button clicked on config-x-type"
+      (let [event     {:x 144 :y 350}
+            new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-type}) event)]
+        (should= (test-core/state-create {:status :config-o-type :x-type :human}) new-state)))
+
+  #_(it "moves to config x difficulty and sets x-type to computer if computer button clicked on config-x-type"
+      (let [event     {:x 432 :y 350}
+            new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-type}) event)]
+        (should= (test-core/state-create {:status :config-x-difficulty :x-type :computer}) new-state)))
+
+  #_(it "moves to config o type if x-difficulty is set to easy"
+      (let [event     {:x 288 :y 288}
+            new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
+        (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :easy}) new-state)))
+
+  #_(it "moves to config o type if x-difficulty is set to medium"
+      (let [event     {:x 288 :y 432}
+            new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
+        (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :medium}) new-state)))
+
+  #_(it "moves to config o type if x-difficulty is set to hard"
+      (let [event     {:x 288 :y 576}
+            new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
+        (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :hard}) new-state)))
+
+
+  #_(context "config o"
+      (it "moves to select-board if o-type is set to human"
+        (let [event     {:x 144 :y 350}
+              new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-type}) event)]
+          (should= (test-core/state-create {:status :select-board :o-type :human}) new-state)))
+
+      (it "moves to config o difficulty and sets o-type to computer if right side of board clicked on config-o-type"
+        (let [event     {:x 432 :y 350}
+              new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-type}) event)]
+          (should= (test-core/state-create {:status :config-o-difficulty :o-type :computer}) new-state)))
+
+      (it "moves to select-board after o-difficulty is set to easy"
+        (let [event     {:x 288 :y 288}
+              new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
+          (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :easy}) new-state)))
+
+      (it "moves to select-board after o-difficulty is set to medium"
+        (let [event     {:x 288 :y 432}
+              new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
+          (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :medium}) new-state)))
+
+      (it "moves to select-board after o-difficulty is set to hard"
+        (let [event     {:x 288 :y 576}
+              new-state (multis/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
+          (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :hard}) new-state)))
+      )
   )

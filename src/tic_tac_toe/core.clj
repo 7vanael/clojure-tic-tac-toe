@@ -10,13 +10,21 @@
                          {:character "O" :play-type nil :difficulty nil}]
    :save                (or save :sql)})
 
+(def player-options
+  [:human :computer])
+
+(def difficulty-options
+  [:easy :medium :hard])
+
+(def board-options
+  {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
 
 (defmulti start-game :interface)
 
-(defn get-update-state [state]
+(defn state-disbatch [state _]
   [(:interface state) (:status state)])
 
-(defmulti update-state get-update-state)
+(defmulti update-state state-disbatch)
 
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
@@ -39,12 +47,18 @@
     (if (even? played) "X" "O")))
 
 (defn take-turn [{:keys [active-player-index players board] :as state}]
-  (let [current-char     (get-in players [active-player-index :character])
-        next-player-char (next-player board)
-        correct-player   (= current-char next-player-char)]
-    (cond (not correct-player) state
+  ;(let [current-char     (get-in players [active-player-index :character])
+  ;      next-player-char (next-player board)
+  ;      correct-player   (= current-char next-player-char)]
+    (if
           (currently-human? state) (take-human-turn state)
-          :else (take-computer-turn state))))
+          (take-computer-turn state)))
+;)
+
+(defn do-take-human-turn [{:keys [board players active-player-index] :as state} next-play]
+  (assoc state :board (board/take-square board
+                                         (board/space->coordinates next-play board)
+                                         (get-in players [active-player-index :character]))))
 
 (def states-to-break-loop
   #{:tie :winner})
