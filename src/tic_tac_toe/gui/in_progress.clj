@@ -129,12 +129,10 @@
         value        (:value clicked-cell)
         player-char  (get-in players [active-player-index :character])
         player-type  (get-in players [active-player-index :play-type])]
-    (if (and (contains? play-options value) (= :human player-type))
-      (-> state
-          (assoc :board (board/take-square board (board/space->coordinates value board) player-char))
-          board/evaluate-board
-          core/change-player
-          core/save-game)
+    (if (and ;; TODO use board/available? instead of contains
+             (contains? play-options value)
+             (= :human player-type))
+      (assoc state :board (board/take-square board (board/space->coordinates value board) player-char))
       state)))
 
 (defmethod core/take-human-turn :gui [state] state)
@@ -142,11 +140,10 @@
 (defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state}]
   (let [is-3d?       (board-3d? board)
         cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        cells        (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d]) (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))
-        new-state (assoc state :cells cells)]
+        cells        (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d]) (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))]
     (if (core/currently-human? state)
-    new-state
-    (core/do-update! new-state))))
+    state
+    (core/do-update! state))))
 
 (defmethod multis/draw-state :board-ready [state]
   (multis/draw-state (assoc state :status :in-progress)))

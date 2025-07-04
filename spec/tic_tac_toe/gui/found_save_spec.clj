@@ -3,7 +3,7 @@
             [tic-tac-toe.gui.found-save :refer :all]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.gui.gui-spec :as test-gui]))
+            [tic-tac-toe.spec-helper :as helper]))
 
 (describe "found-save"
 
@@ -20,6 +20,6 @@
           saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human
                                                :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0
                                                :save   :mock})
-          new-state   (assoc (test-gui/pre-state :mock) :status :config-x-type)]
+          new-state   (assoc (helper/pre-state :mock) :status :config-x-type)]
       (should= new-state (multis/mouse-clicked saved-state event))))
   )

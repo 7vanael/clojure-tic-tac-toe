@@ -11,8 +11,7 @@
         next-play             (console/get-next-play state play-options)
         next-play-coordinates (board/space->coordinates next-play board)
         player-char           (get-in players [active-player-index :character])]
-    (-> state
-        (assoc :board (board/take-square board next-play-coordinates player-char)))))
+    (core/do-take-human-turn state next-play player-char)))
 
 
 (defmethod core/update-state [:tui :in-progress] [state]
