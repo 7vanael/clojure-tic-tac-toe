@@ -40,7 +40,7 @@
     (prn "(:mouse-click state):" (:mouse-click state))
     (prn "(q/mouse-pressed?):" (q/mouse-pressed?))
     ;and/or will return the last value passed in, so this assigns mouse-clicked result to val if present
-    (if-let [val (and (q/mouse-pressed?) (not (:mouse-click state)) (multis/mouse-clicked state {:x (q/mouse-x) :y (q/mouse-y)}))]
+    (if-let [val (and (q/mouse-pressed?) (not (:mouse-click state)) (multis/mouse-clicked new-state {:x (q/mouse-x) :y (q/mouse-y)}))]
       (core/update-state new-state (->inspect val))
       new-state)))
 

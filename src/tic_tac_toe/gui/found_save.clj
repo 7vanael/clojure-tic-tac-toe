@@ -16,7 +16,7 @@
 
 (defmethod core/update-state [:gui :found-save] [state value]
   (cond (= 1 value) (assoc state :status :in-progress)
-        (= 2 value) (assoc (core/initial-state (:interface state) (:save state)) :status :config-x-type)
+        (= 2 value) (assoc (core/initial-state (:interface state) (:save state)) :status :config-x-type :mouse-click true)
         :else state))
 
 (defmethod multis/mouse-clicked :found-save [_ {:keys [x y]}]

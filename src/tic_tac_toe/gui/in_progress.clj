@@ -144,5 +144,8 @@
 (defmethod multis/draw-state :board-ready [state]
   (multis/draw-state (assoc state :status :in-progress)))
 
+(defmethod multis/mouse-clicked :board-ready [_ _]
+  1)
+
 (defmethod core/update-state [:gui :board-ready] [state _]
   (assoc state :status :in-progress))
