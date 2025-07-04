@@ -42,10 +42,9 @@
   (let [current-char     (get-in players [active-player-index :character])
         next-player-char (next-player board)
         correct-player   (= current-char next-player-char)]
-    (if
+    (cond (not correct-player) state
           (currently-human? state) (take-human-turn state)
-      ;(not correct-player) state
-           (take-computer-turn state))))
+          :else (take-computer-turn state))))
 
 (def states-to-break-loop
   #{:tie :winner})
@@ -71,6 +70,3 @@
       board/evaluate-board
       change-player
       save-game))
-
-(defn do-take-human-turn [{:keys [board] :as state} next-play player-char]
-  (assoc state :board (board/take-square board (board/space->coordinates next-play board) player-char)))

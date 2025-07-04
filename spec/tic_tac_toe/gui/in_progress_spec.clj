@@ -114,7 +114,6 @@
     (it "does not update if invalid play clicked"
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                     :active-player-index 0
-                                                    :waiting?            false
                                                     :status              :in-progress
                                                     :x-type              :human
                                                     :o-type              :computer
@@ -122,15 +121,12 @@
                                                     :save                :mock})
             event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
                             :y (+ grid-origin-y-2d (/ usable-screen 2))}]
-        (should= (:board starting-state) (:board (multis/mouse-clicked starting-state event))))
+        (should= starting-state (multis/mouse-clicked starting-state event)))
       )
 
     (it "does not update if active player is not human"
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
-                                                    :x-difficulty        :hard
-                                                    :o-difficulty        :hard
                                                     :active-player-index 0
-                                                    :interface           :gui
                                                     :status              :in-progress
                                                     :x-type              :computer
                                                     :o-type              :computer
@@ -138,14 +134,12 @@
                                                     :save                :mock})
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
                             :y (+ grid-origin-y-2d (/ (* 2.5 usable-screen) 3))}]
-        (should= (:board starting-state) (:board (multis/mouse-clicked starting-state event))))
+        (should= starting-state (multis/mouse-clicked starting-state event)))
       )
 
     (it "does update the board, evaluate it and change players if valid play is selected & player is human"
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
-                                                    :interface           :gui
                                                     :active-player-index 0
-                                                    :waiting?            false
                                                     :status              :in-progress
                                                     :x-type              :human
                                                     :o-type              :computer
@@ -154,14 +148,12 @@
             event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
                             :y (+ grid-origin-y-2d (/ (* 2.5 usable-screen) 3))}
             new-state      (test-core/state-create {:board               test-board/center-x-corner-xo-board
-                                                    :interface           :gui
                                                     :active-player-index 1
-                                                    :waiting?            false
                                                     :status              :in-progress
                                                     :x-type              :human
                                                     :o-type              :computer
                                                     :cells               cells-center-x-corner-o
                                                     :save                :mock})]
-        (should= (:board new-state) (:board (multis/mouse-clicked starting-state event)))))
+        (should= new-state (dissoc (multis/mouse-clicked starting-state event) :game-id))))
     )
   )
