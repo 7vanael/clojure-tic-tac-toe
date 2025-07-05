@@ -1,13 +1,12 @@
 (ns tic-tac-toe.gui.tie
   (:require [quil.core :as q]
-            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.core :as core])
   (:import (java.io FileNotFoundException)))
 
 (def type-labels ["Play Again" "Exit"])
 
-(defmethod multis/draw-state :tie [_]
+(defmethod core/draw-state [:gui :tie] [_]
   (q/background 240)
   (q/fill 0)
   (q/text-align :center :center)
@@ -24,7 +23,7 @@
         :else state)
   state)
 
-(defmethod multis/mouse-clicked :tie [state {:keys [x y]}]
+(defmethod core/mouse-clicked :tie [state {:keys [x y]}]
   (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (core/update-state state 1)
         (util/button-clicked? [x y] util/opt2-of-2-rect) (core/update-state state 2)
         :else nil))

@@ -50,9 +50,9 @@
   ;(let [current-char     (get-in players [active-player-index :character])
   ;      next-player-char (next-player board)
   ;      correct-player   (= current-char next-player-char)]
-    (if
-          (currently-human? state) (take-human-turn state)
-          (take-computer-turn state)))
+  (if (currently-human? state)
+    (take-human-turn state)
+    (take-computer-turn state)))
 ;)
 
 (defn do-take-human-turn [{:keys [board players active-player-index] :as state} next-play]
@@ -77,6 +77,11 @@
 (defmulti save-game :save)
 (defmulti load-game :save)
 (defmulti delete-save :save)
+
+(defn state-draw-dispatch [state ]
+  [(:interface state) (:status state)])
+(defmulti draw-state state-draw-dispatch)
+(defmulti mouse-clicked (fn [state & _] (:status state)))
 
 (defn do-update! [state]
   (-> state

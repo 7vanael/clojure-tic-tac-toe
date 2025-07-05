@@ -86,3 +86,6 @@
         game-id   (delay (:game_id (first last-game)))]
     (when (seq last-game)
       (sql/delete! ds :tictactoe {:game_id @game-id}))))
+
+#_(defn core/get-all-games [state]
+  #_(return a map of all saved games))

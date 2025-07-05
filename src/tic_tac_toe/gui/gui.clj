@@ -34,16 +34,6 @@
   (prn "->inspect: " x)
   x)
 
-#_(defn quil-update [state]
-  (prn "state:" state)
-  (let [new-state (if (q/mouse-pressed?) (assoc state :mouse-click true) (assoc state :mouse-click false))]
-    (prn "(:mouse-click state):" (:mouse-click state))
-    (prn "(q/mouse-pressed?):" (q/mouse-pressed?))
-    ;and/or will return the last value passed in, so this assigns mouse-clicked result to val if present
-    (if-let [val (and (q/mouse-pressed?) (not (:mouse-click state)) (multis/mouse-clicked new-state {:x (q/mouse-x) :y (q/mouse-y)}))]
-      (core/update-state new-state (->inspect val))
-      new-state)))
-
 (defn quil-update [state]
   #_(prn "state:" state)
   (->inspect state)
@@ -63,6 +53,6 @@
                :size [util/screen-width util/screen-height]
                :setup #(setup state)
                :update quil-update
-               :draw multis/draw-state
-               :mouse-pressed multis/mouse-clicked
+               :draw core/draw-state
+               :mouse-pressed core/mouse-clicked
                :middleware [m/fun-mode debug-overlay]))

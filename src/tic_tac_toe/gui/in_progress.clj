@@ -1,10 +1,8 @@
 (ns tic-tac-toe.gui.in-progress
   (:require [quil.core :as q :include-macros true]
-            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]))
-
 
 (def usable-screen util/screen-width)
 (def grid-origin-x 0)
@@ -101,12 +99,24 @@
 (defn generate-cells-3d [board cell-size [origin-x origin-y]]
   (mapcat #(layer-cells board cell-size % [origin-x origin-y]) (range 3)))
 
-(defmethod multis/draw-state :in-progress [{:keys [board active-player-index players cells] :as state}]
+(defn calculate-cell-size [is-3d? board]
+  (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board))))
+
+(defn generate-cells [board]
+  (let [is-3d?    (board-3d? board)
+        cell-size (calculate-cell-size is-3d? board)]
+    (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d])
+               (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))))
+
+(defmethod core/draw-state [:gui :in-progress] [{:keys [board active-player-index players] :as state}]
   (let [character  (get-in players [active-player-index :character])
-        is-3d?     (board-3d? board)
         title-text (str character "'s turn")
         lines      (get-lines board)
-        cell-size  (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))]
+        is-3d?     (board-3d? board)
+        cell-size  (calculate-cell-size is-3d? board)
+        cells      (generate-cells board)
+        _ (println "Tui, in-progress, drawing the state: ")
+        _ (prn "cells:" cells)]
     (q/background 240)
     (q/fill 0)
     (q/text-align :center :center)
@@ -117,40 +127,40 @@
     (draw-grid cells)))
 
 
-(defn find-clicked-cell [cells cell-size x y]
-  (let [half-size (/ cell-size 2)]
+(defn find-clicked-cell [board x y]
+  (let [is-3d?    (board-3d? board)
+        cells     (generate-cells board)
+        _ (println "Find-clicked-cell")
+        _ (prn "cells:" cells)
+        cell-size (calculate-cell-size is-3d? board)
+        half-size (/ cell-size 2)]
     (first (filter #(cell-contains-point? % x y half-size) cells))))
 
-(defmethod multis/mouse-clicked :in-progress [{:keys [board cells]} {:keys [x y]}]
-  (let [is-3d?       (board-3d? board)
-        cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        clicked-cell (find-clicked-cell cells cell-size x y)
-        value (:value clicked-cell)
-        _ (prn "cells:" cells)
-        _ (prn "x:" x)
-        _ (prn "y:" y)
-        _ (prn "clicked-cell:" clicked-cell)
-        _ (prn "value:" value)]
-    (if (number? value) value nil)))
+(defmethod core/mouse-clicked :in-progress [{:keys [board] :as state} {:keys [x y]}]
+  (let [clicked-cell (find-clicked-cell board x y)
+        value        (:value clicked-cell)
+        _            (prn "x:" x)
+        _            (prn "y:" y)
+        _            (prn "clicked-cell:" clicked-cell)
+        _            (prn "value:" value)]
+    (if (number? value) (core/update-state state value) nil)))
 
 (defmethod core/take-human-turn :gui [state] state)
 
-(defmethod core/update-state :in-progress [{:keys [board] :as state} value]
-  (let [is-3d?    (board-3d? board)
-        cell-size (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
-        cells     (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d]) (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))
+(defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state} value]
+  (let [cells     (generate-cells board)
         new-state (assoc state :cells cells)]
     (if (and (board/available? board value) #_(= :human player-type))
-      (core/do-update! (core/do-take-human-turn state value))
-      state)))
+      (core/do-update! (core/do-take-human-turn new-state value))
+      new-state)))
 
 ;board-ready state is a mechanism to get the board drawn prior to calling
 ; update state. It is only active for a single quil cycle
-(defmethod multis/draw-state :board-ready [state]
-  (multis/draw-state (assoc state :status :in-progress)))
-
-(defmethod multis/mouse-clicked :board-ready [_ _]
-  1)
-
-(defmethod core/update-state [:gui :board-ready] [state _]
-  (assoc state :status :in-progress))
+;(defmethod multis/draw-state :board-ready [state]
+;  (multis/draw-state (assoc state :status :in-progress)))
+;
+;(defmethod multis/mouse-clicked :board-ready [_ _]
+;  1)
+;
+;(defmethod core/update-state [:gui :board-ready] [state _]
+;  (assoc state :status :in-progress))

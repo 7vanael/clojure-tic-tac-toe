@@ -3,7 +3,6 @@
             [speclj.core :refer :all]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.gui.winner :refer :all]
-            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
@@ -16,18 +15,18 @@
     (it "Invokes update state with option 1 if button 1 is clicked"
     (let [event {:x 144 :y 350}
             state {:status :winner}]
-        (multis/mouse-clicked state event)
+        (core/mouse-clicked state event)
         (should-have-invoked :update-state {:with [state 1]})))
 
   (it "Invokes update state with option 1 if button 2 is clicked"
     (let [event {:x 432 :y 350}
           state {:status :winner}]
-      (multis/mouse-clicked state event)
+      (core/mouse-clicked state event)
       (should-have-invoked :update-state {:with [state 2]})))
 
   (it "Returns nil if no valid button is clicked"
     (let [event {:x 1 :y 1}]
-      (multis/mouse-clicked {:status :winner} event)
+      (core/mouse-clicked {:status :winner} event)
       (should-not-have-invoked :update-state)))
 
   #_(it "deletes the save file when the game ends in a win"

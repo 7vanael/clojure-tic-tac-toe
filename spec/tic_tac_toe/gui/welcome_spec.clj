@@ -2,7 +2,6 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.spec-helper :as helper]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
@@ -19,7 +18,7 @@
     (with-redefs [core/update-state (stub :update-state)]
       (let [event     {:x 100 :y 100}
             state (helper/pre-state :mock)]
-        (multis/mouse-clicked state event)
+        (core/mouse-clicked state event)
       (should-have-invoked :update-state {:with [state 1]}))))
   #_(Remainder of tests can be moved to core)
 

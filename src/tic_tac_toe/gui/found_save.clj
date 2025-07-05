@@ -1,12 +1,12 @@
 (ns tic-tac-toe.gui.found-save
   (:require [quil.core :as q]
-            [tic-tac-toe.gui.gui_core :as multis]
+
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.core :as core]))
 
 (def type-labels ["Yes" "No"])
 
-(defmethod multis/draw-state :found-save [_]
+(defmethod core/draw-state [:gui :found-save] [_]
   (q/background 240)
   (q/fill 0)
   (q/text-align :center :center)
@@ -19,7 +19,7 @@
         (= 2 value) (assoc (core/initial-state (:interface state) (:save state)) :status :config-x-type :mouse-click true)
         :else state))
 
-(defmethod multis/mouse-clicked :found-save [state {:keys [x y]}]
+(defmethod core/mouse-clicked :found-save [state {:keys [x y]}]
   (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (core/update-state state 1)
         (util/button-clicked? [x y] util/opt2-of-2-rect) (core/update-state state 2)
         :else nil))

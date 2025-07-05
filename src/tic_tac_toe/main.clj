@@ -1,11 +1,12 @@
 (ns tic-tac-toe.main
-  (:require [tic-tac-toe.tui.console]
-            [tic-tac-toe.gui.gui]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.tui.in-progress]
-            [clojure.tools.cli :as cli]
-            [tic-tac-toe.persistence.postgresql :as psql]
-            [tic-tac-toe.persistence.file]))
+  (:require
+    [tic-tac-toe.core :as core]
+    [tic-tac-toe.tui.console]
+    [tic-tac-toe.gui.gui]
+    [tic-tac-toe.tui.in-progress]
+    [clojure.tools.cli :as cli]
+    [tic-tac-toe.persistence.postgresql :as psql]
+    [tic-tac-toe.persistence.file]))
 
 (defn print-option-info []
   (println "")
@@ -36,16 +37,16 @@
 
 (defn -main [& args]
   (let [{:keys [options errors summary]} (cli/parse-opts args cli-options)
-        interface (cond (:gui options) :gui
-                        (:tui options) :tui
-                        :else :tui)
-        save (cond (:edn options) :edn
-                   (:sql options) :sql
-                   :else :sql)
-        initial-state  {:status :config :interface interface :save save}]
+        interface     (cond (:gui options) :gui
+                            (:tui options) :tui
+                            :else :tui)
+        save          (cond (:edn options) :edn
+                            (:sql options) :sql
+                            :else :sql)
+        initial-state {:status :config :interface interface :save save}]
     (if (seq errors)
       (display-errors errors summary)
       (do
         (when (= save :sql)
-            (psql/initialize))
+          (psql/initialize))
         (core/start-game initial-state)))))
