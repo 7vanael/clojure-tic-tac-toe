@@ -9,14 +9,18 @@
 
 (describe "welcome mouse-clicked"
   (with-stubs)
-  (redefs-around [spit (stub :spit)])
+  (redefs-around [spit (stub :spit)
+                  core/update-state (stub :update-state)])
   (before (reset! spec-helper/mock-db nil))
 
   #_(Only testing the mouse-clicked method! Should test the update-state method in core)
 
-  (it "returns 1 for any clicked location"
-    (let [event     {:x 100 :y 100}]
-      (should= 1 (multis/mouse-clicked (helper/pre-state :mock) event))))
+  (it "calls update-state for any clicked location"
+    (with-redefs [core/update-state (stub :update-state)]
+      (let [event     {:x 100 :y 100}
+            state (helper/pre-state :mock)]
+        (multis/mouse-clicked state event)
+      (should-have-invoked :update-state {:with [state 1]}))))
   #_(Remainder of tests can be moved to core)
 
   #_(it "moves to initial config page from welcome page after a mouse-click if no save found"

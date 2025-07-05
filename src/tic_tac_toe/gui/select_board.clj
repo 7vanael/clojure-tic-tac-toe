@@ -27,8 +27,8 @@
                         (assoc :status :board-ready))
         :else state))
 
-(defmethod multis/mouse-clicked :select-board [_ {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-3-rect) 1
-        (util/button-clicked? [x y] util/opt2-of-3-rect) 2
-        (util/button-clicked? [x y] util/opt3-of-3-rect) 3
+(defmethod multis/mouse-clicked :select-board [state {:keys [x y]}]
+  (cond (util/button-clicked? [x y] util/opt1-of-3-rect) (core/update-state state 1)
+        (util/button-clicked? [x y] util/opt2-of-3-rect) (core/update-state state 2)
+        (util/button-clicked? [x y] util/opt3-of-3-rect) (core/update-state state 3)
         :else nil))

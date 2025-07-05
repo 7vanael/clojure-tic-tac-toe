@@ -125,7 +125,12 @@
   (let [is-3d?       (board-3d? board)
         cell-size    (if is-3d? (/ (/ (- usable-screen (* 2 layer-margin)) 3) (count board)) (/ usable-screen (count board)))
         clicked-cell (find-clicked-cell cells cell-size x y)
-        value (:value clicked-cell)]
+        value (:value clicked-cell)
+        _ (prn "cells:" cells)
+        _ (prn "x:" x)
+        _ (prn "y:" y)
+        _ (prn "clicked-cell:" clicked-cell)
+        _ (prn "value:" value)]
     (if (number? value) value nil)))
 
 (defmethod core/take-human-turn :gui [state] state)

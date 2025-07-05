@@ -4,8 +4,9 @@
             [tic-tac-toe.core :as core]))
 
 
-(defmethod multis/mouse-clicked :welcome [_ _] 1)
+(defmethod multis/mouse-clicked :welcome [state _] (core/update-state state 1))
 
+;Update game before you update the state...
   (defmethod core/update-state [:gui :welcome] [state value]
     (let [saved-game (core/load-game state)]
       (cond (nil? value) state

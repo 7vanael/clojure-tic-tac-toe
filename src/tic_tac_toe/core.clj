@@ -21,10 +21,10 @@
 
 (defmulti start-game :interface)
 
-(defn state-disbatch [state _]
+(defn state-dispatch [state _]
   [(:interface state) (:status state)])
 
-(defmulti update-state state-disbatch)
+(defmulti update-state state-dispatch)
 
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))

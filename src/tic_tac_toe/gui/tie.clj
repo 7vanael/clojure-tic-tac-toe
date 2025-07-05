@@ -24,7 +24,7 @@
         :else state)
   state)
 
-(defmethod multis/mouse-clicked :tie [_ {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) 1
-        (util/button-clicked? [x y] util/opt2-of-2-rect) 2
+(defmethod multis/mouse-clicked :tie [state {:keys [x y]}]
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (core/update-state state 1)
+        (util/button-clicked? [x y] util/opt2-of-2-rect) (core/update-state state 2)
         :else nil))

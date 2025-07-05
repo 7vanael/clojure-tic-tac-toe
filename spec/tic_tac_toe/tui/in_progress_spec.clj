@@ -58,7 +58,7 @@
     (with-redefs [println (stub :print-dup)]
       (let [starting-state (test-core/state-create {:interface :tui :status :config-x-type :save :mock})
             expected-state (test-core/state-create {:interface :tui :status :config-x-difficulty :save :mock :x-type :computer})]
-        (should= expected-state (with-in-str "computer\n" (core/update-state starting-state))))))
+        (should= expected-state (with-in-str "computer\n" (core/update-state starting-state 1))))))
 
   (it "changes status from config-x-type to config-o-type if human is selected"
     (with-redefs [println (stub :print-dup)]
@@ -70,32 +70,32 @@
     (with-redefs [println (stub :print-dup)]
       (let [starting-state (test-core/state-create {:interface :tui :status :config-x-difficulty :save :mock :x-type :computer})
             expected-state (test-core/state-create {:interface :tui :status :config-o-type :save :mock :x-type :computer :x-difficulty :hard})]
-        (should= expected-state (with-in-str "hard\n" (core/update-state starting-state))))))
+        (should= expected-state (with-in-str "hard\n" (core/update-state starting-state 1))))))
 
   (it "changes status from config-o-type to config-o-difficulty if computer is selected"
     (with-redefs [println (stub :print-dup)]
       (let [starting-state (test-core/state-create {:interface :tui :status :config-o-type :save :mock})
             expected-state (test-core/state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer})]
-        (should= expected-state (with-in-str "computer\n" (core/update-state starting-state))))))
+        (should= expected-state (with-in-str "computer\n" (core/update-state starting-state 1))))))
 
   (it "changes status from config-o-type to select-board if human is selected"
     (with-redefs [println (stub :print-dup)]
       (let [starting-state (test-core/state-create {:interface :tui :status :config-o-type :save :mock})
             expected-state (test-core/state-create {:interface :tui :status :select-board :save :mock :o-type :human})]
-        (should= expected-state (with-in-str "human\n" (core/update-state starting-state))))))
+        (should= expected-state (with-in-str "human\n" (core/update-state starting-state 1))))))
 
 
   (it "changes status from config-o-difficulty to select-board once difficulty is selected"
     (with-redefs [println (stub :print-dup)]
       (let [starting-state (test-core/state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer})
             expected-state (test-core/state-create {:interface :tui :status :select-board :save :mock :o-type :computer :o-difficulty :medium})]
-        (should= expected-state (with-in-str "medium\n" (core/update-state starting-state))))))
+        (should= expected-state (with-in-str "medium\n" (core/update-state starting-state 1))))))
 
   (it "changes status from select-board to ready once a board has been selected"
     (with-redefs [println (stub :print-dup)]
       (let [starting-state (test-core/state-create {:interface :tui :status :select-board :save :mock})
             expected-state (test-core/state-create {:interface :tui :status :ready :save :mock :board [[1 2 3] [4 5 6] [7 8 9]]})]
-        (should= expected-state (with-in-str "1\n" (core/update-state starting-state))))))
+        (should= expected-state (with-in-str "1\n" (core/update-state starting-state 1))))))
 
   (it "The human turn method is called if the active player is human"
     (with-redefs [core/take-human-turn (stub :human-turn)]

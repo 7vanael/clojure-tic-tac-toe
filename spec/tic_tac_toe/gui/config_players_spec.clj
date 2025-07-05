@@ -1,50 +1,72 @@
 (ns tic-tac-toe.gui.config-players-spec
   (:require [speclj.core :refer :all]
+            [tic-tac-toe.core :as core]
             [tic-tac-toe.gui.config-players :refer :all]
             [tic-tac-toe.gui.gui_core :as multis]
             [tic-tac-toe.core-spec :as test-core]))
 
 (describe "configure players"
-  (context "config x-type"
-    (it "Returns 1 if button 1 is clicked"
-      (let [event {:x 144 :y 350}]
-        (should= 1 (multis/mouse-clicked {:status :config-x-type} event))))
+  (with-stubs)
+  (redefs-around [core/update-state (stub :update-state)])
 
-    (it "Returns 2 if button 2 is clicked"
-      (let [event {:x 432 :y 350}]
-        (should= 2 (multis/mouse-clicked {:status :config-x-type} event))))
+  (context "config x-type"
+    (it "Invokes update state with option 1 if button 1 is clicked"
+      (let [event {:x 144 :y 350}
+            state {:status :config-x-type}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 1]})))
+
+    (it "Invokes update state with option 2 if button 2 is clicked"
+      (let [event {:x 432 :y 350}
+            state {:status :config-x-type}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 2]})))
 
     (it "Returns nil if no valid button is clicked"
-      (let [event {:x 1 :y 1}]
-        (should-be-nil (multis/mouse-clicked {:status :config-x-type} event))))
+      (let [event {:x 1 :y 1}
+            state {:status :config-x-type}]
+        (multis/mouse-clicked state event)
+        (should-not-have-invoked :update-state)))
     )
 
   (context "config o-type"
-    (it "Returns 1 if button 1 is clicked"
-      (let [event {:x 144 :y 350}]
-        (should= 1 (multis/mouse-clicked {:status :config-o-type} event))))
+    (it "Invokes update state with option 1 if button 1 is clicked"
+      (let [event {:x 144 :y 350}
+            state {:status :config-o-type}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 1]})))
 
-    (it "Returns 2 if button 2 is clicked"
-      (let [event {:x 432 :y 350}]
-        (should= 2 (multis/mouse-clicked {:status :config-o-type} event))))
+    (it "Invokes update state with option 2 if button 2 is clicked"
+      (let [event {:x 432 :y 350}
+            state {:status :config-o-type}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 2]})))
 
     (it "Returns nil if no valid button is clicked"
-      (let [event {:x 1 :y 1}]
-        (should-be-nil (multis/mouse-clicked {:status :config-o-type} event))))
+      (let [event {:x 1 :y 1}
+            state {:status :config-o-type}]
+        (multis/mouse-clicked state event)
+        (should-not-have-invoked :update-state)))
     )
 
   (context "config x-difficulty"
-    (it "Returns 1 if button 1 is clicked"
-      (let [event {:x 288 :y 288}]
-        (should= 1 (multis/mouse-clicked {:status :config-x-difficulty} event))))
+    (it "Invokes update state with option 1 if button 1 is clicked"
+      (let [event {:x 288 :y 288}
+            state {:status :config-x-difficulty}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 1]})))
 
-    (it "Returns 2 if button 2 is clicked"
-      (let [event {:x 288 :y 432}]
-        (should= 2 (multis/mouse-clicked {:status :config-x-difficulty} event))))
+    (it "Invokes update state with option 2 if button 2 is clicked"
+      (let [event {:x 288 :y 432}
+            state {:status :config-x-difficulty}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 2]})))
 
-    (it "Returns 3 if button 3 is clicked"
-      (let [event {:x 288 :y 576}]
-        (should= 3 (multis/mouse-clicked {:status :config-x-difficulty} event))))
+    (it "Invokes update state with option 3 if button 3 is clicked"
+      (let [event {:x 288 :y 576}
+            state {:status :config-x-difficulty}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 3]})))
 
     (it "Returns nil if no valid button is clicked"
       (let [event {:x 1 :y 1}]
@@ -52,22 +74,28 @@
     )
 
   (context "config o-difficulty"
-    (it "Returns 1 if button 1 is clicked"
-      (let [event {:x 288 :y 288}]
-        (should= 1 (multis/mouse-clicked {:status :config-o-difficulty} event))))
+    (it "Invokes update state with option 1 if button 1 is clicked"
+      (let [event {:x 288 :y 288}
+            state {:status :config-o-difficulty}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 1]})))
 
-    (it "Returns 2 if button 2 is clicked"
-      (let [event {:x 288 :y 432}]
-        (should= 2 (multis/mouse-clicked {:status :config-o-difficulty} event))))
+    (it "Invokes update state with option 2 if button 2 is clicked"
+      (let [event {:x 288 :y 432}
+            state {:status :config-o-difficulty}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 2]})))
 
-    (it "Returns 3 if button 3 is clicked"
-      (let [event {:x 288 :y 576}]
-        (should= 3 (multis/mouse-clicked {:status :config-o-difficulty} event))))
+    (it "Invokes update state with option 3 if button 3 is clicked"
+      (let [event {:x 288 :y 576}
+            state {:status :config-o-difficulty}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 3]})))
 
     (it "Returns nil if no valid button is clicked"
       (let [event {:x 1 :y 1}]
-        (should-be-nil (multis/mouse-clicked {:status :config-o-difficulty} event)))))
-
+        (should-be-nil (multis/mouse-clicked {:status :config-o-difficulty} event))))
+    )
   #_(it "moves to config o type and sets x-type to Human if human button clicked on config-x-type"
       (let [event     {:x 144 :y 350}
             new-state (multis/mouse-clicked (test-core/state-create {:status :config-x-type}) event)]

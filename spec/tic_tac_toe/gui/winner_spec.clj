@@ -9,20 +9,26 @@
 
 (describe "winner- end of game"
   (with-stubs)
-  (redefs-around [spit (stub :spit)])
+  (redefs-around [spit (stub :spit)
+                  core/update-state (stub :update-state)])
   (before (reset! spec-helper/mock-db {}))
 
-    (it "Returns 1 if button 1 is clicked"
-    (let [event {:x 144 :y 350}]
-      (should= 1 (multis/mouse-clicked {:status :winner} event))))
+    (it "Invokes update state with option 1 if button 1 is clicked"
+    (let [event {:x 144 :y 350}
+            state {:status :winner}]
+        (multis/mouse-clicked state event)
+        (should-have-invoked :update-state {:with [state 1]})))
 
-  (it "Returns 2 if button 2 is clicked"
-    (let [event {:x 432 :y 350}]
-      (should= 2 (multis/mouse-clicked {:status :winner} event))))
+  (it "Invokes update state with option 1 if button 2 is clicked"
+    (let [event {:x 432 :y 350}
+          state {:status :winner}]
+      (multis/mouse-clicked state event)
+      (should-have-invoked :update-state {:with [state 2]})))
 
   (it "Returns nil if no valid button is clicked"
     (let [event {:x 1 :y 1}]
-      (should-be-nil (multis/mouse-clicked {:status :winner} event))))
+      (multis/mouse-clicked {:status :winner} event)
+      (should-not-have-invoked :update-state)))
 
   #_(it "deletes the save file when the game ends in a win"
     (let [state (test-core/state-create {:interface :gui :status :winner :x-type :human
