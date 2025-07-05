@@ -1,6 +1,5 @@
 (ns tic-tac-toe.gui.found-save
   (:require [quil.core :as q]
-
             [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.core :as core]))
 

@@ -12,30 +12,17 @@
   (assoc state :status :game-over))
 
 (def cells-3d
-  [{:x 30, :y 174, :z 0, :value 1} {:x 90, :y 174, :z 0, :value 2} {:x 150, :y 174, :z 0, :value 3}
-   {:x 30, :y 234, :z 0, :value 4} {:x 90, :y 234, :z 0, :value 5} {:x 150, :y 234, :z 0, :value 6}
-   {:x 30, :y 294, :z 0, :value 7} {:x 90, :y 294, :z 0, :value 8} {:x 150, :y 294, :z 0, :value 9}
+  [{:x 30, :y 192, :z 0, :value 1} {:x 90, :y 192, :z 0, :value 2} {:x 150, :y 192, :z 0, :value 3}
+   {:x 30, :y 252, :z 0, :value 4} {:x 90, :y 252, :z 0, :value 5} {:x 150, :y 252, :z 0, :value 6}
+   {:x 30, :y 312, :z 0, :value 7} {:x 90, :y 312, :z 0, :value 8} {:x 150, :y 312, :z 0, :value 9}
 
-   {:x 228, :y 174, :z 1, :value 10} {:x 288, :y 174, :z 1, :value 11} {:x 348, :y 174, :z 1, :value 12}
-   {:x 228, :y 234, :z 1, :value 13} {:x 288, :y 234, :z 1, :value 14} {:x 348, :y 234, :z 1, :value 15}
-   {:x 228, :y 294, :z 1, :value 16} {:x 288, :y 294, :z 1, :value 17} {:x 348, :y 294, :z 1, :value 18}
+   {:x 228, :y 192, :z 1, :value 10} {:x 288, :y 192, :z 1, :value 11} {:x 348, :y 192, :z 1, :value 12}
+   {:x 228, :y 252, :z 1, :value 13} {:x 288, :y 252, :z 1, :value 14} {:x 348, :y 252, :z 1, :value 15}
+   {:x 228, :y 312, :z 1, :value 16} {:x 288, :y 312, :z 1, :value 17} {:x 348, :y 312, :z 1, :value 18}
 
-   {:x 426, :y 174, :z 2, :value 19} {:x 486, :y 174, :z 2, :value 20} {:x 546, :y 174, :z 2, :value 21}
-   {:x 426, :y 234, :z 2, :value 22} {:x 486, :y 234, :z 2, :value 23} {:x 546, :y 234, :z 2, :value 24}
-   {:x 426, :y 294, :z 2, :value 25} {:x 486, :y 294, :z 2, :value 26} {:x 546, :y 294, :z 2, :value 27}])
-
-; (def new-cells-3d
-;  ({:x 30, :y 192, :z 0, :value 1} {:x 90, :y 192, :z 0, :value 2} {:x 150, :y 192, :z 0, :value 3}
-;   {:x 30, :y 252, :z 0, :value 4} {:x 90, :y 252, :z 0, :value 5} {:x 150, :y 252, :z 0, :value 6}
-;   {:x 30, :y 312, :z 0, :value 7} {:x 90, :y 312, :z 0, :value 8} {:x 150, :y 312, :z 0, :value 9}
-;
-;   {:x 228, :y 192, :z 1, :value 10} {:x 288, :y 192, :z 1, :value 11} {:x 348, :y 192, :z 1, :value 12}
-;   {:x 228, :y 252, :z 1, :value 13} {:x 288, :y 252, :z 1, :value 14} {:x 348, :y 252, :z 1, :value 15}
-;   {:x 228, :y 312, :z 1, :value 16} {:x 288, :y 312, :z 1, :value 17} {:x 348, :y 312, :z 1, :value 18}
-;
-;   {:x 426, :y 192, :z 2, :value 19} {:x 486, :y 192, :z 2, :value 20} {:x 546, :y 192, :z 2, :value 21}
-;   {:x 426, :y 252, :z 2, :value 22} {:x 486, :y 252, :z 2, :value 23} {:x 546, :y 252, :z 2, :value 24}
-;   {:x 426, :y 312, :z 2, :value 25} {:x 486, :y 312, :z 2, :value 26} {:x 546, :y 312, :z 2, :value 27}))
+   {:x 426, :y 192, :z 2, :value 19} {:x 486, :y 192, :z 2, :value 20} {:x 546, :y 192, :z 2, :value 21}
+   {:x 426, :y 252, :z 2, :value 22} {:x 486, :y 252, :z 2, :value 23} {:x 546, :y 252, :z 2, :value 24}
+   {:x 426, :y 312, :z 2, :value 25} {:x 486, :y 312, :z 2, :value 26} {:x 546, :y 312, :z 2, :value 27}])
 
 (def cells-center-x-corner-o
   [{:x 96, :y 240, :value "O"} {:x 288, :y 240, :value 2} {:x 480, :y 240, :value 3}
@@ -101,13 +88,12 @@
       (should= [{:x 5, :y 5, :value 1} {:x 15, :y 5, :value 2}
                 {:x 5, :y 15, :value 3} {:x 15, :y 15, :value 4}]
                (generate-cells-2d [[1 2] [3 4]] 10 [0 0]))
-      #_(should= [{:x 5, :y 5, :value 1} {:x 15, :y 5, :value 2}
-                  {:x 5, :y 15, :value 3} {:x 15, :y 15, :value 4}]
-                 (generate-cells [[1 2] [3 4]]))
+
       (should= [{:x 96, :y 240, :value 1} {:x 288, :y 240, :value 2} {:x 480, :y 240, :value 3}
                 {:x 96, :y 432, :value 4} {:x 288, :y 432, :value 5} {:x 480, :y 432, :value 6}
                 {:x 96, :y 624, :value 7} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}]
                (generate-cells-2d test-board/empty-board 192 [0 144]))
+
       (should= [{:x 96, :y 240, :value 1} {:x 288, :y 240, :value 2} {:x 480, :y 240, :value 3}
                 {:x 96, :y 432, :value 4} {:x 288, :y 432, :value 5} {:x 480, :y 432, :value 6}
                 {:x 96, :y 624, :value 7} {:x 288, :y 624, :value 8} {:x 480, :y 624, :value 9}]
@@ -125,14 +111,16 @@
                ;dependent on the set screen size defined in gui-util, usable-screen =
                (generate-cells-3d [[[1 2] [3 4]] [[5 6] [7 8]] [[9 10] [11 12]]] 10 [0 0]))
 
-      (should= cells-3d
-               (generate-cells-3d test-board/empty-3d-board 60 [0 144])))
+      (should= cells-3d (generate-cells-3d test-board/empty-3d-board 60 [0 162])))
+
+    (it "generates cells from the generate-cells method"
+      (should= cells-3d (generate-cells test-board/empty-3d-board)))
     )
 
   (context "mouse-click"
 
     (it "identifies which square was clicked on, if any"
-      (should= {:x 288, :y 234, :z 1, :value 14} (find-clicked-cell test-board/empty-3d-board 288 234))
+      (should= {:x 288, :y 252, :z 1, :value 14} (find-clicked-cell test-board/empty-3d-board 288 234))
       (should-not (find-clicked-cell test-board/empty-3d-board 288 670)))
 
     (it "does not update if invalid play clicked"

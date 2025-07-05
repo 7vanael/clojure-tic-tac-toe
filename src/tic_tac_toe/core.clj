@@ -78,9 +78,13 @@
 (defmulti load-game :save)
 (defmulti delete-save :save)
 
+
 (defn state-draw-dispatch [state ]
   [(:interface state) (:status state)])
+;This is dependent on both state and interface right now, but will be dependent on
+; only state when refactoring is finished
 (defmulti draw-state state-draw-dispatch)
+
 (defmulti mouse-clicked (fn [state & _] (:status state)))
 
 (defn do-update! [state]

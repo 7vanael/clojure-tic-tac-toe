@@ -108,15 +108,13 @@
     (if is-3d? (generate-cells-3d board cell-size [grid-origin-x grid-origin-y-3d])
                (generate-cells-2d board cell-size [grid-origin-x grid-origin-y-2d]))))
 
-(defmethod core/draw-state [:gui :in-progress] [{:keys [board active-player-index players] :as state}]
+(defmethod core/draw-state [:gui :in-progress] [{:keys [board active-player-index players]}]
   (let [character  (get-in players [active-player-index :character])
         title-text (str character "'s turn")
         lines      (get-lines board)
         is-3d?     (board-3d? board)
         cell-size  (calculate-cell-size is-3d? board)
-        cells      (generate-cells board)
-        _ (println "Tui, in-progress, drawing the state: ")
-        _ (prn "cells:" cells)]
+        cells      (generate-cells board)]
     (q/background 240)
     (q/fill 0)
     (q/text-align :center :center)
@@ -130,19 +128,13 @@
 (defn find-clicked-cell [board x y]
   (let [is-3d?    (board-3d? board)
         cells     (generate-cells board)
-        _ (println "Find-clicked-cell")
-        _ (prn "cells:" cells)
         cell-size (calculate-cell-size is-3d? board)
         half-size (/ cell-size 2)]
     (first (filter #(cell-contains-point? % x y half-size) cells))))
 
 (defmethod core/mouse-clicked :in-progress [{:keys [board] :as state} {:keys [x y]}]
   (let [clicked-cell (find-clicked-cell board x y)
-        value        (:value clicked-cell)
-        _            (prn "x:" x)
-        _            (prn "y:" y)
-        _            (prn "clicked-cell:" clicked-cell)
-        _            (prn "value:" value)]
+        value        (:value clicked-cell)]
     (if (number? value) (core/update-state state value) nil)))
 
 (defmethod core/take-human-turn :gui [state] state)
