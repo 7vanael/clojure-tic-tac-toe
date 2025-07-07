@@ -112,4 +112,8 @@
       (should= (:board saved-state) (:board loaded-state))
       (should= (:players saved-state) (:players loaded-state))
       ))
+
+  (it "retrieves a state by ID"
+    (let [saved-state (core/save-game state2 test-datasource)
+          other-save (core/save-game state test-datasource)]))
   )

@@ -32,6 +32,7 @@
 (defmulti take-computer-turn get-computer-difficulty)
 
 (defmulti take-human-turn :interface)
+
 (defn currently-human? [{:keys [active-player-index players]}]
   (let [player-type (get-in players [active-player-index :play-type])]
     (= player-type :human)))
@@ -82,8 +83,9 @@
 (defn state-draw-dispatch [state ]
   [(:interface state) (:status state)])
 ;This is dependent on both state and interface right now, but will be dependent on
-; only state when refactoring is finished
+; only status when refactoring is finished
 (defmulti draw-state state-draw-dispatch)
+;Each implementation will have a draw :welcome, draw :in-progress, draw :tie?
 
 (defmulti mouse-clicked (fn [state & _] (:status state)))
 
