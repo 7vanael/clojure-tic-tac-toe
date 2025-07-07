@@ -35,7 +35,6 @@
   x)
 
 (defn quil-update [state]
-  #_(prn "state:" state)
   (->inspect state)
   #_(let [new-state (if (q/mouse-pressed?) (assoc state :mouse-click true) (assoc state :mouse-click false))]
     (prn "(:mouse-click state):" (:mouse-click state))
@@ -47,7 +46,7 @@
 
 (declare tic-tac-toe)
 
-(defmethod core/start-game :gui [state]
+(defmethod core/launch :gui [state]
   (q/defsketch tic-tac-toe
                :title "Tic-Tac-Toe"
                :size [util/screen-width util/screen-height]

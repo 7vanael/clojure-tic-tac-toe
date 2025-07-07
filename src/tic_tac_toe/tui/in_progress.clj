@@ -9,12 +9,11 @@
 (defmethod core/take-human-turn :tui [{:keys [board] :as state}]
   (let [play-options (board/play-options board)
         next-play    (console/get-next-play state play-options)]
-    (core/do-take-human-turn state next-play)))
+    next-play))
 
 
 (defmethod core/update-state [:tui :in-progress] [state]
-  (console/display-board (:board state))
-  (core/do-update! state))
+  (console/display-board (:board state)))
 
 (defn game-loop [state]
   (loop [current-state state]
