@@ -1,150 +1,163 @@
 (ns tic-tac-toe.gui.config-players-spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.gui.config-players :refer :all]
-            [tic-tac-toe.core-spec :as test-core]))
+            [tic-tac-toe.gui.config-players]
+            [tic-tac-toe.spec-helper :as helper]))
 
 (describe "configure players"
   (with-stubs)
   (redefs-around [core/update-state (stub :update-state)])
 
   (context "config x-type"
-    (it "Invokes update state with option 1 if button 1 is clicked"
-      (let [event {:x 144 :y 350}
-            state {:status :config-x-type}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 1]})))
+    (it "moves to config o type and sets x-type to Human if human button clicked"
+      (let [event     {:x 144 :y 350}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-x-type)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :config-o-type)
+                         (assoc-in [:players 0 :play-type] :human))]
+        (should= expected new-state)))
 
-    (it "Invokes update state with option 2 if button 2 is clicked"
-      (let [event {:x 432 :y 350}
-            state {:status :config-x-type}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 2]})))
+    (it "moves to config x difficulty and sets x-type to computer if computer button clicked on config-x-type"
+      (let [event     {:x 432 :y 350}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-x-type)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :config-x-difficulty)
+                         (assoc-in [:players 0 :play-type] :computer))]
+        (should= expected new-state)))
 
-    (it "Returns nil if no valid button is clicked"
-      (let [event {:x 1 :y 1}
-            state {:status :config-x-type}]
-        (core/mouse-clicked state event)
-        (should-not-have-invoked :update-state)))
+    (it "returns state unchanged if no button clicked on config-x-type"
+      (let [event     {:x 2 :y 2}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-x-type)
+            new-state (core/mouse-clicked starting-state event)]
+        (should= starting-state new-state)))
     )
 
   (context "config o-type"
-    (it "Invokes update state with option 1 if button 1 is clicked"
-      (let [event {:x 144 :y 350}
-            state {:status :config-o-type}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 1]})))
+    (it "moves to select board and sets o-type to Human if human button clicked"
+      (let [event     {:x 144 :y 350}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-o-type)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :select-board)
+                         (assoc-in [:players 1 :play-type] :human))]
+        (should= expected new-state)))
 
-    (it "Invokes update state with option 2 if button 2 is clicked"
-      (let [event {:x 432 :y 350}
-            state {:status :config-o-type}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 2]})))
+    (it "moves to config o difficulty and sets o-type to computer if computer button clicked on config-o-type"
+      (let [event     {:x 432 :y 350}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-o-type)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :config-o-difficulty)
+                         (assoc-in [:players 1 :play-type] :computer))]
+        (should= expected new-state)))
 
-    (it "Returns nil if no valid button is clicked"
-      (let [event {:x 1 :y 1}
-            state {:status :config-o-type}]
-        (core/mouse-clicked state event)
-        (should-not-have-invoked :update-state)))
+    (it "returns state unchanged if no button clicked on config-o-type"
+      (let [event     {:x 2 :y 2}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-o-type)
+            new-state (core/mouse-clicked starting-state event)]
+        (should= starting-state new-state)))
     )
 
   (context "config x-difficulty"
-    (it "Invokes update state with option 1 if button 1 is clicked"
-      (let [event {:x 288 :y 288}
-            state {:status :config-x-difficulty}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 1]})))
 
-    (it "Invokes update state with option 2 if button 2 is clicked"
-      (let [event {:x 288 :y 432}
-            state {:status :config-x-difficulty}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 2]})))
+    (it "moves to config o type if x-difficulty is set to easy"
+      (let [event     {:x 288 :y 288}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-x-difficulty)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :config-o-type)
+                         (assoc-in [:players 0 :difficulty] :easy))]
+        (should= expected new-state)))
 
-    (it "Invokes update state with option 3 if button 3 is clicked"
-      (let [event {:x 288 :y 576}
-            state {:status :config-x-difficulty}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 3]})))
+    (it "moves to config o type if x-difficulty is set to medium"
+      (let [event     {:x 288 :y 432}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-x-difficulty)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :config-o-type)
+                         (assoc-in [:players 0 :difficulty] :medium))]
+        (should= expected new-state)))
 
-    (it "Returns nil if no valid button is clicked"
-      (let [event {:x 1 :y 1}]
-        (should-be-nil (core/mouse-clicked {:status :config-x-difficulty} event))))
+    (it "moves to config o type if x-difficulty is set to hard"
+      (let [event     {:x 288 :y 576}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-x-difficulty)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :config-o-type)
+                         (assoc-in [:players 0 :difficulty] :hard))]
+        (should= expected new-state)))
+
+    (it "returns the state unchanged if no button is clicked"
+      (let [event     {:x 2 :y 2}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-x-difficulty)
+            new-state (core/mouse-clicked starting-state event)]
+        (should= starting-state new-state)))
     )
 
   (context "config o-difficulty"
-    (it "Invokes update state with option 1 if button 1 is clicked"
-      (let [event {:x 288 :y 288}
-            state {:status :config-o-difficulty}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 1]})))
-
-    (it "Invokes update state with option 2 if button 2 is clicked"
-      (let [event {:x 288 :y 432}
-            state {:status :config-o-difficulty}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 2]})))
-
-    (it "Invokes update state with option 3 if button 3 is clicked"
-      (let [event {:x 288 :y 576}
-            state {:status :config-o-difficulty}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 3]})))
-
-    (it "Returns nil if no valid button is clicked"
-      (let [event {:x 1 :y 1}]
-        (should-be-nil (core/mouse-clicked {:status :config-o-difficulty} event))))
-    )
-  #_(it "moves to config o type and sets x-type to Human if human button clicked on config-x-type"
-      (let [event     {:x 144 :y 350}
-            new-state (core/mouse-clicked (test-core/state-create {:status :config-x-type}) event)]
-        (should= (test-core/state-create {:status :config-o-type :x-type :human}) new-state)))
-
-  #_(it "moves to config x difficulty and sets x-type to computer if computer button clicked on config-x-type"
-      (let [event     {:x 432 :y 350}
-            new-state (core/mouse-clicked (test-core/state-create {:status :config-x-type}) event)]
-        (should= (test-core/state-create {:status :config-x-difficulty :x-type :computer}) new-state)))
-
-  #_(it "moves to config o type if x-difficulty is set to easy"
+    (it "moves to select board if o-difficulty is set to easy"
       (let [event     {:x 288 :y 288}
-            new-state (core/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
-        (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :easy}) new-state)))
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-o-difficulty)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :select-board)
+                         (assoc-in [:players 0 :difficulty] :easy))]
+        (should= expected new-state)))
 
-  #_(it "moves to config o type if x-difficulty is set to medium"
+    (it "moves to config o type if x-difficulty is set to medium"
       (let [event     {:x 288 :y 432}
-            new-state (core/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
-        (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :medium}) new-state)))
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-o-difficulty)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :select-board)
+                         (assoc-in [:players 0 :difficulty] :medium))]
+        (should= expected new-state)))
 
-  #_(it "moves to config o type if x-difficulty is set to hard"
+    (it "moves to config o type if x-difficulty is set to hard"
       (let [event     {:x 288 :y 576}
-            new-state (core/mouse-clicked (test-core/state-create {:status :config-x-difficulty :x-type :computer}) event)]
-        (should= (test-core/state-create {:status :config-o-type :x-type :computer :x-difficulty :hard}) new-state)))
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-o-difficulty)
+            new-state (core/mouse-clicked starting-state event)
+            expected (-> starting-state
+                         (assoc :status :select-board)
+                         (assoc-in [:players 0 :difficulty] :hard))]
+        (should= expected new-state)))
+
+    (it "returns the state unchanged if no button is clicked"
+      (let [event     {:x 2 :y 2}
+            starting-state (assoc (helper/gui-mock-state :any) :status :config-o-difficulty)
+            new-state (core/mouse-clicked starting-state event)]
+        (should= starting-state new-state)))
+    )
+
+
 
 
   #_(context "config o"
       (it "moves to select-board if o-type is set to human"
         (let [event     {:x 144 :y 350}
-              new-state (core/mouse-clicked (test-core/state-create {:status :config-o-type}) event)]
-          (should= (test-core/state-create {:status :select-board :o-type :human}) new-state)))
+              new-state (core/mouse-clicked (helper/gui-mock-state {:status :config-o-type}) event)]
+          (should= (helper/gui-mock-state {:status :select-board :o-type :human}) new-state)))
 
       (it "moves to config o difficulty and sets o-type to computer if right side of board clicked on config-o-type"
         (let [event     {:x 432 :y 350}
-              new-state (core/mouse-clicked (test-core/state-create {:status :config-o-type}) event)]
-          (should= (test-core/state-create {:status :config-o-difficulty :o-type :computer}) new-state)))
+              new-state (core/mouse-clicked (helper/gui-mock-state {:status :config-o-type}) event)]
+          (should= (helper/gui-mock-state {:status :config-o-difficulty :o-type :computer}) new-state)))
 
       (it "moves to select-board after o-difficulty is set to easy"
         (let [event     {:x 288 :y 288}
-              new-state (core/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
-          (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :easy}) new-state)))
+              new-state (core/mouse-clicked (helper/gui-mock-state {:status :config-o-difficulty :o-type :computer}) event)]
+          (should= (helper/gui-mock-state {:status :select-board :o-type :computer :o-difficulty :easy}) new-state)))
 
       (it "moves to select-board after o-difficulty is set to medium"
         (let [event     {:x 288 :y 432}
-              new-state (core/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
-          (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :medium}) new-state)))
+              new-state (core/mouse-clicked (helper/gui-mock-state {:status :config-o-difficulty :o-type :computer}) event)]
+          (should= (helper/gui-mock-state {:status :select-board :o-type :computer :o-difficulty :medium}) new-state)))
 
       (it "moves to select-board after o-difficulty is set to hard"
         (let [event     {:x 288 :y 576}
-              new-state (core/mouse-clicked (test-core/state-create {:status :config-o-difficulty :o-type :computer}) event)]
-          (should= (test-core/state-create {:status :select-board :o-type :computer :o-difficulty :hard}) new-state)))
+              new-state (core/mouse-clicked (helper/gui-mock-state {:status :config-o-difficulty :o-type :computer}) event)]
+          (should= (helper/gui-mock-state {:status :select-board :o-type :computer :o-difficulty :hard}) new-state)))
       )
   )

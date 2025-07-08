@@ -1,29 +1,16 @@
 (ns tic-tac-toe.gui.tie
-  (:require [quil.core :as q]
-            [tic-tac-toe.gui.gui-util :as util]
+  (:require [tic-tac-toe.gui.gui-util :as util]
             [tic-tac-toe.core :as core])
   (:import (java.io FileNotFoundException)))
 
-(def type-labels ["Play Again" "Exit"])
 
-(defmethod core/draw-state [:gui :tie] [_]
-  (q/background 240)
-  (q/fill 0)
-  (q/text-align :center :center)
-  (q/text-size 28)
-  (q/text "It's a draw, good game!" (/ util/screen-width 2) util/title-offset-y)
-  (util/draw-2-options-buttons type-labels))
+(defn yes-clicked? [x y] (util/button-clicked? [x y] util/opt1-of-2-rect))
+(defn no-clicked? [x y] (util/button-clicked? [x y] util/opt2-of-2-rect))
 
-(defmethod core/update-state [:gui :tie] [{:keys [interface save] :as state} value]
+(defmethod core/mouse-clicked :tie [state {:keys [x y]}]
   (try
     (core/delete-save state)
     (catch FileNotFoundException _))
-  (cond (= 1 value) (assoc (core/initial-state interface save) :status :config-x-type)
-        (= 2 value) (q/exit)
-        :else state)
-  state)
-
-(defmethod core/mouse-clicked :tie [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (core/update-state state 1)
-        (util/button-clicked? [x y] util/opt2-of-2-rect) (core/update-state state 2)
-        :else nil))
+  (cond (yes-clicked? x y) (assoc (core/initial-state {:save (:save state) :interface (:interface state)}) :status :config-x-type)
+        (no-clicked? x y) (assoc state :status :exit)
+        :else state))

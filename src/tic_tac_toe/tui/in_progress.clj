@@ -63,18 +63,18 @@
       (recur (core/update-state state)))))
 
 (defn initialize-state [save]
-  (build-state (assoc (core/initial-state :tui save) :status :config-x-type)))
+  (build-state (assoc (core/initial-state save) :status :config-x-type)))
 
 (defmethod core/update-state [:tui :found-save] [state]
   (if (console/resume?)
     (assoc state :status :in-progress)
-    (initialize-state (:save state))))
+    (initialize-state state)))
 
 (defmethod core/start-game :tui [state]
   (console/welcome-message)
   (let [starting-state (if-let [saved-game (core/load-game state)]
                          (core/update-state (assoc saved-game :status :found-save :interface :tui))
-                         (initialize-state (:save state)))
+                         (initialize-state state))
         _              (game-loop starting-state)]
     (core/delete-save state)
     (when (console/play-again?)

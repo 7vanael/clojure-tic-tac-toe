@@ -64,8 +64,8 @@
   (with-stubs)
   (before (set-up))
 
-  (it "returns nil if no save is found"
-    (should= nil (core/load-game state test-datasource)))
+  (it "returns initial state unchanged if no save is found"
+    (should= state (core/load-game state test-datasource)))
 
   (it "creates the state table if it does not exist"
     (jdbc/execute! test-datasource ["DROP TABLE IF EXISTS tictactoe"])
@@ -100,10 +100,11 @@
       (should= nil (seq remaining-games))
       (should-not-throw (core/delete-save state test-datasource))))
 
-  (it "loads the last state from the database"
+  (it "loads the last state from the database and sets status to :found-save, interface to starting-states interface"
     (sql/insert! test-datasource :tictactoe state-SQL)
     (sql/insert! test-datasource :tictactoe state2-SQL)
-    (should= state2 (core/load-game state test-datasource)))
+    (let [expected (assoc state2 :status :found-save :interface :gui)]
+      (should= expected (core/load-game state test-datasource))))
 
   (it "returns a saved state that matches the loaded state"
     (let [saved-state  (core/save-game state2 test-datasource)

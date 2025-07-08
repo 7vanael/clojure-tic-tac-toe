@@ -69,15 +69,15 @@
                        (first-save ds sql-state))]
     (assoc state :game-id (:game_id result))))
 
-
-
-(defmethod core/load-game :sql [_ & [source]]
+(defmethod core/load-game :sql [state & [source]]
+  (initialize)
   (let [ds         (or source data-source)
         result     (sql/query ds ["SELECT * FROM tictactoe ORDER BY game_id DESC LIMIT 1"]
                               {:builder-fn rs/as-unqualified-maps})
-        saved-game (delay (parse-game (first result)))]
-    (when (seq result)
-      @saved-game)))
+        loaded-game (delay (parse-game (first result)))]
+    (if-not (seq result)
+      (core/initial-state state)
+      (assoc @loaded-game :status :found-save :interface (:interface state)))))
 
 (defmethod core/delete-save :sql [_ & [source]]
   (let [ds        (or source data-source)

@@ -1,14 +1,16 @@
 (ns tic-tac-toe.core
   (:require [tic-tac-toe.board :as board]))
 
-(defn initial-state [interface & [save]]
-  {:interface           interface
-   :board               nil
-   :active-player-index 0
-   :status              :welcome
-   :players             [{:character "X" :play-type nil :difficulty nil}
-                         {:character "O" :play-type nil :difficulty nil}]
-   :save                (or save :sql)})
+(defn initial-state [state]
+  (merge
+    {:interface           :tui
+     :board               nil
+     :active-player-index 0
+     :status              :welcome
+     :players             [{:character "X" :play-type nil :difficulty nil}
+                           {:character "O" :play-type nil :difficulty nil}]
+     :save                :sql}
+    state))
 
 (def player-options
   [:human :computer])
@@ -19,27 +21,30 @@
 (def board-options
   {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
 
-(defmulti start-game :interface)
-
-(defn state-dispatch [state _]
+(defn state-dispatch [state]
   [(:interface state) (:status state)])
-
-(defmulti update-state state-dispatch)
-
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
-
-(defmulti take-computer-turn get-computer-difficulty)
-
-(defmulti take-human-turn :interface)
-(defn currently-human? [{:keys [active-player-index players]}]
-  (let [player-type (get-in players [active-player-index :play-type])]
-    (= player-type :human)))
-
 (defn active-player-type [{:keys [players active-player-index]}]
   (get-in players [active-player-index :play-type]))
 
+(defmulti start-game :interface)
+(defmulti update-state state-dispatch)
+(defmulti take-computer-turn get-computer-difficulty)
+(defmulti take-human-turn :interface)
 (defmulti select-box active-player-type)
+(defmulti save-game :save)
+(defmulti load-game :save)
+(defmulti delete-save :save)
+(defmulti draw-state state-dispatch)
+(defmulti mouse-clicked (fn [state & _] (:status state)))
+
+
+
+
+(defn currently-human? [{:keys [active-player-index players]}]
+  (let [player-type (get-in players [active-player-index :play-type])]
+    (= player-type :human)))
 
 (defn next-player [board]
   (let [flat-board (flatten board)
@@ -66,30 +71,30 @@
 (defn change-player [{:keys [active-player-index players board] :as state}]
   (let [current-char               (get-in players [active-player-index :character])
         next-player-char           (next-player board)
-        current-player-not-played? (= current-char next-player-char)
-        game-over?                 (contains? states-to-break-loop (:status state))]
-    (if (or game-over? current-player-not-played?)
+        current-player-not-played? (= current-char next-player-char)]
+    (if current-player-not-played?
       state
       (assoc state :active-player-index
                    (if (= (:active-player-index state) 0)
                      1 0)))))
 
-(defmulti save-game :save)
-(defmulti load-game :save)
-(defmulti delete-save :save)
+(defn maybe-game-over [state]
+  (if (contains? states-to-break-loop (:status state))
+    (assoc state :status :game-over)
+    state))
 
 
-(defn state-draw-dispatch [state ]
+
+(defn state-draw-dispatch [state]
   [(:interface state) (:status state)])
 ;This is dependent on both state and interface right now, but will be dependent on
 ; only state when refactoring is finished
-(defmulti draw-state state-draw-dispatch)
 
-(defmulti mouse-clicked (fn [state & _] (:status state)))
 
 (defn do-update! [state]
   (-> state
       take-turn
       board/evaluate-board
+      maybe-game-over
       change-player
       save-game))

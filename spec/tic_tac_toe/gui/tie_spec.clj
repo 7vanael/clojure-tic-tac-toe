@@ -1,58 +1,40 @@
 (ns tic-tac-toe.gui.tie_spec
-  (:require [quil.core :as q]
-            [speclj.core :refer :all]
+  (:require [speclj.core :refer :all]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.gui.tie :refer :all]
-            [tic-tac-toe.core-spec :as test-core]
+            [tic-tac-toe.spec-helper :as helper]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
+(def state (helper/state-create {:status :tie :interface :gui :type-x :human :type-o :human
+                                 :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0
+                                 :save   :mock}))
+
 (describe "tie- end of game"
-  (with-stubs)
-  (redefs-around [spit (stub :spit)
-                  core/update-state (stub :update-state)])
-  (before (reset! spec-helper/mock-db nil))
+  (redefs-around [spit (stub :spit)])
+  (before (reset! spec-helper/mock-db {}))
 
-  (it "Invokes update state with option 1 if button 1 is clicked"
-    (let [event {:x 144 :y 350}
-          state {:status :tie}]
-      (core/mouse-clicked state event)
-      (should-have-invoked :update-state {:with [state 1]})))
+  (it "returns to config x type if yes button is clicked"
+    (let [event    {:x 144 :y 350}
+          expected (assoc (core/initial-state {:save :mock :interface :gui}) :status :config-x-type)]
+      (should= expected (core/mouse-clicked state event))))
 
-  (it "Invokes update state with option 2 if button 2 is clicked"
-      (let [event {:x 432 :y 350}
-            state {:status :tie}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state 2]})))
+  (it "sets the status to exit to end game if 'no' button is pressed"
+    (let [event    {:x 432 :y 350}
+          expected (assoc state :status :exit)]
+      (should= expected (core/mouse-clicked state event))))
 
-  (it "Returns nil if no valid button is clicked"
-      (let [event {:x 1 :y 1}
-            state {:status :tie}]
-        (core/mouse-clicked state event)
-        (should-not-have-invoked :update-state)))
+  (it "returns the state unchanged if no button is clicked"
+    (let [event {:x 2 :y 2}]
+      (should= state (core/mouse-clicked state event))))
 
-  #_(it "deletes the save file when the game ends in a draw"
-      (with-redefs [println (stub :print-dup)]
-        (let [state (test-core/state-create {:interface :gui :status :tie :board [["X" "O" "X"]
-                                                                                  ["O" "X" "O"]
-                                                                                  ["O" "X" "O"]]
-                                             :save      :mock})]
-          (core/save-game state)
-          (should-not= nil @spec-helper/mock-db)
-          (core/update-state state)
-          (should= nil @spec-helper/mock-db))))
-
-
-  #_(it "sets the state to nil and the status to config-x-type if play-again button is clicked"
-      (let [event     {:x 144 :y 350}
-            new-state (core/mouse-clicked (test-core/state-create {:status :tie :board [[1 2 3]] :active-player-index 1 :interface :gui :save :mock}) event)]
-        (should= (test-core/state-create {:status :config-x-type :interface :gui :save :mock})
-                 new-state)))
-
-  #_(it "exits the game if exit button is clicked"
-      (with-redefs [q/exit (stub :exit)]
-        (let [event {:x 432 :y 350}
-              state (test-core/state-create {:status :tie})]
-          (core/mouse-clicked state event)
-          (should-have-invoked :exit)
-          (core/delete-save state))))
+  (it "deletes the save file when the game ends in a win"
+    (let [save-state (helper/state-create {:interface :gui :status :tie :x-type :human
+                                           :o-type    :human :board [["X" "O" "X"]
+                                                                     ["O" "X" "O"]
+                                                                     ["O" "X" "X"]]
+                                           :save      :mock})
+          event      {:x 2 :y 2}]
+      (core/save-game save-state)
+      (core/mouse-clicked save-state event)
+      (should= {:save :mock} (core/load-game {:save :mock}))))
   )

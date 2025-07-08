@@ -22,8 +22,8 @@
     (sut/save-game test-state-in-progress)
     (should-have-invoked :spit))
 
-  (it "returns nil if file not found"
-    (should= nil (sut/load-game test-state-new)))
+  (it "returns the initial state if file not found"
+    (should= test-state-new (sut/load-game test-state-new)))
 
   (it "can load a state from a file"
     (with-redefs [edn/read-string (stub :edn {:return (test-core/state-create {:active-player-index 1 :x-type :human :o-type :human
@@ -40,5 +40,5 @@
                                             :board               [["X" 2 "O"] ["X" "O" "O"] ["X" 8 "X"]] :save :edn}))
     (sut/delete-save test-state-in-progress)
     (should-throw FileNotFoundException (slurp file/savefile))
-    (should= nil (sut/load-game test-state-new)))
+    (should= test-state-new (sut/load-game test-state-new)))
   )

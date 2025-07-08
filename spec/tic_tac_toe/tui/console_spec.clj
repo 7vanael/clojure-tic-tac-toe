@@ -63,16 +63,20 @@
 
   (it "deletes a save when the game ends in a draw"
     (with-redefs [announce-draw (stub :announce)]
-      (let [saved-state (core/save-game (test-core/state-create {:save                :mock :status :tie :interface :tui :board [["X" "X" "X"]]
-                                                                 :active-player-index 0}))
+      (let [saved-state  (core/save-game (test-core/state-create
+                                           {:interface :tui
+                                            :save                :mock
+                                            :status :tie
+                                            :board [["X" "X" "X"]]
+                                            :active-player-index 0}))
             ending-state (core/update-state saved-state)]
         (should= (assoc saved-state :status :game-over) ending-state)
         (should= nil (core/load-game ending-state)))))
 
   (it "deletes a save when the game ends in a win"
     (with-redefs [announce-winner (stub :announce)]
-      (let [saved-state (core/save-game (test-core/state-create {:save                :mock :status :winner :interface :tui :board [["X" "X" "X"]]
-                                                                 :active-player-index 0}))
+      (let [saved-state  (core/save-game (test-core/state-create {:save                :mock :status :winner :interface :tui :board [["X" "X" "X"]]
+                                                                  :active-player-index 0}))
             ending-state (core/update-state saved-state)]
         (should= (assoc saved-state :status :game-over) ending-state)
         (should= nil (core/load-game ending-state)))))

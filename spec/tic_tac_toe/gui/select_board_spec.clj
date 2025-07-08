@@ -2,50 +2,36 @@
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.gui.select-board :refer :all]
-            [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.board_spec :as test-board]))
+            [tic-tac-toe.spec-helper :as helper]))
 
 (describe "select board"
   (with-stubs)
   (redefs-around [core/update-state (stub :update-state)])
 
-  (it "Invokes update state with option 1 if button 1 is clicked"
-    (let [event {:x 288 :y 288}
-          state {:status :select-board}]
-      (core/mouse-clicked state event)
-      (should-have-invoked :update-state {:with [state 1]})))
+  (it "moves to in-progress with board of 3x3 if 3x3 button pressed"
+    (let [event     {:x 288 :y 288}
+          starting-state (assoc (helper/gui-mock-state :any) :status :select-board)
+          new-state (core/mouse-clicked starting-state event)
+          expected (assoc starting-state :status :in-progress :board helper/empty-board)]
+      (should= expected new-state)))
 
-  (it "Invokes update state with option 2 if button 2 is clicked"
-    (let [event {:x 288 :y 432}
-          state {:status :select-board}]
-      (core/mouse-clicked state event)
-      (should-have-invoked :update-state {:with [state 2]})))
+  (it "moves to in-progress with board of 4x4 if 4x4 button pressed"
+    (let [event     {:x 288 :y 432}
+          starting-state (assoc (helper/gui-mock-state :any) :status :select-board)
+          new-state (core/mouse-clicked starting-state event)
+          expected  (assoc starting-state :status :in-progress :board helper/empty-4-board)]
+      (should= expected new-state)))
 
-  (it "Invokes update state with option 3 if button 3 is clicked"
-    (let [event {:x 288 :y 576}
-          state {:status :select-board}]
-      (core/mouse-clicked state event)
-      (should-have-invoked :update-state {:with [state 3]})))
+  (it "moves to in-progress with board of 3x3x3 if 3x3x3 button pressed"
+    (let [event     {:x 288 :y 576}
+          starting-state (assoc (helper/gui-mock-state :any) :status :select-board)
+          new-state (core/mouse-clicked starting-state event)
+          expected (assoc starting-state :status :in-progress :board helper/empty-3d-board)]
+      (should= expected new-state)))
 
-  (it "Returns nil if no valid button is clicked"
-    (let [event {:x 1 :y 1}]
-      (should-be-nil (core/mouse-clicked {:status :select-board} event))))
-
-  #_(it "sets the board-size to 3 and changes state to board-ready if 3x3 button is pressed"
-      (let [event     {:x 288 :y 288}
-            new-state (core/mouse-clicked (test-core/state-create {:status :select-board}) event)]
-        (should= (test-core/state-create {:status :board-ready :board test-board/empty-board})
-                 new-state)))
-
-  #_(it "sets the board-size to 4 and changes state to bord-ready if 4x4 button is pressed"
-      (let [event     {:x 288 :y 432}
-            new-state (core/mouse-clicked (test-core/state-create {:status :select-board}) event)]
-        (should= (test-core/state-create {:status :board-ready :board test-board/empty-4-board})
-                 new-state)))
-
-  #_(it "sets the board-size to 3x3x3 and changes state to board-ready if 4x4 button is pressed"
-      (let [event     {:x 288 :y 576}
-            new-state (core/mouse-clicked (test-core/state-create {:status :select-board}) event)]
-        (should= (test-core/state-create {:status :board-ready :board test-board/empty-3d-board})
-                 new-state)))
+  (it "returns the state unchanged if no button is clicked"
+    (let [event     {:x 2 :y 2}
+          starting-state (assoc (helper/gui-mock-state :any) :status :select-board)
+          new-state (core/mouse-clicked starting-state event)]
+      (should= starting-state new-state)))
   )

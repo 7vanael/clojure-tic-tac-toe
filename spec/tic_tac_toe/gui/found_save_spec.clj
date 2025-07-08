@@ -8,35 +8,24 @@
   (with-stubs)
   (redefs-around [core/update-state (stub :update-state)])
 
-  (it "Invokes update state with option 1 if button 1 is clicked"
-    (let [event {:x 144 :y 350}
-          state {:status :found-save}]
-      (core/mouse-clicked state event)
-      (should-have-invoked :update-state {:with [state 1]})))
+  (it "resumes play of a saved game if Yes button is pressed"
+    (let [event       {:x 144 :y 350}
+          saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human
+                                               :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0
+                                               :save   :mock})
+          new-state   (assoc saved-state :status :in-progress)]
+      (should= new-state (core/mouse-clicked saved-state event))))
 
-  (it "Invokes update state with option 1 if button 2 is clicked"
-    (let [event {:x 432 :y 350}
-          state {:status :found-save}]
-      (core/mouse-clicked state event)
-      (should-have-invoked :update-state {:with [state 2]})))
+  (it "sets the status to config-x-type to start a new game if 'no' button is pressed"
+    (let [event       {:x 432 :y 350}
+          saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human
+                                               :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0
+                                               :save   :mock})
+          new-state   (assoc (helper/gui-mock-state :mock) :status :config-x-type)]
+      (should= new-state (core/mouse-clicked saved-state event))))
 
-  (it "Returns nil if no valid button pressed"
-    (let [event {:x 1 :y 1}]
-      (should-be-nil (core/mouse-clicked {:status :found-save} event))))
-
-  #_(it "resumes play of a saved game if Yes button is pressed"
-      (let [event       {:x 144 :y 350}
-            saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human
-                                                 :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0
-                                                 :save   :mock})
-            new-state   (assoc saved-state :status :in-progress)]
-        (should= new-state (core/mouse-clicked saved-state event))))
-
-  #_(it "sets the status to config-x-type to start a new game if 'no' button is pressed"
-      (let [event       {:x 432 :y 350}
-            saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human
-                                                 :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0
-                                                 :save   :mock})
-            new-state   (assoc (helper/pre-state :mock) :status :config-x-type)]
-        (should= new-state (core/mouse-clicked saved-state event))))
+  (it "returns the state unchanged if no button is clicked"
+    (let [event     {:x 2 :y 2}
+          current-state (assoc (helper/gui-mock-state :mock) :status :found-save)]
+      (should= current-state (core/mouse-clicked current-state event))))
   )

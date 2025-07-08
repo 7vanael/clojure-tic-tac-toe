@@ -10,10 +10,10 @@
   (spit savefile (dissoc state :interface))
   state)
 
-(defmethod core/load-game :edn [_]
+(defmethod core/load-game :edn [state]
   (try (edn/read-string (slurp savefile))
        (catch FileNotFoundException _
-         nil)))
+         state)))
 
 (defmethod core/delete-save :edn [_]
   (io/delete-file savefile true))
