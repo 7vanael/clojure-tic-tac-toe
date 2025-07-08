@@ -6,7 +6,8 @@
     [tic-tac-toe.tui.in-progress]
     [clojure.tools.cli :as cli]
     [tic-tac-toe.persistence.postgresql :as psql]
-    [tic-tac-toe.persistence.file]))
+    [tic-tac-toe.persistence.file]
+    [tic-tac-toe.computer.easy]))
 
 (defn print-option-info []
   (println "")

@@ -57,7 +57,6 @@
     state))
 
 (defn get-next-play [state play-options]
-  (announce-player state)
   (print-number-prompt)
   (let [input (read-string (read-line))]
     (if (validate-number play-options input)
@@ -113,18 +112,21 @@
 (defn validate-yes-no-entry [input]
   (contains? valid-yes-no-responses input))
 
-(defn get-yes-no-response [prompt]
-  (prompt)
+;(defn get-yes-no-response [prompt]
+;  (prompt)
+;  (let [input (str/trim (str/lower-case (read-line)))]
+;    (if (validate-yes-no-entry input)
+;      input
+;      (get-yes-no-response prompt))))
+
+(defn get-yes-no-response []
   (let [input (str/trim (str/lower-case (read-line)))]
     (if (validate-yes-no-entry input)
       input
-      (get-yes-no-response prompt))))
+      (get-yes-no-response))))
 
-(defn play-again? []
-  (str/includes? (get-yes-no-response play-again-prompt) "y"))
-
-(defn resume? []
-  (str/includes? (get-yes-no-response save-found-prompt) "y"))
+(defn yes-or-no? []
+  (if (str/includes? (get-yes-no-response ) "y") 1 2))
 
 (defn board-size-prompt [size-options]
   (println "What size board do you want to play on?")
@@ -132,14 +134,14 @@
     (println (str (inc idx) ") " key))))
 
 (defn get-board-size [size-options]
-  (board-size-prompt size-options)
   (let [input          (read-line)
         size-selection (try (Integer/parseInt input)
                             (catch Exception _
                               nil))
-        option-keys    (vec (keys size-options))]
+        ;option-keys    (vec (keys size-options))
+        ]
     (if (and size-selection (>= size-selection 1) (<= size-selection (count size-options)))
-      (get size-options (get option-keys (dec size-selection)))
+      size-selection ;No longer returns the keys, only 1-3 options
       (get-board-size size-options))))
 
 (defn display-difficulty-options [char options]

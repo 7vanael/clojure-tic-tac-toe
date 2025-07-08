@@ -18,7 +18,7 @@
     (with-redefs [core/update-state (stub :update-state)]
       (let [event     {:x 100 :y 100}
             state (helper/pre-state :mock)]
-        (core/mouse-clicked state event)
+        (core/get-selection state event)
       (should-have-invoked :update-state {:with [state 1]}))))
   #_(Remainder of tests can be moved to core)
 

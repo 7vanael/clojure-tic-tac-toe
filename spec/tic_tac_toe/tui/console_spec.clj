@@ -52,7 +52,7 @@
 
   (it "returns if a user wants to load a saved game or not"
     (with-redefs [save-found-prompt (stub :print-dup)]
-      (should= true (with-in-str "y\n" (resume?)))))
+      (should= true (with-in-str "y\n" (yes-or-no?)))))
 
   (it "notifies the player that a play wasn't valid"
     (should= "That isn't a valid play, please try again\n"
@@ -107,19 +107,19 @@
 
   (it "returns true if the user wants to play again"
     (with-redefs [play-again-prompt (stub :prompt)]
-      (should= true (with-in-str "Y\n" (play-again?)))
-      (should= true (with-in-str "Yes\n" (play-again?)))
-      (should= true (with-in-str "y\n" (play-again?)))
-      (should= true (with-in-str "yes\n" (play-again?)))
-      (should= true (with-in-str "none\nyes\n" (play-again?)))
-      (should= true (with-in-str "yesterday\nyes\n" (play-again?)))
-      (should= false (with-in-str "N\n" (play-again?)))
-      (should= false (with-in-str "No\n" (play-again?)))
-      (should= false (with-in-str "yesterday\nno\n" (play-again?)))
-      (should= false (with-in-str "yell\nn\n" (play-again?)))
-      (should= false (with-in-str "noise\nn\n" (play-again?)))
-      (should= false (with-in-str "None\nn\n" (play-again?)))
-      (should= false (with-in-str "nonsense\nn\n" (play-again?)))))
+      (should= true (with-in-str "Y\n" (yes-or-no?)))
+      (should= true (with-in-str "Yes\n" (yes-or-no?)))
+      (should= true (with-in-str "y\n" (yes-or-no?)))
+      (should= true (with-in-str "yes\n" (yes-or-no?)))
+      (should= true (with-in-str "none\nyes\n" (yes-or-no?)))
+      (should= true (with-in-str "yesterday\nyes\n" (yes-or-no?)))
+      (should= false (with-in-str "N\n" (yes-or-no?)))
+      (should= false (with-in-str "No\n" (yes-or-no?)))
+      (should= false (with-in-str "yesterday\nno\n" (yes-or-no?)))
+      (should= false (with-in-str "yell\nn\n" (yes-or-no?)))
+      (should= false (with-in-str "noise\nn\n" (yes-or-no?)))
+      (should= false (with-in-str "None\nn\n" (yes-or-no?)))
+      (should= false (with-in-str "nonsense\nn\n" (yes-or-no?)))))
 
   (it "prints the board-size options"
     (should= "What size board do you want to play on?\n1) :3x3\n2) :4x4\n3) :3x3x3\n"

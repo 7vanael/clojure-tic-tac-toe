@@ -1,8 +1,7 @@
 (ns tic-tac-toe.gui.winner
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.core :as core])
-  (:import (java.io FileNotFoundException)))
+            [tic-tac-toe.core :as core]))
 
 (def type-labels ["Play Again" "Exit"])
 
@@ -16,15 +15,7 @@
     (q/text title-text (/ util/screen-width 2) util/title-offset-y)
     (util/draw-2-options-buttons type-labels)))
 
-(defmethod core/update-state [:gui :winner] [state value]
-  (try
-     (core/delete-save state)
-     (catch FileNotFoundException _))
-  (cond (= 1 value) (assoc-in (core/initial-state (:interface state) (:save state)) [:status] :config-x-type)
-        (= 2 value) (q/exit)
-        :else state))
-
-(defmethod core/mouse-clicked :winner [state {:keys [x y]}]
-  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) (core/update-state state 1)
-        (util/button-clicked? [x y] util/opt2-of-2-rect) (core/update-state state 2)
+(defmethod core/get-selection :winner [_ {:keys [x y]}]
+  (cond (util/button-clicked? [x y] util/opt1-of-2-rect) 1
+        (util/button-clicked? [x y] util/opt2-of-2-rect) 2
         :else nil))

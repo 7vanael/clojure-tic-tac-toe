@@ -15,18 +15,18 @@
     (it "Invokes update state with option 1 if button 1 is clicked"
     (let [event {:x 144 :y 350}
             state {:status :winner}]
-        (core/mouse-clicked state event)
+        (core/get-selection state event)
         (should-have-invoked :update-state {:with [state 1]})))
 
   (it "Invokes update state with option 1 if button 2 is clicked"
     (let [event {:x 432 :y 350}
           state {:status :winner}]
-      (core/mouse-clicked state event)
+      (core/get-selection state event)
       (should-have-invoked :update-state {:with [state 2]})))
 
   (it "Returns nil if no valid button is clicked"
     (let [event {:x 1 :y 1}]
-      (core/mouse-clicked {:status :winner} event)
+      (core/get-selection {:status :winner} event)
       (should-not-have-invoked :update-state)))
 
   #_(it "deletes the save file when the game ends in a win"

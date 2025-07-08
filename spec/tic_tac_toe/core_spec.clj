@@ -141,7 +141,7 @@
     (should= "O" (next-player first-X-4-board)))
 
 
-  (it "dispatches turns correctly when it's a human turn"
+  #_(it "dispatches turns correctly when it's a human turn"
     (with-redefs [take-human-turn    (stub :human-turn)
                   take-computer-turn (stub :computer-turn)]
       (take-turn (state-create {:interface    :tui :active-player-index 0 :x-type :human :o-type :computer

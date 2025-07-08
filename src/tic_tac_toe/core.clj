@@ -1,5 +1,6 @@
 (ns tic-tac-toe.core
-  (:require [tic-tac-toe.board :as board]))
+  (:require [tic-tac-toe.board :as board])
+  (:import (java.io FileNotFoundException)))
 
 (defn initial-state [interface & [save]]
   {:interface           interface
@@ -29,24 +30,18 @@
 
 (defmulti take-computer-turn get-computer-difficulty)
 
-(defmulti take-human-turn :interface)                       ;Refactor this to get-selection?
+;(defmulti take-human-turn :interface)   ;Refactor this to get-selection?
 
 (defn currently-human? [{:keys [active-player-index players]}]
   (let [player-type (get-in players [active-player-index :play-type])]
     (= player-type :human)))
 
-(defmulti get-selection :interface)
 
 (defn next-player [board]
   (let [flat-board (flatten board)
         played     (count (filter string? flat-board))]
     (if (even? played) "X" "O")))
 
-
-(defn do-take-human-turn [{:keys [board players active-player-index] :as state} next-play]
-  (assoc state :board (board/take-square board
-                                         (board/space->coordinates next-play board)
-                                         (get-in players [active-player-index :character]))))
 
 (def states-to-break-loop
   #{:tie :winner})
@@ -69,18 +64,9 @@
 
 (defn state-draw-dispatch [state]
   [(:interface state) (:status state)])
-;This is dependent on both state and interface right now, I'm not confident it can be
-; implementation independent at this point.
 (defmulti draw-state state-draw-dispatch)
-;Each implementation will have a draw :welcome, draw :in-progress, draw :tie?
 
-(defmulti mouse-clicked (fn [state & _] (:status state)))
-
-(defmethod update-state :tie [state input]
-  (cond (= 1 input) (assoc (initial-state (:interface state) (:save state))
-                      :status :config-x-type)  ; Play again
-        (= 2 input) (assoc state :status :exit)    ; Quit
-        :else state))
+(defmulti get-selection (fn [state & _] (:status state)))
 
 (defn take-turn [state]
   (if (currently-human? state)
@@ -92,6 +78,29 @@
         coordinates (board/space->coordinates value board)]
     (assoc state :board (board/take-square board coordinates character))))
 
+(defmulti get-selection :interface)
+
+;(defmethod update-state :exit [state]
+;  state)
+
+(defmethod update-state :winner [{:keys [interface save] :as state} value]
+  (try
+    (delete-save state)
+    (catch FileNotFoundException _))
+  (cond (= 1 value) (assoc (initial-state interface save) :status :config-x-type)
+        (= 2 value) (assoc state :status :exit)
+        :else state)
+  state)
+
+(defmethod update-state :tie [{:keys [interface save] :as state} value]
+  (try
+    (delete-save state)
+    (catch FileNotFoundException _))
+  (cond (= 1 value) (assoc (initial-state interface save) :status :config-x-type)
+        (= 2 value) (assoc state :status :exit)
+        :else state)
+  state)
+
 (defmethod update-state :in-progress [state value]
   (-> state
       (make-move value)
@@ -99,16 +108,74 @@
       change-player
       save-game))
 
-(defmethod update-state :welcome [state value]
+(defmethod update-state :select-board [state value]
+  (cond (= 1 value) (-> state
+                        (assoc :board (board/new-board 3))
+                        (assoc :status :in-progress))
+        (= 2 value) (-> state
+                        (assoc :board (board/new-board 4))
+                        (assoc :status :in-progress))
+        (= 3 value) (-> state
+                        (assoc :board (board/new-board [3 3 3]))
+                        (assoc :status :in-progress))
+        :else state))
+
+(defmethod update-state :config-o-difficulty [state value]
+  (cond (= 1 value) (-> state
+                        (assoc-in [:players 1 :difficulty] :easy)
+                        (assoc :status :select-board))
+        (= 2 value) (-> state
+                        (assoc-in [:players 1 :difficulty] :medium)
+                        (assoc :status :select-board))
+        (= 3 value) (-> state
+                        (assoc-in [:players 1 :difficulty] :hard)
+                        (assoc :status :select-board))
+        :else state))
+
+(defmethod update-state :config-x-difficulty [state value]
+  (cond (= 1 value) (-> state
+                        (assoc-in [:players 0 :difficulty] :easy)
+                        (assoc :status :config-o-type))
+        (= 2 value) (-> state
+                        (assoc-in [:players 0 :difficulty] :medium)
+                        (assoc :status :config-o-type))
+        (= 3 value) (-> state
+                        (assoc-in [:players 0 :difficulty] :hard)
+                        (assoc :status :config-o-type))
+        :else state))
+
+(defmethod update-state :config-o-type [state value]
+  (cond (= 1 value) (-> state
+                        (assoc-in [:players 1 :play-type] :human)
+                        (assoc :status :select-board))
+        (= 2 value) (-> state
+                        (assoc-in [:players 1 :play-type] :computer)
+                        (assoc :status :config-o-difficulty))
+        :else state))
+
+(defmethod update-state :config-x-type [state value]
+  (cond (= 1 value) (-> state
+                        (assoc-in [:players 0 :play-type] :human)
+                        (assoc :status :config-o-type))
+        (= 2 value) (-> state
+                        (assoc-in [:players 0 :play-type] :computer)
+                        (assoc :status :config-x-difficulty))
+        :else state))
+
+(defmethod update-state :found-save [state value]
+  (cond (= 1 value) (assoc state :status :in-progress)
+        (= 2 value) (initial-state (:interface state) (:save state))
+        :else state))
+
+(defmethod update-state :welcome [state _]
   (let [saved-game (load-game state)]
-    (cond ;(nil? value) state ;I'm not sure I need this condition?
-          (nil? saved-game) (assoc state :status :config-x-type)
+    (cond (nil? saved-game) (assoc state :status :config-x-type)
           :else (assoc saved-game :status :found-save :interface (:interface state)))))
 
 (defn get-input [state]
   (if (= :in-progress (:status state))
-         (take-turn state)
-         (get-selection state)))
+    (take-turn state)
+    (get-selection state)))
 
 (defn play-game [initial-state]
   (loop [state initial-state]
@@ -121,9 +188,10 @@
 
 (defmulti launch :interface)
 
-(defn start-game [initial-state]
-  (launch initial-state)
-  (play-game initial-state))
+(defn start-game [initial-state-params]
+  (let [state (initial-state (:interface initial-state-params) (:save initial-state-params))]
+    (launch state)
+    (play-game state)))
 
 ;
 ;(defn play-game [state]
@@ -142,14 +210,19 @@
 ;                              )]
 ;        (recur updated-state)))))
 
-(defn do-update! [state]
-  (-> state
-      take-turn
-      board/evaluate-board
-      change-player
-      save-game))
+;(defn do-update! [state]
+;  (-> state
+;      take-turn
+;      board/evaluate-board
+;      change-player
+;      save-game))
 
 ;(defn active-player-type [{:keys [players active-player-index]}]
 ;  (get-in players [active-player-index :play-type]))
 ;
 ;(defmulti select-box active-player-type)
+;
+;(defn do-take-human-turn [{:keys [board players active-player-index] :as state} next-play]
+;  (assoc state :board (board/take-square board
+;                                         (board/space->coordinates next-play board)
+;                                         (get-in players [active-player-index :character]))))

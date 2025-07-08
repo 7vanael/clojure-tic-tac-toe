@@ -132,19 +132,11 @@
         half-size (/ cell-size 2)]
     (first (filter #(cell-contains-point? % x y half-size) cells))))
 
-(defmethod core/mouse-clicked :in-progress [{:keys [board] :as state} {:keys [x y]}]
+(defmethod core/get-selection [:gui :in-progress] [{:keys [board] :as state} {:keys [x y]}]
   (let [clicked-cell (find-clicked-cell board x y)
         value        (:value clicked-cell)]
     (if (number? value) (core/update-state state value) nil)))
 
-(defmethod core/take-human-turn :gui [state] state)
-
-(defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state} value]
-  (let [cells     (generate-cells board)
-        new-state (assoc state :cells cells)]
-    (if (and (board/available? board value) #_(= :human player-type))
-      (core/do-update! (core/do-take-human-turn new-state value))
-      new-state)))
 
 ;board-ready state is a mechanism to get the board drawn prior to calling
 ; update state. It is only active for a single quil cycle

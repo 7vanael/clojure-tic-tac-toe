@@ -15,19 +15,19 @@
   (it "Invokes update state with option 1 if button 1 is clicked"
     (let [event {:x 144 :y 350}
           state {:status :tie}]
-      (core/mouse-clicked state event)
+      (core/get-selection state event)
       (should-have-invoked :update-state {:with [state 1]})))
 
   (it "Invokes update state with option 2 if button 2 is clicked"
       (let [event {:x 432 :y 350}
             state {:status :tie}]
-        (core/mouse-clicked state event)
+        (core/get-selection state event)
         (should-have-invoked :update-state {:with [state 2]})))
 
   (it "Returns nil if no valid button is clicked"
       (let [event {:x 1 :y 1}
             state {:status :tie}]
-        (core/mouse-clicked state event)
+        (core/get-selection state event)
         (should-not-have-invoked :update-state)))
 
   #_(it "deletes the save file when the game ends in a draw"
@@ -44,7 +44,7 @@
 
   #_(it "sets the state to nil and the status to config-x-type if play-again button is clicked"
       (let [event     {:x 144 :y 350}
-            new-state (core/mouse-clicked (test-core/state-create {:status :tie :board [[1 2 3]] :active-player-index 1 :interface :gui :save :mock}) event)]
+            new-state (core/get-selection (test-core/state-create {:status :tie :board [[1 2 3]] :active-player-index 1 :interface :gui :save :mock}) event)]
         (should= (test-core/state-create {:status :config-x-type :interface :gui :save :mock})
                  new-state)))
 
@@ -52,7 +52,7 @@
       (with-redefs [q/exit (stub :exit)]
         (let [event {:x 432 :y 350}
               state (test-core/state-create {:status :tie})]
-          (core/mouse-clicked state event)
+          (core/get-selection state event)
           (should-have-invoked :exit)
           (core/delete-save state))))
   )

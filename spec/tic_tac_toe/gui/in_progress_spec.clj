@@ -134,7 +134,7 @@
                                                     :save                :mock})
             event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
                             :y (+ grid-origin-y-2d (/ usable-screen 2))}]
-        (should= nil (core/mouse-clicked starting-state event)))
+        (should= nil (core/get-selection starting-state event)))
       )
 
     #_(it "does not update if active player is not human"
@@ -151,7 +151,7 @@
                                                       :save                :mock})
               event          {:x (+ grid-origin-x (/ (* 0.5 usable-screen) 3)) ;space [2 0]
                               :y (+ grid-origin-y-2d (/ (* 2.5 usable-screen) 3))}]
-          (should= (:board starting-state) (:board (core/mouse-clicked starting-state event))))
+          (should= (:board starting-state) (:board (core/get-selection starting-state event))))
         )
 
     #_(it "does update the board, evaluate it and change players if valid play is selected & player is human"
@@ -174,6 +174,6 @@
                                                       :o-type              :computer
                                                       :cells               cells-center-x-corner-o
                                                       :save                :mock})]
-          (should= new-state (dissoc (core/mouse-clicked starting-state event) :game-id))))
+          (should= new-state (dissoc (core/get-selection starting-state event) :game-id))))
     )
   )
