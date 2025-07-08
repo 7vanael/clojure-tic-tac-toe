@@ -70,7 +70,6 @@
 (defmethod core/draw-state [:tui :welcome] [_]
   (console/welcome-message))
 
-(defmethod core/launch :tui [_])
 
 
 ;(defn build-state [state]

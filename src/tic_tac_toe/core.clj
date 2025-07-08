@@ -171,11 +171,11 @@
 
 (defmethod update-state :found-save [state value]
   (cond (= 1 value) (assoc state :status :in-progress)
-        (= 2 value) (initial-state state)
+        (= 2 value) (assoc (initial-state state) :status :config-x-type)
         :else state))
 
 (defmethod update-state :welcome [state _]
-  (println "WLECOME")
+  (println "WELCOME")
   (let [saved-game (load-game state)]
     (cond (nil? saved-game) (assoc state :status :config-x-type)
           :else (assoc saved-game :status :found-save :interface (:interface state)))))
@@ -185,8 +185,9 @@
     (take-turn state)
     (get-selection state)))
 
-(defn play-game [initial-state]
-  (loop [state initial-state]
+(defn play-game [starting-state]
+  (prn "PLAY-GAME starting-state:" starting-state)
+  (loop [state starting-state]
     (if (= :exit (:status state))
       state
       (let [_             (draw-state state)
@@ -194,61 +195,55 @@
             updated-state (update-state state input)]
         (recur updated-state)))))
 
-(defmulti launch :interface)
+#_(defmulti launch-quil :interface)
 
-(defn start-game [starting-state]
-  (prn "initial-state:" starting-state)
-  (let [_ (println "start-game, passed in state" starting-state)
-        state (initial-state starting-state)]
-    (prn "state:" state)
-    (launch state)
-    (play-game state)))
 
-;
-;(defn play-game [state]
-;  (loop [state state]
-;    (if (states-to-break-loop (:status state))
-;      state
-;      (let [_             (draw-state state)
-;            input         (take-turn state)                 ;This is take-turn so the computer can have a chance!
-;            ; take-turn will route to make-selection if it's the human's turn
-;            moved-state   (make-move state input)
-;            updated-state (-> moved-state
-;                              board/evaluate-board
-;                              change-player
-;                              save-game
-;                              draw-state                    ;Is this a good place for this??
-;                              )]
-;        (recur updated-state)))))
 
-;(defn do-update! [state]
-;  (-> state
-;      take-turn
-;      board/evaluate-board
-;      change-player
-;      save-game))
+  ;
+  ;(defn play-game [state]
+  ;  (loop [state state]
+  ;    (if (states-to-break-loop (:status state))
+  ;      state
+  ;      (let [_             (draw-state state)
+  ;            input         (take-turn state)                 ;This is take-turn so the computer can have a chance!
+  ;            ; take-turn will route to make-selection if it's the human's turn
+  ;            moved-state   (make-move state input)
+  ;            updated-state (-> moved-state
+  ;                              board/evaluate-board
+  ;                              change-player
+  ;                              save-game
+  ;                              draw-state                    ;Is this a good place for this??
+  ;                              )]
+  ;        (recur updated-state)))))
 
-;(defn active-player-type [{:keys [players active-player-index]}]
-;  (get-in players [active-player-index :play-type]))
-;
-;(defmulti select-box active-player-type)
-;
-;(defn do-take-human-turn [{:keys [board players active-player-index] :as state} next-play]
-;  (assoc state :board (board/take-square board
-;                                         (board/space->coordinates next-play board)
-;                                         (get-in players [active-player-index :character]))))
-;
-; draw
-; mouse-clicked
-; resize
-; key-pressed
-; update
-; recur
-;
-; draw
-; update
-;   if mouse-clicked? (mouse-click-selection) state
-;   if resized? (resize-logic) state
-;   if key-pressed? (key-press-logic) state
-;   (update-state-logic)
-; recur
+  ;(defn do-update! [state]
+  ;  (-> state
+  ;      take-turn
+  ;      board/evaluate-board
+  ;      change-player
+  ;      save-game))
+
+  ;(defn active-player-type [{:keys [players active-player-index]}]
+  ;  (get-in players [active-player-index :play-type]))
+  ;
+  ;(defmulti select-box active-player-type)
+  ;
+  ;(defn do-take-human-turn [{:keys [board players active-player-index] :as state} next-play]
+  ;  (assoc state :board (board/take-square board
+  ;                                         (board/space->coordinates next-play board)
+  ;                                         (get-in players [active-player-index :character]))))
+  ;
+  ; draw
+  ; mouse-clicked
+  ; resize
+  ; key-pressed
+  ; update
+  ; recur
+  ;
+  ; draw
+  ; update
+  ;   if mouse-clicked? (mouse-click-selection) state
+  ;   if resized? (resize-logic) state
+  ;   if key-pressed? (key-press-logic) state
+  ;   (update-state-logic)
+  ; recur

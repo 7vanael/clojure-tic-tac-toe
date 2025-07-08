@@ -4,6 +4,7 @@
     [tic-tac-toe.tui.console]
     [tic-tac-toe.gui.gui]
     [tic-tac-toe.tui.in-progress]
+    [tic-tac-toe.gui.gui :as q]
     [clojure.tools.cli :as cli]
     [tic-tac-toe.persistence.postgresql :as psql]
     [tic-tac-toe.persistence.file]
@@ -40,6 +41,12 @@
   (prn "->inspect: " x)
   x)
 
+(defn start-game [state]
+  (prn "initial-state:" state)
+  (if (= :gui (:interface state))
+    (q/launch-quil state)
+    (core/play-game state)))
+
 (defn -main [& args]
   (let [{:keys [options errors summary]} (cli/parse-opts args cli-options)
         interface     (cond (:gui options) :gui
@@ -48,11 +55,11 @@
         save          (cond (:edn options) :edn
                             (:sql options) :sql
                             :else :sql)
-        initial-state {:status :config :interface interface :save save}]
+        initial-state (core/initial-state {:status :config :interface interface :save save})]
     (if (seq errors)
       (display-errors errors summary)
       (do
         (when (= save :sql)
           (psql/initialize))
         (println "In Main, calling start-game")
-        (core/start-game initial-state)))))
+        (start-game initial-state)))))

@@ -13,7 +13,7 @@
 
 
 (defn debug-overlay [options]
-  (let [debugging     true
+  (let [debugging     false
         original-draw (:draw options)]
     (assoc options :draw
                    (fn [state]
@@ -36,6 +36,7 @@
 (defn quil-update [state]
   #_(prn "state:" state)
   (->inspect state)
+  state
   (let [new-state (if (q/mouse-pressed?) (assoc state :mouse-click true) (assoc state :mouse-click false))]
       (prn "(:mouse-click state):" (:mouse-click state))
       (prn "(q/mouse-pressed?):" (q/mouse-pressed?))
@@ -46,13 +47,13 @@
         (core/update-state new-state (->inspect val))
        (->inspect new-state))))
 
+(declare tic-tac-toe)
 
-(defmethod core/launch :gui [state]
+(defn launch-quil [state]
   (q/defsketch tic-tac-toe
                :title "Tic-Tac-Toe"
                :size [util/screen-width util/screen-height]
                :setup (constantly state)
                :update quil-update
                :draw core/draw-state
-               ;:mouse-pressed core/get-selection
-               :middleware [m/fun-mode debug-overlay]))
+               :middleware [m/fun-mode #_debug-overlay]))
