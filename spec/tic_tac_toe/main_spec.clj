@@ -56,4 +56,8 @@
       (with-out-str (-main "--fake-flag"))
       (should-have-invoked :exit)))
 
+  (it "calls start-game with the initial-state"
+    (with-redefs [core/start-game (stub :start-game)]
+      (with-out-str (-main))
+      (should-have-invoked :start-game {:with [{:status :config :interface :tui :save :sql}]})))
   )

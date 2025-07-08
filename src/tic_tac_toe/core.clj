@@ -2,14 +2,15 @@
   (:require [tic-tac-toe.board :as board])
   (:import (java.io FileNotFoundException)))
 
-(defn initial-state [interface & [save]]
+(defn initial-state [{:keys [interface save] :as state}]
+  (println "In initial-state, passed in state: " state)
   {:interface           interface
    :board               nil
    :active-player-index 0
    :status              :welcome
    :players             [{:character "X" :play-type nil :difficulty nil}
                          {:character "O" :play-type nil :difficulty nil}]
-   :save                (or save :sql)})
+   :save                save})
 
 (def player-options
   [:human :computer])
@@ -21,9 +22,11 @@
   {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
 
 (defn state-dispatch [state _]
-  [(:interface state) (:status state)])
+  (prn "UPDATING state:" state)
+  (:status state))
 
 (defmulti update-state state-dispatch)
+(defmethod update-state :default [state value] (println "default update-state"))
 
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
@@ -61,12 +64,19 @@
 (defmulti load-game :save)
 (defmulti delete-save :save)
 
+(defmulti get-selection (fn [state & _]
+                          (prn "SELECTING state:" state)
+                          [(:interface state) (:status state)]))
+
+;(defmethod get-selection :default [state] (println "GET-SELECTION BAD SATE: " state))
+
 
 (defn state-draw-dispatch [state]
+  (prn "DRAWING state:" state)
   [(:interface state) (:status state)])
+
 (defmulti draw-state state-draw-dispatch)
 
-(defmulti get-selection (fn [state & _] (:status state)))
 
 (defn take-turn [state]
   (if (currently-human? state)
@@ -78,25 +88,20 @@
         coordinates (board/space->coordinates value board)]
     (assoc state :board (board/take-square board coordinates character))))
 
-(defmulti get-selection :interface)
-
-;(defmethod update-state :exit [state]
-;  state)
-
-(defmethod update-state :winner [{:keys [interface save] :as state} value]
+(defmethod update-state :winner [state value]
   (try
     (delete-save state)
     (catch FileNotFoundException _))
-  (cond (= 1 value) (assoc (initial-state interface save) :status :config-x-type)
+  (cond (= 1 value) (assoc (initial-state state) :status :config-x-type)
         (= 2 value) (assoc state :status :exit)
         :else state)
   state)
 
-(defmethod update-state :tie [{:keys [interface save] :as state} value]
+(defmethod update-state :tie [state value]
   (try
     (delete-save state)
     (catch FileNotFoundException _))
-  (cond (= 1 value) (assoc (initial-state interface save) :status :config-x-type)
+  (cond (= 1 value) (assoc (initial-state state) :status :config-x-type)
         (= 2 value) (assoc state :status :exit)
         :else state)
   state)
@@ -162,12 +167,15 @@
                         (assoc :status :config-x-difficulty))
         :else state))
 
+;(defmethod draw-state :default [state] (println "BAD STATE!!! " state) )
+
 (defmethod update-state :found-save [state value]
   (cond (= 1 value) (assoc state :status :in-progress)
-        (= 2 value) (initial-state (:interface state) (:save state))
+        (= 2 value) (initial-state state)
         :else state))
 
 (defmethod update-state :welcome [state _]
+  (println "WLECOME")
   (let [saved-game (load-game state)]
     (cond (nil? saved-game) (assoc state :status :config-x-type)
           :else (assoc saved-game :status :found-save :interface (:interface state)))))
@@ -188,8 +196,11 @@
 
 (defmulti launch :interface)
 
-(defn start-game [initial-state-params]
-  (let [state (initial-state (:interface initial-state-params) (:save initial-state-params))]
+(defn start-game [starting-state]
+  (prn "initial-state:" starting-state)
+  (let [_ (println "start-game, passed in state" starting-state)
+        state (initial-state starting-state)]
+    (prn "state:" state)
     (launch state)
     (play-game state)))
 
@@ -226,3 +237,18 @@
 ;  (assoc state :board (board/take-square board
 ;                                         (board/space->coordinates next-play board)
 ;                                         (get-in players [active-player-index :character]))))
+;
+; draw
+; mouse-clicked
+; resize
+; key-pressed
+; update
+; recur
+;
+; draw
+; update
+;   if mouse-clicked? (mouse-click-selection) state
+;   if resized? (resize-logic) state
+;   if key-pressed? (key-press-logic) state
+;   (update-state-logic)
+; recur

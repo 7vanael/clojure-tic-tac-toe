@@ -3,7 +3,7 @@
             [tic-tac-toe.core :as core]))
 
 
-(defmethod core/get-selection :welcome [_ _] 1)
+(defmethod core/get-selection [:gui :welcome] [_ _] 1)
 
 (defmethod core/draw-state [:gui :welcome] [_]
   (q/background 240)

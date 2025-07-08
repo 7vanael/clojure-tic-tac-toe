@@ -36,6 +36,10 @@
    [nil "--edn" "Save to EDN files"]
    [nil "--sql" "Save to SQL database (default)"]])
 
+(defn ->inspect [x]
+  (prn "->inspect: " x)
+  x)
+
 (defn -main [& args]
   (let [{:keys [options errors summary]} (cli/parse-opts args cli-options)
         interface     (cond (:gui options) :gui
@@ -50,4 +54,5 @@
       (do
         (when (= save :sql)
           (psql/initialize))
+        (println "In Main, calling start-game")
         (core/start-game initial-state)))))

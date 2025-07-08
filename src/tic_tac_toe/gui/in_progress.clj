@@ -135,7 +135,7 @@
 (defmethod core/get-selection [:gui :in-progress] [{:keys [board] :as state} {:keys [x y]}]
   (let [clicked-cell (find-clicked-cell board x y)
         value        (:value clicked-cell)]
-    (if (number? value) (core/update-state state value) nil)))
+    (when (number? value) value)))
 
 
 ;board-ready state is a mechanism to get the board drawn prior to calling

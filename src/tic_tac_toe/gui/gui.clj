@@ -26,23 +26,33 @@
                          (q/text (str capt " " (fn)) 20 (+ (* 20 ind) 20)))
                        (q/pop-style))))))
 
-;(defn setup []
-;  )
+;(defn setup [state]
+;  (core/initial-state (:interface state) (:save state)))
 
 (defn ->inspect [x]
   (prn "->inspect: " x)
   x)
 
 (defn quil-update [state]
-  (->inspect state))
+  #_(prn "state:" state)
+  (->inspect state)
+  (let [new-state (if (q/mouse-pressed?) (assoc state :mouse-click true) (assoc state :mouse-click false))]
+      (prn "(:mouse-click state):" (:mouse-click state))
+      (prn "(q/mouse-pressed?):" (q/mouse-pressed?))
+      ;and/or will return the last value passed in, so this assigns mouse-clicked result to val if present
+      (if-let [val (and (not (q/mouse-pressed?))
+                        (:mouse-click state)
+                        (core/get-selection new-state {:x (q/mouse-x) :y (q/mouse-y)}))]
+        (core/update-state new-state (->inspect val))
+       (->inspect new-state))))
+
 
 (defmethod core/launch :gui [state]
   (q/defsketch tic-tac-toe
                :title "Tic-Tac-Toe"
                :size [util/screen-width util/screen-height]
-               :setup (fn [] state)
+               :setup (constantly state)
                :update quil-update
-               :draw (fn [state] (q/background 255))
-               ;:draw core/draw-state
-               :mouse-pressed core/get-selection
+               :draw core/draw-state
+               ;:mouse-pressed core/get-selection
                :middleware [m/fun-mode debug-overlay]))

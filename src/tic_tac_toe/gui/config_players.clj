@@ -27,7 +27,7 @@
   (q/text "Choose Player X Computer Difficulty" util/center-x util/title-offset-y)
   (util/draw-3-buttons difficulty-options))
 
-(defmethod core/get-selection :config-x-difficulty [_ {:keys [x y]}]
+(defmethod core/get-selection [:gui :config-x-difficulty] [_ {:keys [x y]}]
   (cond (util/button-clicked? [x y] util/opt1-of-3-rect) 1
         (util/button-clicked? [x y] util/opt2-of-3-rect) 2
         (util/button-clicked? [x y] util/opt3-of-3-rect) 3
@@ -41,7 +41,7 @@
   (q/text "Choose Player O Type" util/center-x util/title-offset-y)
   (util/draw-2-options-buttons type-labels))
 
-(defmethod core/get-selection :config-o-type [_ {:keys [x y]}]
+(defmethod core/get-selection [:gui :config-o-type] [_ {:keys [x y]}]
   (cond (util/button-clicked? [x y] util/opt1-of-2-rect) 1
         (util/button-clicked? [x y] util/opt2-of-2-rect) 2
         :else nil))
@@ -55,7 +55,7 @@
   (util/draw-3-buttons difficulty-options))
 
 
-(defmethod core/get-selection :config-o-difficulty [_ {:keys [x y]}]
+(defmethod core/get-selection [:gui :config-o-difficulty] [_ {:keys [x y]}]
   (cond (util/button-clicked? [x y] util/opt1-of-3-rect) 1
         (util/button-clicked? [x y] util/opt2-of-3-rect) 2
         (util/button-clicked? [x y] util/opt3-of-3-rect) 3

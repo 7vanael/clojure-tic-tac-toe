@@ -14,7 +14,7 @@
   (util/draw-2-options-buttons type-labels))
 
 
-(defmethod core/get-selection :found-save [state {:keys [x y]}]
+(defmethod core/get-selection [:gui :found-save] [state {:keys [x y]}]
   (cond (util/button-clicked? [x y] util/opt1-of-2-rect) 1
         (util/button-clicked? [x y] util/opt2-of-2-rect) 2
         :else nil))

@@ -128,6 +128,14 @@
   (with-stubs)
   (redefs-around [spit (stub :spit)])
 
+  (it "creates an initial state given a starting state"
+    (let [starting-state {:status :config :save :mock :interface :tui}
+          expected-state {:interface :tui :board nil :active-player-index 0
+                          :status :welcome :save :mock :players
+                          [{:character "X" :play-type nil :difficulty nil}
+                           {:character "O" :play-type nil :difficulty nil}]}]
+      (should= expected-state (initial-state starting-state))))
+
   (it "can tell what play-type of turn it is"
     (should= true (currently-human? (state-create {:interface :tui :active-player-index 0 :x-type :human :o-type :human}))))
 

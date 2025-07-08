@@ -1,6 +1,5 @@
 (ns tic-tac-toe.tui.console
-  (:require [clojure.string :as str]
-            [tic-tac-toe.core :as core]))
+  (:require [clojure.string :as str]))
 
 (defn welcome-message []
   (println "Welcome to tic-tac-toe!"))
@@ -69,19 +68,8 @@
 (defn announce-winner [character]
   (println (str (str/capitalize character) " wins! Good game!")))
 
-(defmethod core/update-state [:tui :winner] [{:keys [active-player-index players] :as state}]
-  (let [character (get-in players [active-player-index :character])]
-    (core/delete-save state)
-    (announce-winner character)
-    (assoc state :status :game-over)))
-
 (defn announce-draw []
   (println "It's a draw! Good game!"))
-
-(defmethod core/update-state [:tui :tie] [state]
-  (core/delete-save state)
-  (announce-draw)
-  (assoc state :status :game-over))
 
 (defn display-play-type-options [character options]
   (println "Who will play " character "?")
@@ -112,13 +100,6 @@
 (defn validate-yes-no-entry [input]
   (contains? valid-yes-no-responses input))
 
-;(defn get-yes-no-response [prompt]
-;  (prompt)
-;  (let [input (str/trim (str/lower-case (read-line)))]
-;    (if (validate-yes-no-entry input)
-;      input
-;      (get-yes-no-response prompt))))
-
 (defn get-yes-no-response []
   (let [input (str/trim (str/lower-case (read-line)))]
     (if (validate-yes-no-entry input)
@@ -137,11 +118,9 @@
   (let [input          (read-line)
         size-selection (try (Integer/parseInt input)
                             (catch Exception _
-                              nil))
-        ;option-keys    (vec (keys size-options))
-        ]
+                              nil))]
     (if (and size-selection (>= size-selection 1) (<= size-selection (count size-options)))
-      size-selection ;No longer returns the keys, only 1-3 options
+      size-selection
       (get-board-size size-options))))
 
 (defn display-difficulty-options [char options]
