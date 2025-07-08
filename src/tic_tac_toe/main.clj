@@ -37,12 +37,7 @@
    [nil "--edn" "Save to EDN files"]
    [nil "--sql" "Save to SQL database (default)"]])
 
-(defn ->inspect [x]
-  (prn "->inspect: " x)
-  x)
-
 (defn start-game [state]
-  (prn "initial-state:" state)
   (if (= :gui (:interface state))
     (q/launch-quil state)
     (core/play-game state)))

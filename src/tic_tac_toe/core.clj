@@ -21,30 +21,19 @@
 (def board-options
   {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
 
-(defn state-dispatch [state _]
-  (prn "UPDATING state:" state)
-  (:status state))
-
-(defmulti update-state state-dispatch)
-(defmethod update-state :default [state value] (println "default update-state"))
-
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
 
 (defmulti take-computer-turn get-computer-difficulty)
 
-;(defmulti take-human-turn :interface)   ;Refactor this to get-selection?
-
 (defn currently-human? [{:keys [active-player-index players]}]
   (let [player-type (get-in players [active-player-index :play-type])]
     (= player-type :human)))
-
 
 (defn next-player [board]
   (let [flat-board (flatten board)
         played     (count (filter string? flat-board))]
     (if (even? played) "X" "O")))
-
 
 (def states-to-break-loop
   #{:tie :winner})
@@ -64,19 +53,26 @@
 (defmulti load-game :save)
 (defmulti delete-save :save)
 
-(defmulti get-selection (fn [state & _]
-                          (prn "SELECTING state:" state)
-                          [(:interface state) (:status state)]))
-
-;(defmethod get-selection :default [state] (println "GET-SELECTION BAD SATE: " state))
-
-
 (defn state-draw-dispatch [state]
-  (prn "DRAWING state:" state)
+  (prn "DISPATCH DRAW state:" state)
+  [(:interface state) (:status state)])
+
+(defn state-selection-dispatch [state _]
+  (prn "DISPATCH GET-SELECTION state:" state)
   [(:interface state) (:status state)])
 
 (defmulti draw-state state-draw-dispatch)
+(defmulti get-selection state-selection-dispatch)
 
+;(defmethod draw-state :default [state] (println "BAD STATE!!! " state) )
+;(defmethod get-selection :default [state] (println "GET-SELECTION BAD SATE: " state))
+
+(defn state-status-dispatch [state _]
+  (prn "UPDATING state:" state)
+  (:status state))
+
+(defmulti update-state state-status-dispatch)
+;(defmethod update-state :default [state value] (println "default update-state"))
 
 (defn take-turn [state]
   (if (currently-human? state)
@@ -167,7 +163,6 @@
                         (assoc :status :config-x-difficulty))
         :else state))
 
-;(defmethod draw-state :default [state] (println "BAD STATE!!! " state) )
 
 (defmethod update-state :found-save [state value]
   (cond (= 1 value) (assoc state :status :in-progress)
@@ -180,8 +175,12 @@
     (cond (nil? saved-game) (assoc state :status :config-x-type)
           :else (assoc saved-game :status :found-save :interface (:interface state)))))
 
+(defn active-player-type [{:keys [active-player-index players]}]
+  (get-in players [active-player-index :play-type]))
+
 (defn get-input [state]
-  (if (= :in-progress (:status state))
+  (if (and (= :in-progress (:status state))
+           (= :computer (active-player-type state)))
     (take-turn state)
     (get-selection state)))
 
@@ -195,7 +194,6 @@
             updated-state (update-state state input)]
         (recur updated-state)))))
 
-#_(defmulti launch-quil :interface)
 
 
 
@@ -232,18 +230,3 @@
   ;  (assoc state :board (board/take-square board
   ;                                         (board/space->coordinates next-play board)
   ;                                         (get-in players [active-player-index :character]))))
-  ;
-  ; draw
-  ; mouse-clicked
-  ; resize
-  ; key-pressed
-  ; update
-  ; recur
-  ;
-  ; draw
-  ; update
-  ;   if mouse-clicked? (mouse-click-selection) state
-  ;   if resized? (resize-logic) state
-  ;   if key-pressed? (key-press-logic) state
-  ;   (update-state-logic)
-  ; recur

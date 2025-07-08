@@ -26,28 +26,21 @@
                          (q/text (str capt " " (fn)) 20 (+ (* 20 ind) 20)))
                        (q/pop-style))))))
 
-;(defn setup [state]
-;  (core/initial-state (:interface state) (:save state)))
-
 (defn ->inspect [x]
   (prn "->inspect: " x)
   x)
 
 (defn quil-update [state]
-  #_(prn "state:" state)
   (->inspect state)
   state
   (let [new-state (if (q/mouse-pressed?) (assoc state :mouse-click true) (assoc state :mouse-click false))]
-      (prn "(:mouse-click state):" (:mouse-click state))
-      (prn "(q/mouse-pressed?):" (q/mouse-pressed?))
-      ;and/or will return the last value passed in, so this assigns mouse-clicked result to val if present
-      (if-let [val (and (not (q/mouse-pressed?))
-                        (:mouse-click state)
-                        (core/get-selection new-state {:x (q/mouse-x) :y (q/mouse-y)}))]
-        (core/update-state new-state (->inspect val))
-       (->inspect new-state))))
-
-(declare tic-tac-toe)
+    ;and/or will return the last value passed in, so this assigns mouse-clicked result to val if present
+    (if-let [val (and (not (q/mouse-pressed?))
+                      (:mouse-click state)
+                      (core/get-selection new-state {:x (q/mouse-x) :y (q/mouse-y)}))]
+      ;If mouse-button released, call it a click and see what it gives you
+      (core/update-state new-state (->inspect val))
+      (->inspect new-state))))
 
 (defn launch-quil [state]
   (q/defsketch tic-tac-toe

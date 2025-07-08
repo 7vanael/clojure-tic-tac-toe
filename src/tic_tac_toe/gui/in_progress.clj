@@ -136,15 +136,3 @@
   (let [clicked-cell (find-clicked-cell board x y)
         value        (:value clicked-cell)]
     (when (number? value) value)))
-
-
-;board-ready state is a mechanism to get the board drawn prior to calling
-; update state. It is only active for a single quil cycle
-;(defmethod multis/draw-state :board-ready [state]
-;  (multis/draw-state (assoc state :status :in-progress)))
-;
-;(defmethod multis/mouse-clicked :board-ready [_ _]
-;  1)
-;
-;(defmethod core/update-state [:gui :board-ready] [state _]
-;  (assoc state :status :in-progress))

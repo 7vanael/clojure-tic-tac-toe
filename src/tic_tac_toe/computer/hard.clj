@@ -58,12 +58,13 @@
         blocking-moves
         scored-moves)))
 
-(defn hard [{:keys [board active-player-index players] :as state}]
-  (let [character (get-in players [active-player-index :character])
-        next-play (if (and (> (count (flatten board)) 16) (board/available? board [1 1 1]))
+(defn hard [{:keys [board] :as state}]
+  (let [next-play (if (and (> (count (flatten board)) 16) (board/available? board [1 1 1]))
                     [1 1 1]
                     (first (apply max-key second (shuffle (eval-moves state)))))]
-    (assoc state :board (board/take-square board next-play character))))
+    (prn "next-play:" next-play)
+    (prn "(get-in board next-play):" (get-in board next-play))
+    (get-in :board next-play)))
 
 (defmethod core/take-computer-turn :hard [state]
   (hard state))
