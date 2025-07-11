@@ -3,7 +3,7 @@
             [tic-tac-toe.core :as core]
             [tic-tac-toe.tui.console :refer :all]
             [tic-tac-toe.board_spec :refer :all :as test-board]
-            [tic-tac-toe.core-spec :as test-core]
+            [tic-tac-toe.spec-helper :as helper]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
 (describe "console"
@@ -16,24 +16,24 @@
 
   (it "prints the board state"
     (should= "\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n\n"
-             (with-out-str (display-board test-board/empty-board)))
+             (with-out-str (display-board helper/empty-board)))
 
     (should= "\n  1 |  2 |  3 \n----|----|----\n  4 |  X |  6 \n----|----|----\n  7 |  8 |  9 \n\n"
-             (with-out-str (display-board test-board/center-x-board))))
+             (with-out-str (display-board helper/center-x-board))))
 
   (it "prints the board state for a 4x board"
     (should= "\n  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  6 |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n\n"
-             (with-out-str (display-board test-board/empty-4-board)))
+             (with-out-str (display-board helper/empty-4-board)))
 
     (should= "\n  1 |  2 |  3 |  4 \n----|----|----|----\n  5 |  X |  7 |  8 \n----|----|----|----\n  9 | 10 | 11 | 12 \n----|----|----|----\n 13 | 14 | 15 | 16 \n\n"
-             (with-out-str (display-board test-board/first-X-4-board))))
+             (with-out-str (display-board helper/first-X-4-board))))
 
   (it "prints the board state for a 3d board"
     (should= "\n\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  8 |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n\n"
-             (with-out-str (display-board test-board/empty-3d-board)))
+             (with-out-str (display-board helper/empty-3d-board)))
 
     (should= "\n\nLayer 1:\n  1 |  2 |  3 \n----|----|----\n  4 |  5 |  6 \n----|----|----\n  7 |  X |  9 \n\nLayer 2:\n 10 | 11 | 12 \n----|----|----\n 13 | 14 | 15 \n----|----|----\n 16 | 17 | 18 \n\nLayer 3:\n 19 | 20 | 21 \n----|----|----\n 22 | 23 | 24 \n----|----|----\n 25 | 26 | 27 \n\n\n"
-             (with-out-str (display-board test-board/first-x-3d-board))))
+             (with-out-str (display-board helper/first-x-3d-board))))
 
   (it "prints the number prompt"
     (should= "Please enter the number for the space you'd like to take\n"
@@ -43,7 +43,7 @@
     (with-redefs [print-number-prompt (stub :print-prompt)
                   announce-player     (stub :print-dup)]
       (should= 6 (with-in-str "c\n26\n6\n1\n" (get-next-play
-                                                (test-core/state-create {:interface :tui :board [["X" 2 "O"] ["X" "O" 6] ["O" "X" "O"]]})
+                                                (helper/state-create {:interface :tui :board [["X" 2 "O"] ["X" "O" 6] ["O" "X" "O"]]})
                                                 [2 6])))))
 
   (it "notifies a player that a saved game was found"
@@ -63,23 +63,23 @@
 
   (it "deletes a save when the game ends in a draw"
     (with-redefs [announce-draw (stub :announce)]
-      (let [saved-state  (core/save-game (test-core/state-create
-                                           {:interface :tui
+      (let [saved-state  (core/save-game (helper/state-create
+                                           {:interface           :tui
                                             :save                :mock
-                                            :status :tie
-                                            :board [["X" "X" "X"]]
+                                            :status              :tie
+                                            :board               [["X" "X" "X"]]
                                             :active-player-index 0}))
             ending-state (core/update-state saved-state)]
         (should= (assoc saved-state :status :game-over) ending-state)
-        (should= nil (core/load-game ending-state)))))
+        (should= {:interface :fake :save :mock} (core/load-game {:interface :fake :save :mock})))))
 
   (it "deletes a save when the game ends in a win"
     (with-redefs [announce-winner (stub :announce)]
-      (let [saved-state  (core/save-game (test-core/state-create {:save                :mock :status :winner :interface :tui :board [["X" "X" "X"]]
-                                                                  :active-player-index 0}))
+      (let [saved-state  (core/save-game (helper/state-create {:save                :mock :status :winner :interface :tui :board [["X" "X" "X"]]
+                                                               :active-player-index 0}))
             ending-state (core/update-state saved-state)]
         (should= (assoc saved-state :status :game-over) ending-state)
-        (should= nil (core/load-game ending-state)))))
+        (should= {:interface :fake :save :mock} (core/load-game {:interface :fake :save :mock})))))
 
   (it "announces the winner of a game"
     (should= "X wins! Good game!\n" (with-out-str (announce-winner "X"))))
@@ -143,4 +143,83 @@
     (with-redefs [display-difficulty-options (stub :display-options)]
       (should= :hard (with-in-str "hard\n" (get-difficulty "X" [:easy :medium :hard])))
       (should-have-invoked :display-options)))
+
+  (context "draw-state"
+    (redefs-around [display-board (stub :display-board)
+                    display-difficulty-options (stub :difficulty-options)
+                    display-play-type-options (stub :play-type-options)
+                    board-size-prompt (stub :board-size)
+                    announce-draw (stub :announce-draw)
+                    announce-winner (stub :announce-winner)
+                    announce-player (stub :announce-player)
+                    play-again-prompt (stub :play-again)
+                    save-found-prompt (stub :save-found)
+                    welcome-message (stub :welcome-message)
+                    println (stub :print-dup)])
+    (it "draws the state for a tie game"
+      (let [state       (helper/state-create {:interface :tui :status :tie :board helper/first-X-4-board})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :display-board)
+        (should-have-invoked :announce-draw)
+        (should-have-invoked :play-again)))
+
+
+    (it "draws the state for a won game"
+      (let [state       (helper/state-create {:interface :tui :status :winner :board helper/first-X-4-board})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :display-board)
+        (should-have-invoked :announce-winner)
+        (should-have-invoked :play-again)))
+
+    (it "draws the state for an in-progress game"
+      (let [state       (helper/state-create {:interface :tui :status :in-progress :board helper/first-X-4-board})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :display-board)
+        (should-have-invoked :announce-player)))
+
+    (it "draws the state for selecting a board"
+      (let [state       (helper/state-create {:interface :tui :status :select-board})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :board-size)))
+
+    (it "draws the state for configuring o difficulty"
+      (let [state       (helper/state-create {:interface :tui :status :config-o-difficulty})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :difficulty-options {:with ["O" core/difficulty-options]})))
+
+    (it "draws the state for configuring o type"
+      (let [state       (helper/state-create {:interface :tui :status :config-o-type})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :play-type-options {:with ["O" core/player-options]})))
+
+    (it "draws the state for configuring x difficulty"
+      (let [state       (helper/state-create {:interface :tui :status :config-x-difficulty})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :difficulty-options {:with ["X" core/difficulty-options]})))
+
+    (it "draws the state for configuring x type"
+      (let [state       (helper/state-create {:interface :tui :status :config-x-type})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :play-type-options {:with ["X" core/player-options]})))
+
+    (it "draws the state for a found save"
+      (let [state       (helper/state-create {:interface :tui :status :found-save})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :save-found)))
+
+    (it "draws the state for a found save"
+      (let [state       (helper/state-create {:interface :tui :status :welcome})
+            final-state (core/draw-state state)]
+        (should= state final-state)
+        (should-have-invoked :welcome-message)))
+    )
   )

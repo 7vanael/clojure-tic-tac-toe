@@ -1,7 +1,6 @@
 (ns tic-tac-toe.gui.draw
   (:require [quil.core :as q]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]))
 
 
@@ -71,7 +70,6 @@
   (q/text-size 28)
   (q/text "Choose Board Size" (/ util/screen-width 2) util/title-offset-y)
   (util/draw-3-buttons board-labels))
-
 
 
 (def play-again-labels ["Play Again" "Exit"])

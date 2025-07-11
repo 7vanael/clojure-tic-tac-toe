@@ -2,10 +2,8 @@
   (:require [clojure.test :refer :all]
             [tic-tac-toe.core :as core]))
 
-;;TODO remove argument if possible
-(defn gui-mock-state [_]
+(defn gui-mock-state []
   (core/initial-state {:interface :gui :save :mock}))
-
 
 (defn state-create [{:keys [interface board active-player-index status x-type o-type x-difficulty o-difficulty cells save]
                      :or   {board               nil
@@ -40,6 +38,28 @@
   [[[1 2 3]
     [4 5 6]
     [7 8 9]]
+   [[10 11 12]
+    [13 14 15]
+    [16 17 18]]
+   [[19 20 21]
+    [22 23 24]
+    [25 26 27]]])
+
+(def center-x-board
+  [[1 2 3]
+   [4 "X" 6]
+   [7 8 9]])
+
+(def first-X-4-board
+  [[1 2 3 4]
+   [5 "X" 7 8]
+   [9 10 11 12]
+   [13 14 15 16]])
+
+(def first-x-3d-board
+  [[[1 2 3]
+    [4 5 6]
+    [7 "X" 9]]
    [[10 11 12]
     [13 14 15]
     [16 17 18]]

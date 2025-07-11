@@ -21,11 +21,11 @@
           saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human
                                                :board  [[1 2 "X"] ["O" 5 6] [7 8 9]] :active-player-index 0
                                                :save   :mock})
-          new-state   (assoc (helper/gui-mock-state :mock) :status :config-x-type)]
+          new-state   (assoc (helper/gui-mock-state) :status :config-x-type)]
       (should= new-state (core/mouse-clicked saved-state event))))
 
   (it "returns the state unchanged if no button is clicked"
     (let [event     {:x 2 :y 2}
-          current-state (assoc (helper/gui-mock-state :mock) :status :found-save)]
+          current-state (assoc (helper/gui-mock-state) :status :found-save)]
       (should= current-state (core/mouse-clicked current-state event))))
   )

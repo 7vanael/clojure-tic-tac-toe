@@ -152,3 +152,49 @@
 
 (defn exit-message []
   (println "Thanks for playing!"))
+
+(defmethod core/draw-state [:tui :winner] [{:keys [active-player-index players board] :as state}]
+  (let [character (get-in players [active-player-index :character])]
+    (display-board board)
+    (announce-winner character)
+    (play-again-prompt)
+    state))
+
+(defmethod core/draw-state [:tui :tie] [state]
+  (display-board (:board state))
+  (announce-draw)
+  (play-again-prompt)
+  state)
+
+(defmethod core/draw-state [:tui :in-progress] [{:keys [board] :as state}]
+  (announce-player state)
+  (display-board board)
+  state)
+
+(defmethod core/draw-state [:tui :select-board] [state]
+  (board-size-prompt core/board-options)
+  state)
+
+(defmethod core/draw-state [:tui :config-o-difficulty] [state]
+  (display-difficulty-options "O" core/difficulty-options)
+  state)
+
+(defmethod core/draw-state [:tui :config-x-difficulty] [state]
+  (display-difficulty-options "X" core/difficulty-options)
+  state)
+
+(defmethod core/draw-state [:tui :config-o-type] [state]
+  (display-play-type-options "O" core/player-options)
+  state)
+
+(defmethod core/draw-state [:tui :config-x-type] [state]
+  (display-play-type-options "X" core/player-options)
+  state)
+
+(defmethod core/draw-state [:tui :found-save] [state]
+  (save-found-prompt)
+  state)
+
+(defmethod core/draw-state [:tui :welcome] [state]
+  (welcome-message)
+  state)
