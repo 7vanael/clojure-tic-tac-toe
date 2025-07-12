@@ -170,9 +170,12 @@
              (change-player (state-create {:active-player-index 1 :x-type :human :o-type :human :board center-x-corner-o-board :status :in-progress}))))
 
 
-  (it "does not change the active player if the game is over"
-    (should= (state-create {:active-player-index 0 :x-type :human :o-type :computer :o-difficulty :medium
-                            :board               empty-board :status :winner})
-             (change-player (state-create {:active-player-index 0 :x-type :human :o-type :computer :o-difficulty :medium
-                                           :board               empty-board :status :winner}))))
+  (it "does not change the active player if the game is over (:winner)"
+    (let [state (state-create {:active-player-index 1 :x-type :human :o-type :computer :o-difficulty :medium
+                               :board               empty-board :status :winner})]
+      (should= state (change-player state))))
+  (it "does not change the active player if the game is over (:tie)"
+    (let [state (state-create {:active-player-index 1 :x-type :human :o-type :computer :o-difficulty :medium
+                               :board               empty-board :status :tie})]
+      (should= state (change-player state))))
   )

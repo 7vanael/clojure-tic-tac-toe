@@ -38,6 +38,7 @@
 (defmulti delete-save :save)
 (defmulti draw-state state-dispatch)
 (defmulti mouse-clicked (fn [state & _] (:status state)))
+(defmulti get-selection state-dispatch)
 
 
 
@@ -71,30 +72,25 @@
 (defn change-player [{:keys [active-player-index players board] :as state}]
   (let [current-char               (get-in players [active-player-index :character])
         next-player-char           (next-player board)
-        current-player-not-played? (= current-char next-player-char)]
-    (if current-player-not-played?
+        current-player-not-played? (= current-char next-player-char)
+        game-over?                 (states-to-break-loop (:status state))]
+    (if (or current-player-not-played? game-over?)
       state
       (assoc state :active-player-index
                    (if (= (:active-player-index state) 0)
                      1 0)))))
 
-(defn maybe-game-over [state]
-  (if (contains? states-to-break-loop (:status state))
-    (assoc state :status :game-over)
-    state))
-
-
-
-(defn state-draw-dispatch [state]
-  [(:interface state) (:status state)])
-;This is dependent on both state and interface right now, but will be dependent on
-; only state when refactoring is finished
+;I want status to be :tie or :winner so correct end-message is displayed.
+;(defn maybe-game-over [state]
+;  (if (contains? states-to-break-loop (:status state))
+;    (assoc state :status :game-over)
+;    state))
 
 
 (defn do-update! [state]
   (-> state
       take-turn
       board/evaluate-board
-      maybe-game-over
+      ;maybe-game-over
       change-player
       save-game))

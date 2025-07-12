@@ -70,19 +70,8 @@
 (defn announce-winner [character]
   (println (str (str/capitalize character) " wins! Good game!")))
 
-(defmethod core/update-state [:tui :winner] [{:keys [active-player-index players] :as state}]
-  (let [character (get-in players [active-player-index :character])]
-    (core/delete-save state)
-    (announce-winner character)
-    (assoc state :status :game-over)))
-
 (defn announce-draw []
   (println "It's a draw! Good game!"))
-
-(defmethod core/update-state [:tui :tie] [state]
-  (core/delete-save state)
-  (announce-draw)
-  (assoc state :status :game-over))
 
 (defn display-play-type-options [character options]
   (println "Who will play " character "?")
@@ -113,18 +102,14 @@
 (defn validate-yes-no-entry [input]
   (contains? valid-yes-no-responses input))
 
-(defn get-yes-no-response [prompt]
-  (prompt)
+(defn get-yes-no-response []
   (let [input (str/trim (str/lower-case (read-line)))]
     (if (validate-yes-no-entry input)
       input
-      (get-yes-no-response prompt))))
+      (get-yes-no-response))))
 
-(defn play-again? []
-  (str/includes? (get-yes-no-response play-again-prompt) "y"))
-
-(defn resume? []
-  (str/includes? (get-yes-no-response save-found-prompt) "y"))
+(defn yes-or-no? []
+  (str/includes? (get-yes-no-response) "y"))
 
 (defn board-size-prompt [size-options]
   (println "What size board do you want to play on?")
@@ -132,7 +117,6 @@
     (println (str (inc idx) ") " key))))
 
 (defn get-board-size [size-options]
-  (board-size-prompt size-options)
   (let [input          (read-line)
         size-selection (try (Integer/parseInt input)
                             (catch Exception _
@@ -152,6 +136,10 @@
 
 (defn exit-message []
   (println "Thanks for playing!"))
+
+(defmethod core/draw-state [:tui :game-over] [state]
+  (exit-message)
+  state)
 
 (defmethod core/draw-state [:tui :winner] [{:keys [active-player-index players board] :as state}]
   (let [character (get-in players [active-player-index :character])]

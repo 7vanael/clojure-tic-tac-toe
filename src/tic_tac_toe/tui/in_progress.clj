@@ -6,25 +6,58 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]))
 
+(defmethod core/get-selection [:tui :winner] [_]
+  (console/yes-or-no?))
+(defmethod core/get-selection [:tui :tie] [_]
+  (console/yes-or-no?))
+(defmethod core/get-selection [:tui :in-progress] [{:keys [board] :as state}]
+  (let [play-options (board/play-options board)]
+    (console/get-next-play state play-options)))
+(defmethod core/get-selection [:tui :select-board] [_]
+  (console/get-board-size core/board-options))
+(defmethod core/get-selection [:tui :config-o-difficulty] [_]
+  (let [selection (console/get-selection "O" core/difficulty-options)]
+    (case selection
+      :easy 1
+      :medium 2
+      :hard 3
+      nil)))
+(defmethod core/get-selection [:tui :config-x-difficulty] [_]
+  (let [selection (console/get-selection "X" core/difficulty-options)]
+    (case selection
+      :easy 1
+      :medium 2
+      :hard 3
+      nil)))
+(defmethod core/get-selection [:tui :config-o-type] [_]
+  (if (= :human (console/get-selection "O" core/player-options)) 1 2))
+(defmethod core/get-selection [:tui :config-x-type] [_]
+  (if (= :human (console/get-selection "X" core/player-options)) 1 2))
+(defmethod core/get-selection [:tui :found-save] [_]
+  (console/yes-or-no?))
+(defmethod core/get-selection [:tui :welcome] [_] 1)
+
 (defmethod core/take-human-turn :tui [{:keys [board] :as state}]
   (let [play-options (board/play-options board)
         next-play    (console/get-next-play state play-options)]
     (core/do-take-human-turn state next-play)))
 
 
+(defmethod core/update-state [:tui :winner] [{:keys [active-player-index players] :as state}]
+  (let [character (get-in players [active-player-index :character])]
+    (core/delete-save state)
+    (console/announce-winner character)
+    (assoc state :status :game-over)))
+
+
+(defmethod core/update-state [:tui :tie] [state]
+  (core/delete-save state)
+  (console/announce-draw)
+  (assoc state :status :game-over))
+
 (defmethod core/update-state [:tui :in-progress] [state]
   (console/display-board (:board state))
   (core/do-update! state))
-
-(defn game-loop [state]
-  (loop [current-state state]
-    (when (:board current-state)
-      (console/display-board (:board current-state)))
-    (let [next-state (core/update-state current-state)]
-      (if (= :game-over (:status next-state))
-        (do (console/display-board (:board next-state))
-            next-state)
-        (recur next-state)))))
 
 (defmethod core/update-state [:tui :select-board] [state]
   (let [board-size  (console/get-board-size core/board-options)
@@ -56,30 +89,37 @@
         new-state   (assoc-in state [:players 0 :play-type] type-x)]
     (assoc new-state :status next-status)))
 
-(defn build-state [state]
-  (loop [state state]
-    (if (= (:status state) :ready)
-      (assoc state :status :in-progress)
-      (recur (core/update-state state)))))
-
-(defn initialize-state [save]
-  (build-state (assoc (core/initial-state save) :status :config-x-type)))
-
-(defmethod core/update-state [:tui :found-save] [state]
-  (if (console/resume?)
+(defmethod core/update-state [:tui :found-save] [{:keys [interface save] :as state}]
+  (if (console/yes-or-no?)
     (assoc state :status :in-progress)
-    (initialize-state state)))
+    (assoc (core/initial-state {:interface interface :save save}) :status :config-x-type)))
+
+(defmethod core/update-state [:tui :welcome] [state]
+  (core/draw-state state)
+  (let [saved-game (core/load-game state)]
+    (if (= :found-save (:status saved-game))
+      (assoc saved-game :interface :tui)
+      (assoc (core/initial-state state) :status :config-x-type))))
+
+
+(defn game-loop [state]
+  (loop [current-state state]
+    (core/draw-state state)
+    (let [next-state (core/update-state current-state)]
+      (if (= :game-over (:status next-state))
+        next-state
+        (recur next-state)))))
 
 (defmethod core/start-game :tui [state]
-  (console/welcome-message)
-  (let [starting-state (if-let [saved-game (core/load-game state)]
-                         (core/update-state (assoc saved-game :status :found-save :interface :tui))
-                         (initialize-state state))
-        _              (game-loop starting-state)]
-    (core/delete-save state)
-    (when (console/play-again?)
-      (core/start-game {:interface :tui :save (:save state)}))
-    (console/exit-message)))
+  (assoc state :status :welcome)
+  (game-loop state)
+  #_(console/welcome-message)
+  #_(let [starting-state (core/update-state state)
+          _              (game-loop starting-state)]
+      (core/delete-save state)
+      (when (console/yes-or-no?)
+        (core/start-game {:interface :tui :save (:save state)}))
+      (console/exit-message)))
 
 (defmethod core/update-state [:tui :game-over] [state]
   state)
