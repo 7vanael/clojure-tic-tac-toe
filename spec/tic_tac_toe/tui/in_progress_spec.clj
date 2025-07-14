@@ -3,116 +3,11 @@
             [tic-tac-toe.core-spec :as test-core]
             [tic-tac-toe.tui.in-progress :as sut]
             [tic-tac-toe.tui.console :as console]
-            [tic-tac-toe.core :as core]
-            [tic-tac-toe.persistence.spec-helper :as spec-helper]))
+            [tic-tac-toe.core :as core]))
 
 (describe "tui in-progress"
   (with-stubs)
   (redefs-around [spit (stub :spit)])
-  (before (reset! spec-helper/mock-db nil))
-
-  (context "updates the state"
-    (it "Welcome; checks for a saved game, offers to load it if found"
-      (let [new-game         (test-core/state-create {:status :welcome :interface :tui :save :mock})
-            saved-game-state (core/save-game (test-core/state-create {:interface           :tui :status :in-progress :board [["X" "O" "X"]
-                                                                                                                             [4 "X" 6]
-                                                                                                                             [7 8 "O"]]
-                                                                      :active-player-index 1 :type-x :human :type-o :human :save :mock}))
-            result           (with-in-str "y\n" (core/update-state new-game))]
-
-        (should= (assoc saved-game-state :status :found-save) result)))
-
-    (it "Welcome; proceeds to x-type configuration if no loaded game found"
-      (let [new-game (test-core/state-create {:status :welcome :interface :tui :save :mock})
-            result   (with-in-str "n\n" (core/update-state new-game))]
-        (should= (assoc new-game :status :config-x-type) result)))
-
-    (it "Found-save; resumes play of a loaded game if player selects yes"
-      (with-redefs [core/get-selection (stub :selection {:return true})]
-        (let [state     (test-core/state-create {:interface :tui :status :found-save :active-player-index 1
-                                                 :type-x    :human :type-o :human :save :mock :board [["X" "O" "X"]
-                                                                                                      [4 "X" 6]
-                                                                                                      [7 8 "O"]]})
-              new-state (core/update-state state)]
-          (should= (assoc state :status :in-progress) new-state))))
-
-    (it "Found-save; moves to config-x-type if player selects not to load save"
-      (with-redefs [core/get-selection (stub :selection {:return false})]
-        (let [state     (test-core/state-create {:interface :tui :status :found-save :active-player-index 1
-                                                 :type-x    :human :type-o :human :save :mock :board [["X" "O" "X"]
-                                                                                                      [4 "X" 6]
-                                                                                                      [7 8 "O"]]})
-              clean-state (core/initial-state {:interface :tui :save :mock})
-              new-state (core/update-state state)]
-          (should= (assoc clean-state :status :config-x-type) new-state))))
-
-    (it "Config-x-type; to config-x-difficulty if computer is selected"
-      (with-redefs [core/get-selection (stub :selection {:return :computer})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :config-x-type :save :mock})
-              expected-state (test-core/state-create {:interface :tui :status :config-x-difficulty :save :mock :x-type :computer})]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Config-x-type;to config-o-type if human is selected"
-      (with-redefs [core/get-selection (stub :selection {:return :human})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :config-x-type :save :mock})
-              expected-state (test-core/state-create {:interface :tui :status :config-o-type :save :mock :x-type :human})]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Config-x-difficulty; changes status to config-o-type once difficulty is selected"
-      (with-redefs [core/get-selection (stub :selection {:return :hard})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :config-x-difficulty :save :mock :x-type :computer})
-              expected-state (test-core/state-create {:interface :tui :status :config-o-type :save :mock :x-type :computer :x-difficulty :hard})]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Config-o-type; changes status to config-o-difficulty if computer is selected"
-      (with-redefs [core/get-selection (stub :selection {:return :computer})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :config-o-type :save :mock})
-              expected-state (test-core/state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer})]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Config-o-type; changes status to select-board if human is selected"
-      (with-redefs [core/get-selection (stub :selection {:return :human})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :config-o-type :save :mock})
-              expected-state (test-core/state-create {:interface :tui :status :select-board :save :mock :o-type :human})]
-          (should= expected-state (core/update-state starting-state)))))
-
-
-    (it "Config-o-difficulty; changes status to select-board once difficulty is selected"
-      (with-redefs [core/get-selection (stub :selection {:return :easy})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer})
-              expected-state (test-core/state-create {:interface :tui :status :select-board :save :mock :o-type :computer :o-difficulty :easy})]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Select-board; changes status to in-progress and populates a board once a board has been selected"
-      (with-redefs [core/get-selection (stub :selection {:return 3})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :select-board :save :mock})
-              expected-state (test-core/state-create {:interface :tui :status :in-progress :save :mock :board [[1 2 3] [4 5 6] [7 8 9]]})]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Tie; changes status to config-x-type if get-selection (play again) returns true"
-      (with-redefs [core/get-selection (stub :selection {:return true})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :tie :save :mock :board [[1 2 3] [4 5 6] [7 8 9]] :x-type :human :o-type :computer :o-difficulty :medium})
-              expected-state (test-core/state-create {:interface :tui :status :config-x-type :save :mock })]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Tie; changes status to game-over if get-selection (play again) returns false"
-      (with-redefs [core/get-selection (stub :selection {:return false})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :tie :save :mock :board [[1 2 3] [4 5 6] [7 8 9]] :x-type :human :o-type :computer :o-difficulty :medium})
-              expected-state (test-core/state-create {:interface :tui :status :game-over :save :mock :board [[1 2 3] [4 5 6] [7 8 9]] :x-type :human :o-type :computer :o-difficulty :medium})]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Winner; changes status to config-x-type if get-selection (play again) returns true"
-      (with-redefs [core/get-selection (stub :selection {:return true})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :winner :save :mock :board [[1 2 3] [4 5 6] [7 8 9]] :x-type :human :o-type :computer :o-difficulty :medium})
-              expected-state (test-core/state-create {:interface :tui :status :config-x-type :save :mock })]
-          (should= expected-state (core/update-state starting-state)))))
-
-    (it "Winner; changes status to game-over if get-selection (play again) returns false"
-      (with-redefs [core/get-selection (stub :selection {:return false})]
-        (let [starting-state (test-core/state-create {:interface :tui :status :winner :save :mock :board [[1 2 3] [4 5 6] [7 8 9]] :x-type :human :o-type :computer :o-difficulty :medium})
-              expected-state (test-core/state-create {:interface :tui :status :game-over :save :mock :board [[1 2 3] [4 5 6] [7 8 9]] :x-type :human :o-type :computer :o-difficulty :medium})]
-          (should= expected-state (core/update-state starting-state)))))
-    )
 
   (context "get-selection"
     (it "found-save; gets a true/false"

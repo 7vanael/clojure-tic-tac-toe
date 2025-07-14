@@ -30,7 +30,7 @@
 
 ;(defmulti select-box active-player-type)
 (defmulti start-game :interface)
-(defmulti update-state state-dispatch)
+(defmulti update-state :status)
 (defmulti take-computer-turn get-computer-difficulty)
 (defmulti take-human-turn :interface)
 (defmulti save-game :save)
@@ -40,9 +40,8 @@
 (defmulti mouse-clicked (fn [state & _] (:status state)))
 (defmulti get-selection state-dispatch)
 
-(defn currently-human? [{:keys [active-player-index players]}]
-  (let [player-type (get-in players [active-player-index :play-type])]
-    (= player-type :human)))
+(defn currently-human? [state]
+  (= :human (active-player-type state)))
 
 (defn next-player [board]
   (let [flat-board (flatten board)
@@ -70,17 +69,63 @@
       state
       (assoc state :active-player-index (if (= (:active-player-index state) 0) 1 0)))))
 
-;I want status to be :tie or :winner so correct end-message is displayed.
-;(defn maybe-game-over [state]
-;  (if (contains? states-to-break-loop (:status state))
-;    (assoc state :status :game-over)
-;    state))
-
 
 (defn do-update! [state]
   (-> state
       take-turn
       board/evaluate-board
-      ;maybe-game-over
-      change-player ;This will just not happen if in an end-game status. Want to keep win/tie
+      change-player
       save-game))
+
+(defmethod update-state :winner [state]
+  (delete-save state)
+  (if (get-selection state)
+    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (assoc state :status :game-over)))
+
+(defmethod update-state :tie [state]
+  (delete-save state)
+  (if (get-selection state)
+    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (assoc state :status :game-over)))
+
+(defmethod update-state :select-board [state]
+  (let [board-size  (get-selection state)
+        next-status :in-progress
+        new-state   (assoc state :board (board/new-board board-size))]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-o-difficulty [state]
+  (let [difficulty-o (get-selection state)
+        next-status  :select-board
+        new-state    (assoc-in state [:players 1 :difficulty] difficulty-o)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-x-difficulty [state]
+  (let [difficulty-x (get-selection state)
+        next-status  :config-o-type
+        new-state    (assoc-in state [:players 0 :difficulty] difficulty-x)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-o-type [state]
+  (let [type-o      (get-selection state)
+        next-status (if (= type-o :human) :select-board :config-o-difficulty)
+        new-state   (assoc-in state [:players 1 :play-type] type-o)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-x-type [state]
+  (let [type-x      (get-selection state)
+        next-status (if (= type-x :human) :config-o-type :config-x-difficulty)
+        new-state   (assoc-in state [:players 0 :play-type] type-x)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :found-save [{:keys [interface save] :as state}]
+  (if (get-selection state)
+    (assoc state :status :in-progress)
+    (assoc (initial-state {:interface interface :save save}) :status :config-x-type)))
+
+(defmethod update-state :welcome [state]
+  (let [saved-game (load-game state)]
+    (if (= :found-save (:status saved-game))
+      (assoc saved-game :interface :tui)
+      (assoc (initial-state state) :status :config-x-type))))

@@ -1,7 +1,6 @@
 (ns tic-tac-toe.gui.in-progress
   (:require [quil.core :as q :include-macros true]
             [tic-tac-toe.gui.gui-util :as util]
-            [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]))
 
 (def usable-screen util/screen-width)
@@ -124,7 +123,6 @@
     (q/text-size (if is-3d? (/ cell-size 3) (/ cell-size 2)))
     (draw-grid cells)))
 
-
 (defn find-clicked-cell [board x y]
   (let [is-3d?    (board-3d? board)
         cells     (generate-cells board)
@@ -145,21 +143,3 @@
       state)))
 
 (defmethod core/take-human-turn :gui [state] state)
-
-#_(defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state} value]
-  (let [cells     (generate-cells board)
-        new-state (assoc state :cells cells)]
-    (if (and (board/available? board value) #_(= :human player-type))
-      (core/do-update! (core/do-take-human-turn new-state value))
-      new-state)))
-
-;board-ready state is a mechanism to get the board drawn prior to calling
-; update state. It is only active for a single quil cycle
-;(defmethod multis/draw-state :board-ready [state]
-;  (multis/draw-state (assoc state :status :in-progress)))
-;
-;(defmethod multis/mouse-clicked :board-ready [_ _]
-;  1)
-;
-;(defmethod core/update-state [:gui :board-ready] [state _]
-;  (assoc state :status :in-progress))
