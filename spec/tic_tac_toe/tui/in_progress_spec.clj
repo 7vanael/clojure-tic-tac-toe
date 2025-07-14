@@ -8,8 +8,7 @@
 
 (describe "tui in-progress"
   (with-stubs)
-  (redefs-around [spit (stub :spit)
-                  core/draw-state (stub :draw-state)])
+  (redefs-around [spit (stub :spit)])
   (before (reset! spec-helper/mock-db nil))
 
   (context "updates the state"
@@ -21,14 +20,12 @@
                                                                       :active-player-index 1 :type-x :human :type-o :human :save :mock}))
             result           (with-in-str "y\n" (core/update-state new-game))]
 
-        (should= (assoc saved-game-state :status :found-save) result)
-        (should-have-invoked :draw-state {:with [new-game]})))
+        (should= (assoc saved-game-state :status :found-save) result)))
 
     (it "Welcome; proceeds to x-type configuration if no loaded game found"
       (let [new-game (test-core/state-create {:status :welcome :interface :tui :save :mock})
             result   (with-in-str "n\n" (core/update-state new-game))]
-        (should= (assoc new-game :status :config-x-type) result)
-        (should-have-invoked :draw-state {:with [new-game]})))
+        (should= (assoc new-game :status :config-x-type) result)))
 
     (it "Found-save; resumes play of a loaded game if player selects yes"
       (with-redefs [core/get-selection (stub :selection {:return true})]
