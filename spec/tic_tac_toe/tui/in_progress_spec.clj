@@ -1,7 +1,7 @@
 (ns tic-tac-toe.tui.in_progress_spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.core-spec :as test-core]
-            [tic-tac-toe.tui.in-progress :refer :all]
+            [tic-tac-toe.tui.in-progress :as sut]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))

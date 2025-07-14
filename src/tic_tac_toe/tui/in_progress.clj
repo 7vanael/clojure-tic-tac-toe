@@ -11,7 +11,6 @@
         next-play    (console/get-next-play state play-options)]
     (core/do-take-human-turn state next-play)))
 
-
 (defmethod core/get-selection [:tui :winner] [_]
   (= "y" (console/get-yes-no-response)))
 (defmethod core/update-state [:tui :winner] [state]
@@ -60,7 +59,7 @@
 (defmethod core/get-selection [:tui :config-o-type] [_]
   (console/get-selection core/player-options))
 (defmethod core/update-state [:tui :config-o-type] [state]
-  (let [type-o      (core/get-selection core/player-options)
+  (let [type-o      (core/get-selection state)
         next-status (if (= type-o :human) :select-board :config-o-difficulty)
         new-state   (assoc-in state [:players 1 :play-type] type-o)]
     (assoc new-state :status next-status)))
@@ -81,7 +80,6 @@
     (assoc (core/initial-state {:interface interface :save save}) :status :config-x-type)))
 
 (defmethod core/update-state [:tui :welcome] [state]
-  (core/draw-state state)
   (let [saved-game (core/load-game state)]
     (if (= :found-save (:status saved-game))
       (assoc saved-game :interface :tui)
@@ -90,15 +88,19 @@
 
 (defn game-loop [state]
   (loop [current-state state]
-    (core/draw-state state)
-    (let [next-state (core/update-state current-state)]
+    (core/draw-state current-state)
+    (let [next-state (core/update-state current-state)
+          _ (prn "state:" state)
+          _ (prn "current-state:" current-state)
+          _ (prn "next-state:" next-state)]
       (if (= :game-over (:status next-state))
         next-state
         (recur next-state)))))
 
 (defmethod core/start-game :tui [state]
-  (assoc state :status :welcome)
-  (game-loop state))
+  (-> state
+      (assoc :status :welcome)
+      game-loop))
 
 ;(defmethod core/update-state [:tui :game-over] [state]
 ;  state)

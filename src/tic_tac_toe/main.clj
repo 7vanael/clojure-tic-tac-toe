@@ -2,7 +2,9 @@
   (:require
     [tic-tac-toe.core :as core]
     [tic-tac-toe.tui.console]
+    [tic_tac_toe.tui.in-progress]
     [tic-tac-toe.gui.gui]
+    [tic-tac-toe.persistence.postgresql]
     [clojure.tools.cli :as cli]))
 
 (defn print-option-info []
