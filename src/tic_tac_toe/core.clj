@@ -25,9 +25,9 @@
   [(:interface state) (:status state)])
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
-;(defn active-player-type [{:keys [players active-player-index]}]
-;  (get-in players [active-player-index :play-type]))
-;
+(defn active-player-type [{:keys [players active-player-index]}]
+  (get-in players [active-player-index :play-type]))
+
 ;(defmulti select-box active-player-type)
 (defmulti start-game :interface)
 (defmulti update-state state-dispatch)

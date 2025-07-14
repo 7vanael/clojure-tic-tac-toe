@@ -132,13 +132,16 @@
         half-size (/ cell-size 2)]
     (first (filter #(cell-contains-point? % x y half-size) cells))))
 
+(defn take-human-turn [state value]
+  (-> state
+      (core/do-take-human-turn value)
+      core/do-update!))
+
 (defmethod core/mouse-clicked :in-progress [{:keys [board] :as state} {:keys [x y]}]
   (let [clicked-cell (find-clicked-cell board x y)
         value        (:value clicked-cell)]
-    (if (number? value)
-      (-> state
-          (core/do-take-human-turn value)
-          core/do-update!)
+    (if (and (number? value) (= :human (core/active-player-type state)))
+      (take-human-turn state value)
       state)))
 
 (defmethod core/take-human-turn :gui [state] state)

@@ -40,12 +40,12 @@
 
 (defmethod core/mouse-clicked :config-o-difficulty [state {:keys [x y]}]
   (cond (easy-clicked? x y) (-> state
-                                (assoc-in [:players 0 :difficulty] :easy)
+                                (assoc-in [:players 1 :difficulty] :easy)
                                 (assoc :status :select-board))
         (medium-clicked? x y) (-> state
-                                  (assoc-in [:players 0 :difficulty] :medium)
+                                  (assoc-in [:players 1 :difficulty] :medium)
                                   (assoc :status :select-board))
         (hard-clicked? x y) (-> state
-                                (assoc-in [:players 0 :difficulty] :hard)
+                                (assoc-in [:players 1 :difficulty] :hard)
                                 (assoc :status :select-board))
         :else state))

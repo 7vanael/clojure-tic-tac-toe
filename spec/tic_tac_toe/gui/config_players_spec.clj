@@ -101,7 +101,7 @@
             new-state (core/mouse-clicked starting-state event)
             expected (-> starting-state
                          (assoc :status :select-board)
-                         (assoc-in [:players 0 :difficulty] :easy))]
+                         (assoc-in [:players 1 :difficulty] :easy))]
         (should= expected new-state)))
 
     (it "moves to config o type if x-difficulty is set to medium"
@@ -110,7 +110,7 @@
             new-state (core/mouse-clicked starting-state event)
             expected (-> starting-state
                          (assoc :status :select-board)
-                         (assoc-in [:players 0 :difficulty] :medium))]
+                         (assoc-in [:players 1 :difficulty] :medium))]
         (should= expected new-state)))
 
     (it "moves to config o type if x-difficulty is set to hard"
@@ -119,7 +119,7 @@
             new-state (core/mouse-clicked starting-state event)
             expected (-> starting-state
                          (assoc :status :select-board)
-                         (assoc-in [:players 0 :difficulty] :hard))]
+                         (assoc-in [:players 1 :difficulty] :hard))]
         (should= expected new-state)))
 
     (it "returns the state unchanged if no button is clicked"

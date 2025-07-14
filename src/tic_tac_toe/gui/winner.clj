@@ -12,5 +12,5 @@
     (core/delete-save state)
     (catch FileNotFoundException _))
   (cond (yes-clicked? x y) (assoc (core/initial-state {:save (:save state) :interface (:interface state)}) :status :config-x-type)
-        (no-clicked? x y) (assoc state :status :exit)
+        (no-clicked? x y) (System/exit 0)
         :else state))

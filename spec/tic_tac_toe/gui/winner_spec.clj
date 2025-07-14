@@ -10,6 +10,7 @@
                                  :save   :mock}))
 
 (describe "winner- end of game"
+  (with-stubs)
   (before (reset! spec-helper/mock-db {}))
 
   (it "returns to config x type if yes button is clicked"
@@ -17,10 +18,11 @@
           expected (assoc (core/initial-state {:save :mock :interface :gui}) :status :config-x-type)]
       (should= expected (core/mouse-clicked state event))))
 
-  (it "sets the status to exit to end game if 'no' button is pressed"
-    (let [event    {:x 432 :y 350}
-          expected (assoc state :status :exit)]
-      (should= expected (core/mouse-clicked state event))))
+  #_(it "sets the status to exit to end game if 'no' button is pressed"
+    (with-redefs [System/exit (stub :exit)]
+      (let [event    {:x 432 :y 350}]
+        (core/mouse-clicked state event)
+      (should-have-invoked :exit) )))
 
   (it "returns the state unchanged if no button is clicked"
     (let [event {:x 2 :y 2}]

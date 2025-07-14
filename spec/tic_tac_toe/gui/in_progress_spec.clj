@@ -115,8 +115,7 @@
     (it "identifies which square was clicked on, if any"
       (should= {:x 288, :y 252, :z 1, :value 14} (find-clicked-cell test-board/empty-3d-board 288 234))
       (should-not (find-clicked-cell test-board/empty-3d-board 288 670)))
-
-    (it "does not update if invalid play clicked"
+    (it "returns state unchanged if invalid play clicked"
       (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                     :active-player-index 0
                                                     :interface           :gui
@@ -127,11 +126,30 @@
                                                     :save                :mock})
             event          {:x (+ grid-origin-x (/ usable-screen 2)) ;space [1 1]
                             :y (+ grid-origin-y-2d (/ usable-screen 2))}]
-        (should= nil (core/mouse-clicked starting-state event)))
+        (should= starting-state (core/mouse-clicked starting-state event)))
       )
 
-    #_(it "does not update if active player is not human"
-        ;Mouse-click is not responsible for validating player
+    (it "updates the state with the board and calls do-update when a human player clicks a valid square"
+      (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
+                                                    :active-player-index 0
+                                                    :interface           :gui
+                                                    :status              :in-progress
+                                                    :x-type              :human
+                                                    :o-type              :computer
+                                                    :save                :mock})
+            event          {:x 96
+                            :y 624}
+            expected (test-core/state-create {:board               test-board/center-x-corner-xo-board
+                                              :active-player-index 1
+                                              :interface           :gui
+                                              :status              :in-progress
+                                              :x-type              :human
+                                              :o-type              :computer
+                                              :save                :mock})]
+        (should= expected (core/mouse-clicked starting-state event)))
+      )
+
+    (it "does not update if active player is not human"
         (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                       :active-player-index 0
                                                       :status              :in-progress
@@ -147,8 +165,7 @@
           (should= (:board starting-state) (:board (core/mouse-clicked starting-state event))))
         )
 
-    #_(it "does update the board, evaluate it and change players if valid play is selected & player is human"
-        ;Take turn is not responsible for changing active player
+    (it "does update the board, evaluate it and change players if valid play is selected & player is human"
         (let [starting-state (test-core/state-create {:board               test-board/center-x-corner-o-board
                                                       :active-player-index 0
                                                       :status              :in-progress
