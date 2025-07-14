@@ -69,7 +69,6 @@
       state
       (assoc state :active-player-index (if (= (:active-player-index state) 0) 1 0)))))
 
-
 (defn do-update! [state]
   (-> state
       take-turn
@@ -77,55 +76,8 @@
       change-player
       save-game))
 
-(defmethod update-state :winner [state]
-  (delete-save state)
-  (if (get-selection state)
-    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
-    (assoc state :status :game-over)))
+(defn fresh-start [{:keys [interface save]}]
+  (initial-state {:interface interface :save save :status :config-x-type}))
 
-(defmethod update-state :tie [state]
-  (delete-save state)
-  (if (get-selection state)
-    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
-    (assoc state :status :game-over)))
-
-(defmethod update-state :select-board [state]
-  (let [board-size  (get-selection state)
-        next-status :in-progress
-        new-state   (assoc state :board (board/new-board board-size))]
-    (assoc new-state :status next-status)))
-
-(defmethod update-state :config-o-difficulty [state]
-  (let [difficulty-o (get-selection state)
-        next-status  :select-board
-        new-state    (assoc-in state [:players 1 :difficulty] difficulty-o)]
-    (assoc new-state :status next-status)))
-
-(defmethod update-state :config-x-difficulty [state]
-  (let [difficulty-x (get-selection state)
-        next-status  :config-o-type
-        new-state    (assoc-in state [:players 0 :difficulty] difficulty-x)]
-    (assoc new-state :status next-status)))
-
-(defmethod update-state :config-o-type [state]
-  (let [type-o      (get-selection state)
-        next-status (if (= type-o :human) :select-board :config-o-difficulty)
-        new-state   (assoc-in state [:players 1 :play-type] type-o)]
-    (assoc new-state :status next-status)))
-
-(defmethod update-state :config-x-type [state]
-  (let [type-x      (get-selection state)
-        next-status (if (= type-x :human) :config-o-type :config-x-difficulty)
-        new-state   (assoc-in state [:players 0 :play-type] type-x)]
-    (assoc new-state :status next-status)))
-
-(defmethod update-state :found-save [{:keys [interface save] :as state}]
-  (if (get-selection state)
-    (assoc state :status :in-progress)
-    (assoc (initial-state {:interface interface :save save}) :status :config-x-type)))
-
-(defmethod update-state :welcome [state]
-  (let [saved-game (load-game state)]
-    (if (= :found-save (:status saved-game))
-      (assoc saved-game :interface :tui)
-      (assoc (initial-state state) :status :config-x-type))))
+(defn go-in-progress [state]
+  (assoc state :status :in-progress))
