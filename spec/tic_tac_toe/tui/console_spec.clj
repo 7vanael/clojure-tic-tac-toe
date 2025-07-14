@@ -3,7 +3,6 @@
             [tic-tac-toe.core :as core]
             [tic-tac-toe.tui.in-progress]
             [tic-tac-toe.tui.console :as sut]
-            [tic-tac-toe.board_spec :refer :all :as test-board]
             [tic-tac-toe.spec-helper :as helper]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
@@ -64,7 +63,7 @@
     (should= "It's a draw! Good game!\n" (with-out-str (sut/announce-draw))))
 
   (it "deletes a save when the game ends in a draw"
-    (with-redefs [sut/announce-draw (stub :announce)]
+    (with-redefs [core/get-selection (stub :get-selection {:return false})]
       (let [saved-state  (core/save-game (helper/state-create
                                            {:interface           :tui
                                             :save                :mock
@@ -73,10 +72,10 @@
                                             :active-player-index 0}))
             ending-state (core/update-state saved-state)]
         (should= (assoc saved-state :status :game-over) ending-state)
-        (should= {:interface :fake :save :mock} (core/load-game {:interface :fake :save :mock})))))
+        (should= {:interface :fake :save :mock} (with-in-str "n\n" (core/load-game {:interface :fake :save :mock}))))))
 
   (it "deletes a save when the game ends in a win"
-    (with-redefs [sut/announce-winner (stub :announce)]
+    (with-redefs [core/get-selection (stub :get-selection {:return false})]
       (let [saved-state  (core/save-game (helper/state-create {:save                :mock :status :winner :interface :tui :board [["X" "X" "X"]]
                                                                :active-player-index 0}))
             ending-state (core/update-state saved-state)]
@@ -90,10 +89,6 @@
     (should= "Who will play  X ?\nhuman\ncomputer\n"
              (with-out-str (sut/display-play-type-options "X" [:human :computer]))))
 
-  (it "asks the user for who should play character O"
-    (with-redefs [sut/display-play-type-options (stub :display-options)]
-      (should= :human (with-in-str "human\n" (sut/get-player-type "X" [:human :computer])))
-      (should-have-invoked :display-options)))
 
   (it "asks the player if they want to play again"
     (should= "Would you like to play again? (y/n)\n"
@@ -140,11 +135,6 @@
   (it "prints the difficulty options"
     (should= "What difficulty setting should X use?\neasy\nmedium\nhard\n"
              (with-out-str (sut/display-difficulty-options "X" [:easy :medium :hard]))))
-
-  (it "asks the user for the difficulty selection for character X"
-    (with-redefs [sut/display-difficulty-options (stub :display-options)]
-      (should= :hard (with-in-str "hard\n" (sut/get-difficulty "X" [:easy :medium :hard])))
-      (should-have-invoked :display-options)))
 
   (it "prints the exit-message"
     (should= "Thanks for playing!\n" (with-out-str (sut/exit-message))))

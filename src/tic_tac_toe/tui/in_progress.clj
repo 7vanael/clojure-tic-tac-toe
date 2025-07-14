@@ -6,91 +6,77 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]))
 
-(defmethod core/get-selection [:tui :winner] [_]
-  (console/yes-or-no?))
-(defmethod core/get-selection [:tui :tie] [_]
-  (console/yes-or-no?))
-(defmethod core/get-selection [:tui :in-progress] [{:keys [board] :as state}]
-  (let [play-options (board/play-options board)]
-    (console/get-next-play state play-options)))
-(defmethod core/get-selection [:tui :select-board] [_]
-  (console/get-board-size core/board-options))
-(defmethod core/get-selection [:tui :config-o-difficulty] [_]
-  (let [selection (console/get-selection "O" core/difficulty-options)]
-    (case selection
-      :easy 1
-      :medium 2
-      :hard 3
-      nil)))
-(defmethod core/get-selection [:tui :config-x-difficulty] [_]
-  (let [selection (console/get-selection "X" core/difficulty-options)]
-    (case selection
-      :easy 1
-      :medium 2
-      :hard 3
-      nil)))
-(defmethod core/get-selection [:tui :config-o-type] [_]
-  (if (= :human (console/get-selection "O" core/player-options)) 1 2))
-(defmethod core/get-selection [:tui :config-x-type] [_]
-  (if (= :human (console/get-selection "X" core/player-options)) 1 2))
-(defmethod core/get-selection [:tui :found-save] [_]
-  (console/yes-or-no?))
-(defmethod core/get-selection [:tui :welcome] [_] 1)
-
 (defmethod core/take-human-turn :tui [{:keys [board] :as state}]
   (let [play-options (board/play-options board)
         next-play    (console/get-next-play state play-options)]
     (core/do-take-human-turn state next-play)))
 
 
-(defmethod core/update-state [:tui :winner] [{:keys [active-player-index players] :as state}]
-  (let [character (get-in players [active-player-index :character])]
-    (core/delete-save state)
-    (console/announce-winner character)
+(defmethod core/get-selection [:tui :winner] [_]
+  (= "y" (console/get-yes-no-response)))
+(defmethod core/update-state [:tui :winner] [state]
+  (core/delete-save state)
+  (if (core/get-selection state)
+    (assoc (core/initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
     (assoc state :status :game-over)))
 
-
+(defmethod core/get-selection [:tui :tie] [_]
+  (= "y" (console/get-yes-no-response)))
 (defmethod core/update-state [:tui :tie] [state]
   (core/delete-save state)
-  (console/announce-draw)
-  (assoc state :status :game-over))
+  (if (core/get-selection state)
+    (assoc (core/initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (assoc state :status :game-over)))
 
 (defmethod core/update-state [:tui :in-progress] [state]
   (console/display-board (:board state))
   (core/do-update! state))
 
+(defmethod core/get-selection [:tui :select-board] [_]
+  (console/get-board-size core/board-options))
 (defmethod core/update-state [:tui :select-board] [state]
-  (let [board-size  (console/get-board-size core/board-options)
-        next-status :ready
+  (let [board-size  (core/get-selection state)
+        next-status :in-progress
         new-state   (assoc state :board (board/new-board board-size))]
     (assoc new-state :status next-status)))
 
+(defmethod core/get-selection [:tui :config-o-difficulty] [_]
+  (console/get-selection core/difficulty-options))
 (defmethod core/update-state [:tui :config-o-difficulty] [state]
-  (let [difficulty-o (console/get-difficulty "O" core/difficulty-options)
+  (let [difficulty-o (core/get-selection state)
         next-status  :select-board
         new-state    (assoc-in state [:players 1 :difficulty] difficulty-o)]
     (assoc new-state :status next-status)))
 
+(defmethod core/get-selection [:tui :config-x-difficulty] [_]
+  (console/get-selection core/difficulty-options))
 (defmethod core/update-state [:tui :config-x-difficulty] [state]
-  (let [difficulty-x (console/get-difficulty "X" core/difficulty-options)
+  (let [difficulty-x (core/get-selection state)
         next-status  :config-o-type
         new-state    (assoc-in state [:players 0 :difficulty] difficulty-x)]
     (assoc new-state :status next-status)))
 
+
+(defmethod core/get-selection [:tui :config-o-type] [_]
+  (console/get-selection core/player-options))
 (defmethod core/update-state [:tui :config-o-type] [state]
-  (let [type-o      (console/get-player-type "O" core/player-options)
+  (let [type-o      (core/get-selection core/player-options)
         next-status (if (= type-o :human) :select-board :config-o-difficulty)
         new-state   (assoc-in state [:players 1 :play-type] type-o)]
     (assoc new-state :status next-status)))
 
+(defmethod core/get-selection [:tui :config-x-type] [_]
+  (console/get-selection core/player-options))
 (defmethod core/update-state [:tui :config-x-type] [state]
-  (let [type-x      (console/get-player-type "X" core/player-options)
+  (let [type-x      (core/get-selection state)
         next-status (if (= type-x :human) :config-o-type :config-x-difficulty)
         new-state   (assoc-in state [:players 0 :play-type] type-x)]
     (assoc new-state :status next-status)))
 
+(defmethod core/get-selection [:tui :found-save] [_]
+  (= "y" (console/get-yes-no-response)))
 (defmethod core/update-state [:tui :found-save] [{:keys [interface save] :as state}]
-  (if (console/yes-or-no?)
+  (if (core/get-selection state)
     (assoc state :status :in-progress)
     (assoc (core/initial-state {:interface interface :save save}) :status :config-x-type)))
 
@@ -112,14 +98,38 @@
 
 (defmethod core/start-game :tui [state]
   (assoc state :status :welcome)
-  (game-loop state)
-  #_(console/welcome-message)
-  #_(let [starting-state (core/update-state state)
-          _              (game-loop starting-state)]
-      (core/delete-save state)
-      (when (console/yes-or-no?)
-        (core/start-game {:interface :tui :save (:save state)}))
-      (console/exit-message)))
+  (game-loop state))
 
-(defmethod core/update-state [:tui :game-over] [state]
-  state)
+;(defmethod core/update-state [:tui :game-over] [state]
+;  state)
+
+;(defmethod core/get-selection [:tui :winner] [_]
+;  (console/yes-or-no?))
+;(defmethod core/get-selection [:tui :tie] [_]
+;  (console/yes-or-no?))
+;(defmethod core/get-selection [:tui :in-progress] [{:keys [board] :as state}]
+;  (let [play-options (board/play-options board)]
+;    (console/get-next-play state play-options)))
+;(defmethod core/get-selection [:tui :select-board] [_]
+;  (console/get-board-size core/board-options))
+;(defmethod core/get-selection [:tui :config-o-difficulty] [_]
+;  (let [selection (console/get-selection core/difficulty-options)]
+;    (case selection
+;      :easy 1
+;      :medium 2
+;      :hard 3
+;      nil)))
+;(defmethod core/get-selection [:tui :config-x-difficulty] [_]
+;  (let [selection (console/get-selection core/difficulty-options)]
+;    (case selection
+;      :easy 1
+;      :medium 2
+;      :hard 3
+;      nil)))
+;(defmethod core/get-selection [:tui :config-o-type] [_]
+;  (if (= :human (console/get-selection core/player-options)) 1 2))
+;(defmethod core/get-selection [:tui :config-x-type] [_]
+;  (if (= :human (console/get-selection core/player-options)) 1 2))
+;(defmethod core/get-selection [:tui :found-save] [_]
+;  (console/yes-or-no?))
+;(defmethod core/get-selection [:tui :welcome] [_] 1)
