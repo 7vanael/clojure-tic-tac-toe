@@ -5,8 +5,6 @@
             [tic-tac-toe.spec-helper :as helper]))
 
 (describe "select board"
-  (with-stubs)
-  (redefs-around [core/update-state (stub :update-state)])
 
   (it "moves to in-progress with board of 3x3 if 3x3 button pressed"
     (let [event     {:x 288 :y 288}

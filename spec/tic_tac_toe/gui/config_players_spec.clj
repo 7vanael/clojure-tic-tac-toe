@@ -5,8 +5,6 @@
             [tic-tac-toe.spec-helper :as helper]))
 
 (describe "configure players"
-  (with-stubs)
-  (redefs-around [core/update-state (stub :update-state)])
 
   (context "config x-type"
     (it "moves to config o type and sets x-type to Human if human button clicked"

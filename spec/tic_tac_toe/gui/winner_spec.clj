@@ -10,8 +10,6 @@
                                  :save   :mock}))
 
 (describe "winner- end of game"
-  (with-stubs)
-  (redefs-around [spit (stub :spit)])
   (before (reset! spec-helper/mock-db {}))
 
   (it "returns to config x type if yes button is clicked"

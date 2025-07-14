@@ -5,8 +5,6 @@
             [tic-tac-toe.spec-helper :as helper]))
 
 (describe "found-save"
-  (with-stubs)
-  (redefs-around [core/update-state (stub :update-state)])
 
   (it "resumes play of a saved game if Yes button is pressed"
     (let [event       {:x 144 :y 350}

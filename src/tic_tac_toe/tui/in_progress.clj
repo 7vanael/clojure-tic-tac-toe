@@ -89,10 +89,7 @@
 (defn game-loop [state]
   (loop [current-state state]
     (core/draw-state current-state)
-    (let [next-state (core/update-state current-state)
-          _ (prn "state:" state)
-          _ (prn "current-state:" current-state)
-          _ (prn "next-state:" next-state)]
+    (let [next-state (core/update-state current-state)]
       (if (= :game-over (:status next-state))
         next-state
         (recur next-state)))))
@@ -101,37 +98,3 @@
   (-> state
       (assoc :status :welcome)
       game-loop))
-
-;(defmethod core/update-state [:tui :game-over] [state]
-;  state)
-
-;(defmethod core/get-selection [:tui :winner] [_]
-;  (console/yes-or-no?))
-;(defmethod core/get-selection [:tui :tie] [_]
-;  (console/yes-or-no?))
-;(defmethod core/get-selection [:tui :in-progress] [{:keys [board] :as state}]
-;  (let [play-options (board/play-options board)]
-;    (console/get-next-play state play-options)))
-;(defmethod core/get-selection [:tui :select-board] [_]
-;  (console/get-board-size core/board-options))
-;(defmethod core/get-selection [:tui :config-o-difficulty] [_]
-;  (let [selection (console/get-selection core/difficulty-options)]
-;    (case selection
-;      :easy 1
-;      :medium 2
-;      :hard 3
-;      nil)))
-;(defmethod core/get-selection [:tui :config-x-difficulty] [_]
-;  (let [selection (console/get-selection core/difficulty-options)]
-;    (case selection
-;      :easy 1
-;      :medium 2
-;      :hard 3
-;      nil)))
-;(defmethod core/get-selection [:tui :config-o-type] [_]
-;  (if (= :human (console/get-selection core/player-options)) 1 2))
-;(defmethod core/get-selection [:tui :config-x-type] [_]
-;  (if (= :human (console/get-selection core/player-options)) 1 2))
-;(defmethod core/get-selection [:tui :found-save] [_]
-;  (console/yes-or-no?))
-;(defmethod core/get-selection [:tui :welcome] [_] 1)

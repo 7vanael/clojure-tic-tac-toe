@@ -135,11 +135,15 @@
 (defmethod core/mouse-clicked :in-progress [{:keys [board] :as state} {:keys [x y]}]
   (let [clicked-cell (find-clicked-cell board x y)
         value        (:value clicked-cell)]
-    (if (number? value) (core/update-state state value) nil)))
+    (if (number? value)
+      (-> state
+          (core/do-take-human-turn value)
+          core/do-update!)
+      state)))
 
 (defmethod core/take-human-turn :gui [state] state)
 
-(defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state} value]
+#_(defmethod core/update-state [:gui :in-progress] [{:keys [board] :as state} value]
   (let [cells     (generate-cells board)
         new-state (assoc state :cells cells)]
     (if (and (board/available? board value) #_(= :human player-type))

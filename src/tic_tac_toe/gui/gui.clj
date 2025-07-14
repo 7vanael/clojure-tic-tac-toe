@@ -12,12 +12,18 @@
             [tic-tac-toe.gui.winner]
             [tic-tac-toe.gui.found-save]))
 
+(defn setup []
+  (core/initial-state {:interface :gui}))
+
+(defn update-gui [state]
+  state)
+
 (defmethod core/start-game :gui [_]
   (q/sketch
     :title "Tic-Tac-Toe"
     :size [util/screen-width util/screen-height]
-    :setup core/initial-state
-    :update core/update-state
+    :setup setup
+    :update update-gui
     :draw core/draw-state
     :mouse-pressed core/mouse-clicked
     :middleware [m/fun-mode]))

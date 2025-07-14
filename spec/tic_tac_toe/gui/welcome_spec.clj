@@ -8,8 +8,6 @@
 (def state (core/initial-state {:save :mock}))
 
 (describe "welcome mouse-clicked"
-  (with-stubs)
-  (redefs-around [spit (stub :spit)])
   (before (reset! spec-helper/mock-db nil))
 
   (context "on click anywhere"

@@ -42,13 +42,6 @@
     (should= true (board-3d? [[[1 2] [3 4]] [[5 6] [7 8]]]))
     (should= false (board-3d? [[1 2 3] [4 5 6] [7 8 9]])))
 
-
-  #_(context "board-ready"
-      (it "changes the status from board-ready to in-progress, allowing a frame for the board to be drawn"
-        (with-redefs [core/draw-state (stub :draw)]
-          (should= (test-core/state-create {:status :in-progress :interface :gui :save :mock})
-                   (core/update-state (test-core/state-create {:status :board-ready :interface :gui :save :mock}) nil)))))
-
   (context "lines"
     (it "gets start & end points of a horizontal line for a grid"
       (should= [[0 0 10 0] [0 5 10 5] [0 10 10 10]] (get-horizontal-lines 0 0 10 5 2))
