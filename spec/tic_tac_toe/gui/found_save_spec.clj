@@ -7,7 +7,7 @@
 (describe "found-save"
   (with-stubs)
 
-  (it "calls update-state with 1 if Yes button is pressed"
+  (it "calls update-state with true if Yes button is pressed"
     (with-redefs [core/update-state (stub :update-state)]
       (let [event       {:x 144 :y 350}
             saved-state (test-core/state-create {:status :found-save :interface :gui :type-x :human :type-o :human

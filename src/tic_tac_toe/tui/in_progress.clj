@@ -45,6 +45,9 @@
     (core/draw-state current-state)
     (let [next-selection (core/get-selection state)
           next-state (core/update-state current-state next-selection)]
+      (prn "current-state:" current-state)
+      (prn "next-selection:" next-selection)
+      (prn "next-state:" next-state)
       (if (= :game-over (:status next-state))
         next-state
         (recur next-state)))))

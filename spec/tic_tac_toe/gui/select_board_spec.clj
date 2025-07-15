@@ -5,27 +5,28 @@
             [tic-tac-toe.spec-helper :as helper]))
 
 (describe "select board"
+  (with-stubs)
 
-  (it "moves to in-progress with board of 3x3 if 3x3 button pressed"
+  (it "calls update-state with 3 if 3x3 button pressed"
+    (with-redefs [core/update-state (stub :update-state)]
     (let [event     {:x 288 :y 288}
-          starting-state (assoc (helper/gui-mock-state) :status :select-board)
-          new-state (core/mouse-clicked starting-state event)
-          expected (assoc starting-state :status :in-progress :board helper/empty-board)]
-      (should= expected new-state)))
+          starting-state (assoc (helper/gui-mock-state) :status :select-board)]
+      (core/mouse-clicked starting-state event)
+      (should-have-invoked :update-state {:with [starting-state 3]}))))
 
-  (it "moves to in-progress with board of 4x4 if 4x4 button pressed"
+  (it "calls update-state with 4 if 4x4 if 4x4 button pressed"
+    (with-redefs [core/update-state (stub :update-state)]
     (let [event     {:x 288 :y 432}
-          starting-state (assoc (helper/gui-mock-state) :status :select-board)
-          new-state (core/mouse-clicked starting-state event)
-          expected  (assoc starting-state :status :in-progress :board helper/empty-4-board)]
-      (should= expected new-state)))
+          starting-state (assoc (helper/gui-mock-state) :status :select-board)]
+      (core/mouse-clicked starting-state event)
+      (should-have-invoked :update-state {:with [starting-state 4]}))))
 
-  (it "moves to in-progress with board of 3x3x3 if 3x3x3 button pressed"
+  (it "calls update-state with 3 3 3 if 3x3x3 button pressed"
+    (with-redefs [core/update-state (stub :update-state)]
     (let [event     {:x 288 :y 576}
-          starting-state (assoc (helper/gui-mock-state) :status :select-board)
-          new-state (core/mouse-clicked starting-state event)
-          expected (assoc starting-state :status :in-progress :board helper/empty-3d-board)]
-      (should= expected new-state)))
+          starting-state (assoc (helper/gui-mock-state) :status :select-board)]
+      (core/mouse-clicked starting-state event)
+      (should-have-invoked :update-state {:with [starting-state [3 3 3]]}))))
 
   (it "returns the state unchanged if no button is clicked"
     (let [event     {:x 2 :y 2}
