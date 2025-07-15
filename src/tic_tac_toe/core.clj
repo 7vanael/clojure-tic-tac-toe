@@ -21,24 +21,23 @@
 (def board-options
   {:3x3 3, :4x4 4, :3x3x3 [3 3 3]})
 
-(defn state-dispatch [state]
+(defn dual-dispatch [state]
   [(:interface state) (:status state)])
 (defn get-computer-difficulty [{:keys [active-player-index players]}]
   (get-in players [active-player-index :difficulty]))
 (defn active-player-type [{:keys [players active-player-index]}]
   (get-in players [active-player-index :play-type]))
 
-;(defmulti select-box active-player-type)
 (defmulti start-game :interface)
-(defmulti update-state :status)
+(defmulti update-state (fn [state & _] (:status state)))
 (defmulti take-computer-turn get-computer-difficulty)
 (defmulti take-human-turn :interface)
 (defmulti save-game :save)
 (defmulti load-game :save)
 (defmulti delete-save :save)
-(defmulti draw-state state-dispatch)
+(defmulti draw-state dual-dispatch)
 (defmulti mouse-clicked (fn [state & _] (:status state)))
-(defmulti get-selection state-dispatch)
+(defmulti get-selection dual-dispatch)
 
 (defn currently-human? [state]
   (= :human (active-player-type state)))
@@ -81,3 +80,56 @@
 
 (defn go-in-progress [state]
   (assoc state :status :in-progress))
+
+(defmethod update-state :winner [state replay]
+  (delete-save state)
+  (if replay
+    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (assoc state :status :game-over)))
+
+(defmethod update-state :tie [state replay]
+  (delete-save state)
+  (if replay
+    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (assoc state :status :game-over)))
+
+(defmethod update-state :select-board [state board-size]
+  (let [next-status :in-progress
+        new-state   (assoc state :board (board/new-board board-size))]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-o-difficulty [state difficulty]
+  (let [next-status  :select-board
+        new-state    (assoc-in state [:players 1 :difficulty] difficulty)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-x-difficulty [state difficulty]
+  (let [next-status  :config-o-type
+        new-state    (assoc-in state [:players 0 :difficulty] difficulty)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-o-type [state play-type]
+  (let [next-status (if (= play-type :human) :select-board :config-o-difficulty)
+        new-state   (assoc-in state [:players 1 :play-type] play-type)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-o-type [state play-type]
+  (let [next-status (if (= play-type :human) :select-board :config-o-difficulty)
+        new-state   (assoc-in state [:players 1 :play-type] play-type)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :config-x-type [state play-type]
+  (let [next-status (if (= play-type :human) :config-o-type :config-x-difficulty)
+        new-state   (assoc-in state [:players 0 :play-type] play-type)]
+    (assoc new-state :status next-status)))
+
+(defmethod update-state :found-save [state resume]
+  (if resume
+    (go-in-progress state)
+    (fresh-start state)))
+
+(defmethod update-state :welcome [state _]
+  (let [saved-game (load-game state)]
+    (if (= :found-save (:status saved-game))
+      (assoc saved-game :interface (:interface state))
+      (assoc (initial-state state) :status :config-x-type))))

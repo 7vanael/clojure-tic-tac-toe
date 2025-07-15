@@ -62,26 +62,6 @@
   (it "notifies the player that the game is a draw"
     (should= "It's a draw! Good game!\n" (with-out-str (sut/announce-draw))))
 
-  (it "deletes a save when the game ends in a draw"
-    (with-redefs [core/get-selection (stub :get-selection {:return false})]
-      (let [saved-state  (core/save-game (helper/state-create
-                                           {:interface           :tui
-                                            :save                :mock
-                                            :status              :tie
-                                            :board               [["X" "X" "X"]]
-                                            :active-player-index 0}))
-            ending-state (core/update-state saved-state)]
-        (should= (assoc saved-state :status :game-over) ending-state)
-        (should= {:interface :fake :save :mock} (with-in-str "n\n" (core/load-game {:interface :fake :save :mock}))))))
-
-  (it "deletes a save when the game ends in a win"
-    (with-redefs [core/get-selection (stub :get-selection {:return false})]
-      (let [saved-state  (core/save-game (helper/state-create {:save                :mock :status :winner :interface :tui :board [["X" "X" "X"]]
-                                                               :active-player-index 0}))
-            ending-state (core/update-state saved-state)]
-        (should= (assoc saved-state :status :game-over) ending-state)
-        (should= {:interface :fake :save :mock} (core/load-game {:interface :fake :save :mock})))))
-
   (it "announces the winner of a game"
     (should= "X wins! Good game!\n" (with-out-str (sut/announce-winner "X"))))
 

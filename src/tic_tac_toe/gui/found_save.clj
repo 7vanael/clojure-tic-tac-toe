@@ -6,6 +6,6 @@
 (defn no-clicked? [x y] (util/button-clicked? [x y] util/opt2-of-2-rect))
 
 (defmethod core/mouse-clicked :found-save [state {:keys [x y]}]
-  (cond (yes-clicked? x y) (core/go-in-progress state)
-        (no-clicked? x y) (core/fresh-start state)
+  (cond (yes-clicked? x y) (core/update-state state true)
+        (no-clicked? x y) (core/update-state state false)
         :else state))
