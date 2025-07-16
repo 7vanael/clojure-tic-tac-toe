@@ -1,6 +1,7 @@
 (ns tic-tac-toe.tui.in_progress_spec
   (:require [speclj.core :refer :all]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]
+            [tic-tac-toe.tui.in-progress :as sut]
             [tic-tac-toe.core :as core]))
 
 (describe "tui in-progress"
@@ -43,4 +44,45 @@
       (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :winner})))
       (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :winner}))))
 
+  (it "should handle a complete game that ends in game-over"
+    (let [initial-state (core/initial-state {:interface :tui})
+          configured-state (assoc initial-state :status :in-progress :board [[1 2 3] [4 5 6] [7 8 9]])
+          final-state (assoc configured-state :status :game-over)]
+
+      (with-redefs [sut/configure-loop (stub :configure-loop {:return configured-state})
+                    sut/game-loop (stub :game-loop {:return final-state})]
+
+        (core/start-game initial-state)
+
+        (should-have-invoked :configure-loop {:with [(assoc initial-state :status :welcome)]})
+        (should-have-invoked :game-loop {:with [configured-state]}))))
+
+  (it "should handle play-again cycle then game-over"
+    (let [initial-state (core/initial-state {:interface :tui})
+          configured-state (assoc initial-state :status :in-progress :board [[1 2 3] [4 5 6] [7 8 9]])
+          replay-state (assoc configured-state :status :config-x-type)
+          final-state (assoc configured-state :status :game-over)
+          game-loop-calls (atom 0)]
+      (with-redefs [sut/configure-loop (stub :configure-loop {:return configured-state})
+                    sut/game-loop (fn [state]
+                                    (swap! game-loop-calls inc)
+                                    (if (= @game-loop-calls 1)
+                                      replay-state
+                                      final-state))]
+
+        (core/start-game initial-state)
+        (should-have-invoked :configure-loop {:times 2})
+        (should-have-invoked :configure-loop {:with [(assoc initial-state :status :welcome)]})
+        (should-have-invoked :configure-loop {:with [replay-state]})
+        (should= 2 @game-loop-calls))))
+
+  (it "should return nil when game ends (allowing program to exit)"
+    (let [initial-state (core/initial-state {:interface :tui})
+          configured-state (assoc initial-state :status :in-progress :board [[1 2 3] [4 5 6] [7 8 9]])
+          final-state (assoc configured-state :status :game-over)]
+
+      (with-redefs [sut/configure-loop (stub :configure-loop {:return configured-state})
+                    sut/game-loop (stub :game-loop {:return final-state})]
+
+        (should= nil (core/start-game initial-state)))))
   )

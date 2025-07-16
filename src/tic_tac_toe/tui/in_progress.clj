@@ -40,19 +40,32 @@
 
 (defmethod core/get-selection [:tui :welcome] [_] 1)
 
+
+
 (defn game-loop [state]
   (loop [current-state state]
     (core/draw-state current-state)
-    (let [next-selection (core/get-selection state)
-          next-state (core/update-state current-state next-selection)]
-      (prn "current-state:" current-state)
-      (prn "next-selection:" next-selection)
-      (prn "next-state:" next-state)
-      (if (= :game-over (:status next-state))
+    (if (core/states-to-break-loop (:status current-state))
+      (let [replay? (core/get-selection current-state)]
+        (core/update-state current-state replay?))
+      (let [next-state (core/do-update! current-state)]
+        (if (or (= :config-x-type (:status next-state))
+                (= :game-over (:status next-state)))
+          next-state
+          (recur next-state))))))
+
+(defn configure-loop [state]
+  (loop [current-state state]
+    (core/draw-state current-state)
+    (let [next-selection (core/get-selection current-state)
+          next-state     (core/update-state current-state next-selection)]
+      (if (= :in-progress (:status next-state))
         next-state
         (recur next-state)))))
 
 (defmethod core/start-game :tui [state]
-  (-> state
-      (assoc :status :welcome)
-      game-loop))
+  (let [first-configured (configure-loop (assoc state :status :welcome))]
+    (loop [current-state first-configured]
+      (let [final-state (game-loop current-state)]
+        (when (= (:status final-state) :config-x-type)
+          (recur (configure-loop final-state)))))))
