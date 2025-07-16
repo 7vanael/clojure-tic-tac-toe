@@ -42,11 +42,6 @@
 (defn currently-human? [state]
   (= :human (active-player-type state)))
 
-(defn next-player [board]
-  (let [flat-board (flatten board)
-        played     (count (filter string? flat-board))]
-    (if (even? played) "X" "O")))
-
 (defn take-turn [state]
   (if (currently-human? state)
     (take-human-turn state)
@@ -62,7 +57,7 @@
 
 (defn change-player [{:keys [active-player-index players board] :as state}]
   (let [current-char               (get-in players [active-player-index :character])
-        current-player-not-played? (= current-char (next-player board))
+        current-player-not-played? (= current-char (board/next-player board))
         game-over?                 (states-to-break-loop (:status state))]
     (if (or current-player-not-played? game-over?)
       state

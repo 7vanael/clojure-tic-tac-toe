@@ -226,6 +226,15 @@
     (should= 2 (get-board-complexity empty-board))
     (should= 3 (get-board-complexity empty-3d-board)))
 
+  (it "knows which player is the correct player to take the next turn"
+    (should= "X" (next-player empty-board))
+    (should= "X" (next-player empty-4-board))
+    (should= "X" (next-player empty-3d-board))
+    (should= "X" (next-player center-x-corner-o-board))
+    (should= "O" (next-player center-x-corner-xo-board))
+    (should= "O" (next-player first-x-3d-board))
+    (should= "O" (next-player first-X-4-board)))
+
   (it "takes a single number and returns the coordinates of that position on a 2 or 3d board"
     (should= [0 1] (space->coordinates 2 not-full-board-x-column-win))
     (should= [1 2] (space->coordinates 6 not-full-board-x-column-win))

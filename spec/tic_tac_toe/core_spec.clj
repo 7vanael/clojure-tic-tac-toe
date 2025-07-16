@@ -101,15 +101,6 @@
   (it "can tell what play-type of turn it is"
     (should= true (sut/currently-human? (state-create {:interface :tui :active-player-index 0 :x-type :human :o-type :human}))))
 
-  (it "knows which player is the correct player to take the next turn"
-    (should= "X" (sut/next-player empty-board))
-    (should= "X" (sut/next-player empty-4-board))
-    (should= "X" (sut/next-player empty-3d-board))
-    (should= "X" (sut/next-player center-x-corner-o-board))
-    (should= "O" (sut/next-player center-x-corner-xo-board))
-    (should= "O" (sut/next-player first-x-3d-board))
-    (should= "O" (sut/next-player first-X-4-board)))
-
 
   (it "dispatches turns correctly when it's a human turn"
     (with-redefs [sut/take-human-turn    (stub :human-turn)

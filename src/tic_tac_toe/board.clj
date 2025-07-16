@@ -25,6 +25,11 @@
 (defn play-options [board]
   (filter number? (flatten board)))
 
+(defn next-player [board]
+  (let [flat-board (flatten board)
+        played     (count (filter string? flat-board))]
+    (if (even? played) "X" "O")))
+
 (defn space->2d-coordinates [number board]
   (let [width (count board)
         x     (quot (dec number) width)
