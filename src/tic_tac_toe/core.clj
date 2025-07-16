@@ -79,13 +79,13 @@
 (defmethod update-state :winner [state replay]
   (delete-save state)
   (if replay
-    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (fresh-start state)
     (assoc state :status :game-over)))
 
 (defmethod update-state :tie [state replay]
   (delete-save state)
   (if replay
-    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (fresh-start state)
     (assoc state :status :game-over)))
 
 (defmethod update-state :select-board [state board-size]

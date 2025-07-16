@@ -63,9 +63,36 @@
         next-state
         (recur next-state)))))
 
+(defn prompt-to-resume [{:keys [loaded-game] :as state}]
+  (core/draw-state loaded-game)
+  (if (= "y" (core/get-selection loaded-game))
+    (assoc loaded-game :status :in-progress)
+    (core/fresh-start (dissoc state :loaded-game))))
+
+(defn maybe-resume-game [{:keys [loaded-game] :as state}]
+  (if loaded-game
+    (prompt-to-resume state)
+    (core/fresh-start state)))
+
+;(defn maybe-setup-state [state]
+;  (-> state
+;      confiugre-x-type
+;      maybe-configure-x-difficulty
+;      configure-o-type
+;      maybe-configure-o-difficulty
+;      select-board
+;      ))
+
 (defmethod core/start-game :tui [state]
-  (let [first-configured (configure-loop (assoc state :status :welcome))]
-    (loop [current-state first-configured]
-      (let [final-state (game-loop current-state)]
-        (when (= (:status final-state) :config-x-type)
-          (recur (configure-loop final-state)))))))
+  (let [loaded-game (core/load-game state)
+        state       (maybe-resume-game (assoc state :loaded-game loaded-game))
+        ;state       (maybe-setup-state state)]
+   ]
+    (loop [state state]
+
+      (recur (core/update-state state (core/get-selection state)))))
+  #_(let [first-configured (configure-loop (assoc state :status :welcome))]
+      (loop [current-state first-configured]
+        (let [final-state (game-loop current-state)]
+          (when (= (:status final-state) :config-x-type)
+            (recur (configure-loop final-state)))))))
