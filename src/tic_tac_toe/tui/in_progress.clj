@@ -72,27 +72,35 @@
 
 (defn maybe-config-o-difficulty [{:keys [status] :as state}]
   (if (= :config-o-difficulty status)
-    (functions/config-o-difficulty state (core/get-selection state))
+    (do (core/draw-state state)
+        (functions/config-o-difficulty state (core/get-selection state)))
     state))
 
 (defn maybe-config-x-difficulty [{:keys [status] :as state}]
   (if (= :config-x-difficulty status)
-    (functions/config-x-difficulty state (core/get-selection state))
+    (do (core/draw-state state)
+        (functions/config-x-difficulty state (core/get-selection state)))
     state))
 
 (defn maybe-resume-game [{:keys [loaded-game] :as state}]
   (if loaded-game
     (prompt-to-resume state)
     (core/fresh-start state)))
+(defn ->inspect [x]
+  (prn "x:" x)
+  x)
 
 (defn maybe-setup-state [state]
   (if (not (= :config-x-type (:status state)))
     state
     (-> state
+        ;(core/draw-state state)
         (functions/config-x-type (core/get-selection state))
         maybe-config-x-difficulty
+        ;(core/draw-state state)
         (functions/config-o-type (core/get-selection state))
         maybe-config-o-difficulty
+        ;(core/draw-state state)
         (functions/select-board (core/get-selection state)))))
 
 (defmethod core/start-game :tui [state]
