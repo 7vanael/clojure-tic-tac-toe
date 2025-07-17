@@ -18,7 +18,7 @@
 (defn update-gui [state]
   (if (or (not (= :in-progress (:status state))) (= :human (core/active-player-type state)))
     state
-    (core/do-update! state)))
+    (core/play-turn! state)))
 
 (defmethod core/start-game :gui [_]
   (q/sketch

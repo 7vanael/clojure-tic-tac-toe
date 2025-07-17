@@ -218,5 +218,12 @@
             expected-state (state-create {:interface :tui :status :game-over :save :mock :board [[1 2 3] [4 5 6] [7 8 9]] :x-type :human :o-type :computer :o-difficulty :medium})]
         (should= expected-state (core/update-state starting-state false))))
 
+    (it "Fresh-start returns a state that contains only the interface and save of the initial state"
+      (let [starting-state (state-create {:interface :tui :status :found-save :board [[1 2 "X"] [4 "O" 6] [7 8 9]]
+                                          :x-type :human :o-type :computer :o-difficulty :medium :save :mock})
+            nexted-state {:interface :tui :save :mock :status :config :loaded-game starting-state}
+            expected-state (state-create {:interface :tui :status :config-x-type :save :mock})]
+        (should= expected-state (core/fresh-start starting-state))
+        (should= expected-state (core/fresh-start nexted-state))))
     )
   )

@@ -170,7 +170,7 @@
         (should-have-invoked :board-size)))
 
     (it "draws the state for configuring o difficulty"
-      (let [state       (helper/state-create {:interface :tui :status :config-o-difficulty})
+      (let [state       (helper/state-create {:interface :tui :status :config-o-difficulty :o-type :computer})
             final-state (core/draw-state state)]
         (should= state final-state)
         (should-have-invoked :difficulty-options {:with ["O" core/difficulty-options]})))
@@ -205,4 +205,5 @@
         (should= state final-state)
         (should-have-invoked :welcome-message)))
     )
+
   )

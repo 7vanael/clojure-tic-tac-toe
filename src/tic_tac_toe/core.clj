@@ -63,7 +63,7 @@
       state
       (assoc state :active-player-index (if (= (:active-player-index state) 0) 1 0)))))
 
-(defn do-update! [state]
+(defn play-turn! [state]
   (-> state
       take-turn
       board/evaluate-board

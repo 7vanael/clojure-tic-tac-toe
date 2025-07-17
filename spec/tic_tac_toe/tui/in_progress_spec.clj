@@ -3,6 +3,7 @@
             [tic-tac-toe.functions :as functions]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]
             [tic-tac-toe.spec-helper :as helper]
+            [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.tui.in-progress :as sut]
             [tic-tac-toe.core :as core]))
 
@@ -10,58 +11,57 @@
   (with-stubs)
   (redefs-around [spit (stub :spit)
                   core/load-game (stub :load-game)
-                  core/draw-state (stub :draw-state)])
+                  core/draw-state (fn [state] state)])
   (before (reset! spec-helper/mock-db nil))
 
-  (it "found-save; gets a true/false"
-    (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :found-save})))
-    (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :found-save}))))
+  (context "get-selection"
+    (it "found-save; gets a true/false"
+      (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :found-save})))
+      (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :found-save}))))
 
-  (it "config-x-type; gets player type selection from console"
-    (should= :human (with-in-str "human" (core/get-selection {:interface :tui :status :config-x-type})))
-    (should= :computer (with-in-str "computer" (core/get-selection {:interface :tui :status :config-x-type}))))
+    (it "config-x-type; gets player type selection from console"
+      (should= :human (with-in-str "human" (core/get-selection {:interface :tui :status :config-x-type})))
+      (should= :computer (with-in-str "computer" (core/get-selection {:interface :tui :status :config-x-type}))))
 
-  (it "config-o-type; gets player type selection from console"
-    (should= :human (with-in-str "human" (core/get-selection {:interface :tui :status :config-o-type})))
-    (should= :computer (with-in-str "computer" (core/get-selection {:interface :tui :status :config-o-type}))))
+    (it "config-o-type; gets player type selection from console"
+      (should= :human (with-in-str "human" (core/get-selection {:interface :tui :status :config-o-type})))
+      (should= :computer (with-in-str "computer" (core/get-selection {:interface :tui :status :config-o-type}))))
 
-  (it "Config-x-difficulty; gets the computer difficulty selection from console"
-    (should= :easy (with-in-str "easy" (core/get-selection {:interface :tui :status :config-x-difficulty})))
-    (should= :medium (with-in-str "medium" (core/get-selection {:interface :tui :status :config-x-difficulty})))
-    (should= :hard (with-in-str "hard" (core/get-selection {:interface :tui :status :config-x-difficulty}))))
+    (it "Config-x-difficulty; gets the computer difficulty selection from console"
+      (should= :easy (with-in-str "easy" (core/get-selection {:interface :tui :status :config-x-difficulty})))
+      (should= :medium (with-in-str "medium" (core/get-selection {:interface :tui :status :config-x-difficulty})))
+      (should= :hard (with-in-str "hard" (core/get-selection {:interface :tui :status :config-x-difficulty}))))
 
-  (it "Config-o-difficulty; gets the computer difficulty selection from console"
-    (should= :easy (with-in-str "easy" (core/get-selection {:interface :tui :status :config-o-difficulty})))
-    (should= :medium (with-in-str "medium" (core/get-selection {:interface :tui :status :config-o-difficulty})))
-    (should= :hard (with-in-str "hard" (core/get-selection {:interface :tui :status :config-o-difficulty}))))
+    (it "Config-o-difficulty; gets the computer difficulty selection from console"
+      (should= :easy (with-in-str "easy" (core/get-selection {:interface :tui :status :config-o-difficulty})))
+      (should= :medium (with-in-str "medium" (core/get-selection {:interface :tui :status :config-o-difficulty})))
+      (should= :hard (with-in-str "hard" (core/get-selection {:interface :tui :status :config-o-difficulty}))))
 
-  (it "Select-board; gets the board size selection (3, 4, [3 3 3]) from console"
-    (should= 3 (with-in-str "1" (core/get-selection {:interface :tui :status :select-board})))
-    (should= 4 (with-in-str "2" (core/get-selection {:interface :tui :status :select-board})))
-    (should= [3 3 3] (with-in-str "3" (core/get-selection {:interface :tui :status :select-board}))))
+    (it "Select-board; gets the board size selection (3, 4, [3 3 3]) from console"
+      (should= 3 (with-in-str "1" (core/get-selection {:interface :tui :status :select-board})))
+      (should= 4 (with-in-str "2" (core/get-selection {:interface :tui :status :select-board})))
+      (should= [3 3 3] (with-in-str "3" (core/get-selection {:interface :tui :status :select-board}))))
 
-  (it "tie; gets a true/false"
-    (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :tie})))
-    (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :tie}))))
+    (it "In-progress; gets the number of the space the player wants to play"
+      (with-redefs [console/announce-player     (stub :announce-player)
+                    console/print-number-prompt (stub :print-prompt)]
+        (should= 4 (with-in-str "4\n" (core/get-selection {:interface :tui :status :in-progress :x-type :human
+                                                           :o-type    :human :active-player-index 0 :board helper/empty-board})))))
 
-  (it "winner; gets a true/false"
-    (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :winner})))
-    (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :winner}))))
+    (it "tie; gets a true/false"
+      (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :tie})))
+      (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :tie}))))
+
+    (it "winner; gets a true/false"
+      (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :winner})))
+      (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :winner}))))
+    )
 
   (context "setup"
     (it "doesn't set up if status isn't config-x-type"
       (let [state        {:interface :tui :save :mock :status :in-progress}
             ending-state (sut/maybe-setup-state state)]
         (should= state ending-state)))
-
-    (it "configures x-type"                                 ;Well... How to test each step of the maybe-setup-state? This is just rewriting other functions!
-      ; Maybe lines of the maybe-setup-state that are just already tested functions don't need to be tested like this, we'll test the
-      ; entire function at the end?
-      (with-redefs [core/get-selection (stub :get-selection {:return :human})]
-        (let [starting-state (helper/state-create {:status :config-x-type})
-              expected       (helper/state-create {:status :config-o-type :x-type :human})
-              ending-state   (functions/config-x-type starting-state (core/get-selection starting-state))] ;no sut calls
-          (should= expected ending-state))))
 
     (it "configures x-difficulty if x-type is computer"
       (with-redefs [core/get-selection (stub :get-selection {:return :medium})]
@@ -102,6 +102,51 @@
                                                  (= @get-selection-calls 3) :hard
                                                  :else 3))]
           (should= expected-state (sut/maybe-setup-state initial-state)))))
+    )
+  (context "starting the game"
+    (it "prompts to resume a game if one was loaded, starts fresh if declined"
+      (with-redefs [core/get-selection (stub :get-selection {:return false})]
+        (let [loaded-game (helper/state-create {:interface :tui :save :mock :status :found-save :board [[1 "X" 3] [4 5 "O"] [7 8 9]]
+                                                :x-type    :human :o-type :computer :o-difficulty :easy})
+              expected    (core/fresh-start loaded-game)]
+          (should= expected (sut/prompt-to-resume loaded-game)))))
+
+    (it "prompts to resume a game if one was loaded, returns the loaded state in progress if agreed"
+      (with-redefs [core/get-selection (stub :get-selection {:return true})]
+        (let [loaded-game    (helper/state-create {:interface :tui :save :mock :status :found-save :board [[1 "X" 3] [4 5 "O"] [7 8 9]]
+                                                   :x-type    :human :o-type :computer :o-difficulty :easy})
+              starting-state (helper/state-create {:status :config :interface :tui :save :mock})
+              state          (assoc starting-state :loaded-game loaded-game)
+              expected       (assoc loaded-game :status :in-progress)]
+          (should= expected (sut/prompt-to-resume loaded-game)))))
+
+    (it "might resume a loaded game; with a loaded game and y, gets the loaded-game back in-progress"
+      (with-redefs [core/get-selection (stub :get-selection {:return true})]
+        (let [loaded-game    (helper/state-create {:interface :tui :save :mock :status :found-save :board [[1 "X" 3] [4 5 "O"] [7 8 9]]
+                                                   :x-type    :human :o-type :computer :o-difficulty :easy})
+              starting-state (helper/state-create {:status :config :interface :tui :save :mock})
+              state          (assoc starting-state :loaded-game loaded-game)
+              expected       (assoc loaded-game :status :in-progress)]
+          (should= expected (sut/maybe-resume-game state)))))
+
+    (it "might resume a loaded game; with a loaded game and n, returns a fresh state in config-x"
+      (with-redefs [core/get-selection (stub :get-selection {:return false})]
+        (let [loaded-game    (helper/state-create {:interface :tui :save :mock :status :found-save :board [[1 "X" 3] [4 5 "O"] [7 8 9]]
+                                                   :x-type    :human :o-type :computer :o-difficulty :easy})
+              starting-state (helper/state-create {:status :config :interface :tui :save :mock})
+              state          (assoc starting-state :loaded-game loaded-game)
+              expected       (core/fresh-start loaded-game)]
+          (should= expected (sut/maybe-resume-game state)))))
+
+    (it "might resume a loaded game; with no loaded game, returns a fresh state in config-x"
+      (let [starting-state (helper/state-create {:status :config :interface :tui :save :mock})
+            loaded-game    starting-state
+            state          (assoc starting-state :loaded-game loaded-game)
+            expected       (core/fresh-start loaded-game)]
+        (should= expected (sut/maybe-resume-game state))))
+
+    (it "starts the loop"
+      )
     )
 
   #_(it "should handle a complete game that ends in game-over"
