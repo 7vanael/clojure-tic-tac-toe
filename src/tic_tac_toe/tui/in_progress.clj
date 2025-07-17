@@ -1,6 +1,7 @@
 (ns tic-tac-toe.tui.in-progress
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
+            [tic-tac-toe.functions :as functions]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.computer.hard]
             [tic-tac-toe.computer.easy]
@@ -69,28 +70,39 @@
     (assoc loaded-game :status :in-progress)
     (core/fresh-start (dissoc state :loaded-game))))
 
+(defn maybe-config-o-difficulty [{:keys [status] :as state}]
+  (if (= :config-o-difficulty status)
+    (functions/config-o-difficulty state (core/get-selection state))
+    state))
+
+(defn maybe-config-x-difficulty [{:keys [status] :as state}]
+  (if (= :config-x-difficulty status)
+    (functions/config-x-difficulty state (core/get-selection state))
+    state))
+
 (defn maybe-resume-game [{:keys [loaded-game] :as state}]
   (if loaded-game
     (prompt-to-resume state)
     (core/fresh-start state)))
 
-;(defn maybe-setup-state [state]
-;  (-> state
-;      confiugre-x-type
-;      maybe-configure-x-difficulty
-;      configure-o-type
-;      maybe-configure-o-difficulty
-;      select-board
-;      ))
+(defn maybe-setup-state [state]
+  (if (not (= :config-x-type (:status state)))
+    state
+    (-> state
+        (functions/config-x-type (core/get-selection state))
+        maybe-config-x-difficulty
+        (functions/config-o-type (core/get-selection state))
+        maybe-config-o-difficulty
+        (functions/select-board (core/get-selection state)))))
 
 (defmethod core/start-game :tui [state]
   (let [loaded-game (core/load-game state)
         state       (maybe-resume-game (assoc state :loaded-game loaded-game))
-        ;state       (maybe-setup-state state)]
-   ]
+        state       (maybe-setup-state state)]
     (loop [state state]
-
-      (recur (core/update-state state (core/get-selection state)))))
+      (if (functions/game-over? state)
+        state
+        (recur (core/update-state state (core/get-selection state))))))
   #_(let [first-configured (configure-loop (assoc state :status :welcome))]
       (loop [current-state first-configured]
         (let [final-state (game-loop current-state)]
