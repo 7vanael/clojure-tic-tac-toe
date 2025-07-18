@@ -123,6 +123,6 @@
       (should= expected ending-state)))
 
   (it "does not have a player take a turn if it isn't their turn"
-    (let [starting-state (helper/state-create {:x-type :human :o-type :human :save :mock :board (assoc-in helper/empty-board [1 1] "X")})
-          ending-state   (sut/maybe-take-turn (assoc starting-state :response 5))]
-      (should= starting-state ending-state))))
+    (let [starting-state (helper/state-create {:x-type :human :o-type :human :save :mock :board (assoc-in helper/empty-board [1 1] "X") :response 5})
+          expected   (dissoc starting-state :response)]
+      (should= expected (sut/maybe-take-turn starting-state)))))

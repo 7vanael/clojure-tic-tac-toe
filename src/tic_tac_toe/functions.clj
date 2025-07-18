@@ -48,7 +48,6 @@
     (assoc (core/initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
     (dissoc (assoc state :status :game-over) :response)))
 
-
 (defn player-played? [{:keys [active-player-index board players]}]
   (let [current-char (get-in players [active-player-index :character])]
     (not (= current-char (board/next-player board)))))

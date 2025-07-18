@@ -6,16 +6,16 @@
 ;;TODO Date Take-human-turn shouldn't need to call core/do-update! Update state should be about to call it.
 ;; Why doesn't that work?:
 
-(defn take-human-turn [state value]
+(defn take-human-turn [state]
   (-> state
-      (core/do-take-human-turn value)
+      core/do-take-human-turn
       core/play-turn!))
 
 (defmethod core/mouse-clicked :in-progress [{:keys [board] :as state} {:keys [x y]}]
   (let [clicked-cell (cells/find-clicked-cell board x y)
         value        (:value clicked-cell)]
     (if (and (number? value) (= :human (core/active-player-type state)))
-      (take-human-turn state value)
+      (take-human-turn (assoc state :response value))
       state)))
 
 (defmethod core/take-human-turn :gui [state] state)
