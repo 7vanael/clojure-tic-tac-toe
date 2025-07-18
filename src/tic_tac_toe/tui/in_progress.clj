@@ -10,7 +10,7 @@
 (defmethod core/take-human-turn :tui [state]
   ;(let [play-options (board/play-options board)
   ;      next-play    (console/get-next-play state play-options)]
-    (core/do-take-human-turn state (core/get-selection state)))
+    (core/do-take-human-turn (core/get-selection state)))
 ;)
 
 (defmethod core/get-selection [:tui :winner] [state]
@@ -48,20 +48,24 @@
 
 (defn prompt-to-resume [loaded-game]
   (core/draw-state loaded-game)
-  (if (core/get-selection loaded-game)
+  (if (:response (core/get-selection loaded-game))
     (assoc loaded-game :status :in-progress)
     (core/fresh-start loaded-game)))
 
 (defn maybe-config-o-difficulty [{:keys [status] :as state}]
   (if (= :config-o-difficulty status)
-    (do (core/draw-state state)
-        (functions/config-o-difficulty state (core/get-selection state)))
+    (-> state
+        core/draw-state
+        core/get-selection
+        functions/config-o-difficulty)
     state))
 
 (defn maybe-config-x-difficulty [{:keys [status] :as state}]
   (if (= :config-x-difficulty status)
-    (do (core/draw-state state)
-        (functions/config-x-difficulty state (core/get-selection state)))
+    (-> state
+        core/draw-state
+        core/get-selection
+        functions/config-x-difficulty)
     state))
 
 (defn maybe-resume-game [{:keys [loaded-game] :as state}]
@@ -73,15 +77,18 @@
   (if (= :config-x-type (:status state))
     (-> state
         core/draw-state
-        (functions/config-x-type (core/get-selection state))
+        core/get-selection
+        functions/config-x-type
         maybe-config-x-difficulty
         core/draw-state
-        (functions/config-o-type (core/get-selection state))
+        core/get-selection
+        functions/config-o-type
         maybe-config-o-difficulty
         ;core/->inspect
         core/draw-state
         ;core/->inspect
-        (functions/select-board (core/get-selection state)))
+        core/get-selection
+        functions/select-board)
     state))
 
 (defmethod core/start-game :tui [state]

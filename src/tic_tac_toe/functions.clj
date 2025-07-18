@@ -13,45 +13,50 @@
     (core/go-in-progress state)
     (core/fresh-start state)))
 
-(defn config-x-type [state play-type]
-  (let [next-status (if (= play-type :human) :config-o-type :config-x-difficulty)
+(defn config-x-type [state]
+  (let [play-type (:response state)
+        next-status (if (= play-type :human) :config-o-type :config-x-difficulty)
         new-state   (assoc-in state [:players 0 :play-type] play-type)]
-    (assoc new-state :status next-status)))
+    (dissoc (assoc new-state :status next-status) :response)))
 
-(defn config-x-difficulty [state difficulty]
-  (let [next-status  :config-o-type
+(defn config-x-difficulty [state]
+  (let [difficulty (:response state)
+        next-status  :config-o-type
         new-state    (assoc-in state [:players 0 :difficulty] difficulty)]
-    (assoc new-state :status next-status)))
+    (dissoc (assoc new-state :status next-status) :response)))
 
-(defn config-o-type [state play-type]
-  (let [next-status (if (= play-type :human) :select-board :config-o-difficulty)
+(defn config-o-type [state]
+  (let [play-type (:response state)
+        next-status (if (= play-type :human) :select-board :config-o-difficulty)
         new-state   (assoc-in state [:players 1 :play-type] play-type)]
-    (assoc new-state :status next-status)))
+    (dissoc (assoc new-state :status next-status) :response)))
 
-(defn config-o-difficulty [state difficulty]
-  (let [next-status  :select-board
+(defn config-o-difficulty [state]
+  (let [difficulty (:response state)
+        next-status  :select-board
         new-state    (assoc-in state [:players 1 :difficulty] difficulty)]
-    (assoc new-state :status next-status)))
+    (dissoc (assoc new-state :status next-status) :response)))
 
-(defn select-board [state board-size]
-  (let [next-status :in-progress
+(defn select-board [state]
+  (let [board-size (:response state)
+        next-status :in-progress
         new-state   (assoc state :board (board/new-board board-size))]
-    (assoc new-state :status next-status)))
+    (dissoc (assoc new-state :status next-status) :response)))
 
-(defn maybe-play-again [state answer]
-  (if answer
+(defn maybe-play-again [state]
+  (if (:response state)
     (assoc (core/initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
-    (assoc state :status :game-over)))
+    (dissoc (assoc state :status :game-over) :response)))
 
 
 (defn player-played? [{:keys [active-player-index board players]}]
   (let [current-char (get-in players [active-player-index :character])]
     (not (= current-char (board/next-player board)))))
 
-(defn maybe-take-turn [state next-play]
+(defn maybe-take-turn [state]
   (if (player-played? state)
-    state
-    (core/do-take-human-turn state next-play)))
+    (dissoc state :response)
+    (core/do-take-human-turn state)))
 
 (def states-to-end
   #{:tie :winner})

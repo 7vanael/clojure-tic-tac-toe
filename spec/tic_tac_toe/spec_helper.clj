@@ -5,7 +5,7 @@
 (defn gui-mock-state []
   (core/initial-state {:interface :gui :save :mock}))
 
-(defn state-create [{:keys [interface board active-player-index status x-type o-type x-difficulty o-difficulty cells save]
+(defn state-create [{:keys [interface board active-player-index status x-type o-type x-difficulty o-difficulty cells save response]
                      :or   {board               nil
                             active-player-index 0
                             status              :welcome
@@ -21,6 +21,7 @@
                                  {:character "O" :play-type o-type :difficulty o-difficulty}]}
           (some? cells) (assoc :cells cells)
           (some? interface) (assoc :interface interface)
+          (some? response) (assoc :response response)
           (some? save) (assoc :save save)))
 
 (def empty-board

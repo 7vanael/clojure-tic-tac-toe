@@ -52,10 +52,12 @@
     (take-human-turn state)
     (take-computer-turn state)))
 
-(defn do-take-human-turn [{:keys [board players active-player-index] :as state} next-play]
-  (assoc state :board (board/take-square board
+(defn do-take-human-turn [{:keys [board players active-player-index] :as state}]
+  (let [next-play (:response state)
+        clean-state (dissoc state :response)]
+    (assoc clean-state :board (board/take-square board
                                          (board/space->coordinates next-play board)
-                                         (get-in players [active-player-index :character]))))
+                                         (get-in players [active-player-index :character])))))
 
 (def states-to-break-loop
   #{:tie :winner})

@@ -53,40 +53,40 @@
       (should= nil (:board result))))
 
   (it "Config-x-type; if play-type is human,  config-o-type is next"
-    (let [starting-state (helper/state-create {:interface :tui :status :config-x-type :save :mock})
+    (let [starting-state (helper/state-create {:interface :tui :status :config-x-type :save :mock :response :human})
           expected-state (helper/state-create {:interface :tui :status :config-o-type :save :mock :x-type :human})]
-      (should= expected-state (sut/config-x-type starting-state :human))))
+      (should= expected-state (sut/config-x-type starting-state))))
 
   (it "Config-x-type; if play-type is computer, config-x-difficulty"
-    (let [starting-state (helper/state-create {:interface :tui :status :config-x-type :save :mock})
+    (let [starting-state (helper/state-create {:interface :tui :status :config-x-type :save :mock :response :computer})
           expected-state (helper/state-create {:interface :tui :status :config-x-difficulty :save :mock :x-type :computer})]
-      (should= expected-state (sut/config-x-type starting-state :computer))))
+      (should= expected-state (sut/config-x-type starting-state))))
 
   (it "Config-x-difficulty; changes status to config-o-type once difficulty is selected"
-    (let [starting-state (helper/state-create {:interface :tui :status :config-x-difficulty :save :mock :x-type :computer})
+    (let [starting-state (helper/state-create {:interface :tui :status :config-x-difficulty :save :mock :x-type :computer :response :hard})
           expected-state (helper/state-create {:interface :tui :status :config-o-type :save :mock :x-type :computer :x-difficulty :hard})]
-      (should= expected-state (sut/config-x-difficulty starting-state :hard))))
+      (should= expected-state (sut/config-x-difficulty starting-state))))
 
   (it "Config-o-type; changes status to config-o-difficulty if computer is selected"
-    (let [starting-state (helper/state-create {:interface :tui :status :config-o-type :save :mock})
+    (let [starting-state (helper/state-create {:interface :tui :status :config-o-type :save :mock :response :computer})
           expected-state (helper/state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer})]
-      (should= expected-state (sut/config-o-type starting-state :computer))))
+      (should= expected-state (sut/config-o-type starting-state))))
 
   (it "Config-o-type; changes status to select-board if human is selected"
-    (let [starting-state (helper/state-create {:interface :tui :status :config-o-type :save :mock})
+    (let [starting-state (helper/state-create {:interface :tui :status :config-o-type :save :mock :response :human})
           expected-state (helper/state-create {:interface :tui :status :select-board :save :mock :o-type :human})]
-      (should= expected-state (sut/config-o-type starting-state :human))))
+      (should= expected-state (sut/config-o-type starting-state))))
 
 
   (it "Config-o-difficulty; changes status to select-board once difficulty is selected"
-    (let [starting-state (helper/state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer})
+    (let [starting-state (helper/state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer :response :easy})
           expected-state (helper/state-create {:interface :tui :status :select-board :save :mock :o-type :computer :o-difficulty :easy})]
-      (should= expected-state (sut/config-o-difficulty starting-state :easy))))
+      (should= expected-state (sut/config-o-difficulty starting-state))))
 
   (it "Select-board; changes status to in-progress and populates a board once a board has been selected"
-    (let [starting-state (helper/state-create {:interface :tui :status :select-board :save :mock})
+    (let [starting-state (helper/state-create {:interface :tui :status :select-board :save :mock :response 3})
           expected-state (helper/state-create {:interface :tui :status :in-progress :save :mock :board [[1 2 3] [4 5 6] [7 8 9]]})]
-      (should= expected-state (sut/select-board starting-state 3))))
+      (should= expected-state (sut/select-board starting-state))))
 
 
   (it "changes players"
@@ -107,22 +107,22 @@
 
 
   (it "can play again; status back to config x-type, state reset"
-    (let [ending-state (sut/maybe-play-again state-tie true)]
+    (let [ending-state (sut/maybe-play-again (assoc state-tie :response true))]
       (should= :config-x-type (:status ending-state))
       (should= nil (:board ending-state))))
 
   (it "can not play again; status to game-over, state not reset"
-    (let [ending-state (sut/maybe-play-again state-tie false)]
+    (let [ending-state (sut/maybe-play-again (assoc state-tie :response false))]
       (should= :game-over (:status ending-state))
       (should= (:board state-tie) (:board ending-state))))
 
   (it "has a player take a turn"
     (let [starting-state (helper/state-create {:x-type :human :o-type :human :save :mock :board helper/empty-board})
           expected       (helper/state-create {:x-type :human :o-type :human :save :mock :board (assoc-in helper/empty-board [1 1] "X")})
-          ending-state   (sut/maybe-take-turn starting-state 5)]
+          ending-state   (sut/maybe-take-turn (assoc starting-state :response 5))]
       (should= expected ending-state)))
 
   (it "does not have a player take a turn if it isn't their turn"
     (let [starting-state (helper/state-create {:x-type :human :o-type :human :save :mock :board (assoc-in helper/empty-board [1 1] "X")})
-          ending-state   (sut/maybe-take-turn starting-state 5)]
+          ending-state   (sut/maybe-take-turn (assoc starting-state :response 5))]
       (should= starting-state ending-state))))
