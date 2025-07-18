@@ -7,55 +7,44 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]))
 
-(defmethod core/take-human-turn :tui [{:keys [board] :as state}]
-  (let [play-options (board/play-options board)
-        next-play    (console/get-next-play state play-options)]
-    (core/do-take-human-turn state next-play)))
+(defmethod core/take-human-turn :tui [state]
+  ;(let [play-options (board/play-options board)
+  ;      next-play    (console/get-next-play state play-options)]
+    (core/do-take-human-turn state (core/get-selection state)))
+;)
 
-(defmethod core/get-selection [:tui :winner] [_]
-  (= "y" (console/get-yes-no-response)))
+(defmethod core/get-selection [:tui :winner] [state]
+  (assoc state :response (= "y" (console/get-yes-no-response))))
 
-(defmethod core/get-selection [:tui :tie] [_]
-  (= "y" (console/get-yes-no-response)))
+(defmethod core/get-selection [:tui :tie] [state]
+  (assoc state :response (= "y" (console/get-yes-no-response))))
 
 (defmethod core/get-selection [:tui :in-progress] [{:keys [board] :as state}]
   (let [play-options (board/play-options board)]
-    (console/get-next-play state play-options)))
+    (assoc state :response (console/get-next-play state play-options))))
 
-(defmethod core/update-state :in-progress [state]
+(defmethod core/update-state :in-progress [state ]
   (core/play-turn! state))
 
-(defmethod core/get-selection [:tui :select-board] [_]
-  (console/get-board-size core/board-options))
+(defmethod core/get-selection [:tui :select-board] [state]
+  (assoc state :response (console/get-board-size core/board-options)))
 
-(defmethod core/get-selection [:tui :config-o-difficulty] [_]
-  (console/get-selection core/difficulty-options))
+(defmethod core/get-selection [:tui :config-o-difficulty] [state]
+  (assoc state :response (console/get-selection core/difficulty-options)))
 
-(defmethod core/get-selection [:tui :config-x-difficulty] [_]
-  (console/get-selection core/difficulty-options))
+(defmethod core/get-selection [:tui :config-x-difficulty] [state]
+  (assoc state :response (console/get-selection core/difficulty-options)))
 
-(defmethod core/get-selection [:tui :config-o-type] [_]
-  (console/get-selection core/player-options))
+(defmethod core/get-selection [:tui :config-o-type] [state]
+  (assoc state :response (console/get-selection core/player-options)))
 
-(defmethod core/get-selection [:tui :config-x-type] [_]
-  (console/get-selection core/player-options))
+(defmethod core/get-selection [:tui :config-x-type] [state]
+ (assoc state :response (console/get-selection core/player-options)))
 
-(defmethod core/get-selection [:tui :found-save] [_]
-  (= "y" (console/get-yes-no-response)))
+(defmethod core/get-selection [:tui :found-save] [state]
+  (assoc state :response (= "y" (console/get-yes-no-response))))
 
-(defmethod core/get-selection [:tui :welcome] [_] 1)
-
-;(defn game-loop [state]
-;  (loop [current-state state]
-;    (core/draw-state current-state)
-;    (if (core/states-to-break-loop (:status current-state))
-;      (let [replay? (core/get-selection current-state)]
-;        (core/update-state current-state replay?))
-;      (let [next-state (core/play-turn! current-state)]
-;        (if (or (= :config-x-type (:status next-state))
-;                (= :game-over (:status next-state)))
-;          next-state
-;          (recur next-state))))))
+(defmethod core/get-selection [:tui :welcome] [state] state)
 
 (defn prompt-to-resume [loaded-game]
   (core/draw-state loaded-game)
@@ -80,10 +69,6 @@
     (prompt-to-resume loaded-game)
     (core/fresh-start state)))
 
-(defn ->inspect [x]
-  (prn "x:" x)
-  x)
-
 (defn maybe-setup-state [state]
   (if (= :config-x-type (:status state))
     (-> state
@@ -93,26 +78,35 @@
         core/draw-state
         (functions/config-o-type (core/get-selection state))
         maybe-config-o-difficulty
+        ;core/->inspect
         core/draw-state
+        ;core/->inspect
         (functions/select-board (core/get-selection state)))
     state))
 
 (defmethod core/start-game :tui [state]
   (let [loaded-game (core/load-game state)
-        state       (maybe-resume-game (->inspect (assoc state :loaded-game loaded-game)))
-        state       (maybe-setup-state state)]
+        state       (maybe-resume-game (core/->inspect (assoc state :loaded-game loaded-game)))
+        state       (maybe-setup-state state)
+        ;_ (println "in start-game, maybe-set-up complete¬")
+        ;_ (prn "state:" state)
+        ]
     (loop [state state]
-      (->inspect state)
+      ;(println "inside loop of start-game")
       (core/draw-state state)
       (if (functions/game-over? state)
         state
-        (-> state
-            core/get-selection
-            core/update-state
-            recur))))
+        (recur (core/play-turn! state))
+        #_(recur (core/update-state state (core/get-selection state)))))))
 
-  #_(let [first-configured (configure-loop (assoc state :status :welcome))]
-      (loop [current-state first-configured]
-        (let [final-state (game-loop current-state)]
-          (when (= (:status final-state) :config-x-type)
-            (recur (configure-loop final-state)))))))
+;(defn game-loop [state]
+;  (loop [current-state state]
+;    (core/draw-state current-state)
+;    (if (core/states-to-break-loop (:status current-state))
+;      (let [replay? (core/get-selection current-state)]
+;        (core/update-state current-state replay?))
+;      (let [next-state (core/play-turn! current-state)]
+;        (if (or (= :config-x-type (:status next-state))
+;                (= :game-over (:status next-state)))
+;          next-state
+;          (recur next-state))))))

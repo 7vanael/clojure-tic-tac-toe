@@ -15,47 +15,77 @@
   (before (reset! spec-helper/mock-db nil))
 
   (context "get-selection"
-    (it "found-save; gets a true/false"
-      (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :found-save})))
-      (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :found-save}))))
+                 (it "found-save; gets a true/false and attaches to state"
+                   (let [state          {:interface :tui :status :found-save}
+                         expected-true  {:interface :tui :status :found-save :response true}
+                         expected-false {:interface :tui :status :found-save :response false}]
+                     (should= expected-true (with-in-str "y\n" (core/get-selection state)))
+                     (should= expected-false (with-in-str "n\n" (core/get-selection state)))))
 
-    (it "config-x-type; gets player type selection from console"
-      (should= :human (with-in-str "human" (core/get-selection {:interface :tui :status :config-x-type})))
-      (should= :computer (with-in-str "computer" (core/get-selection {:interface :tui :status :config-x-type}))))
+                 (it "config-x-type; gets player type selection from console"
+                   (let [state             {:interface :tui :status :config-x-type}
+                         expected-human    {:interface :tui :status :config-x-type :response :human}
+                         expected-computer {:interface :tui :status :config-x-type :response :computer}]
+                     (should= expected-human (with-in-str "human" (core/get-selection state)))
+                     (should= expected-computer (with-in-str "computer" (core/get-selection state)))))
 
-    (it "config-o-type; gets player type selection from console"
-      (should= :human (with-in-str "human" (core/get-selection {:interface :tui :status :config-o-type})))
-      (should= :computer (with-in-str "computer" (core/get-selection {:interface :tui :status :config-o-type}))))
+                 (it "config-o-type; gets player type selection from console"
+                   (let [state             {:interface :tui :status :config-o-type}
+                         expected-human    {:interface :tui :status :config-o-type :response :human}
+                         expected-computer {:interface :tui :status :config-o-type :response :computer}]
+                     (should= expected-human (with-in-str "human" (core/get-selection state)))
+                     (should= expected-computer (with-in-str "computer" (core/get-selection state)))))
 
-    (it "Config-x-difficulty; gets the computer difficulty selection from console"
-      (should= :easy (with-in-str "easy" (core/get-selection {:interface :tui :status :config-x-difficulty})))
-      (should= :medium (with-in-str "medium" (core/get-selection {:interface :tui :status :config-x-difficulty})))
-      (should= :hard (with-in-str "hard" (core/get-selection {:interface :tui :status :config-x-difficulty}))))
+                 (it "Config-x-difficulty; gets the computer difficulty selection from console"
+                   (let [state           {:interface :tui :status :config-x-difficulty}
+                         expected-easy   {:interface :tui :status :config-x-difficulty :response :easy}
+                         expected-medium {:interface :tui :status :config-x-difficulty :response :medium}
+                         expected-hard   {:interface :tui :status :config-x-difficulty :response :hard}]
+                     (should= expected-easy (with-in-str "easy" (core/get-selection state)))
+                     (should= expected-medium (with-in-str "medium" (core/get-selection state)))
+                     (should= expected-hard (with-in-str "hard" (core/get-selection state)))))
 
-    (it "Config-o-difficulty; gets the computer difficulty selection from console"
-      (should= :easy (with-in-str "easy" (core/get-selection {:interface :tui :status :config-o-difficulty})))
-      (should= :medium (with-in-str "medium" (core/get-selection {:interface :tui :status :config-o-difficulty})))
-      (should= :hard (with-in-str "hard" (core/get-selection {:interface :tui :status :config-o-difficulty}))))
+                 (it "Config-o-difficulty; gets the computer difficulty selection from console"
+                   (let [state           {:interface :tui :status :config-o-difficulty}
+                         expected-easy   {:interface :tui :status :config-o-difficulty :response :easy}
+                         expected-medium {:interface :tui :status :config-o-difficulty :response :medium}
+                         expected-hard   {:interface :tui :status :config-o-difficulty :response :hard}]
+                     (should= expected-easy (with-in-str "easy" (core/get-selection state)))
+                     (should= expected-medium (with-in-str "medium" (core/get-selection state)))
+                     (should= expected-hard (with-in-str "hard" (core/get-selection state)))))
 
-    (it "Select-board; gets the board size selection (3, 4, [3 3 3]) from console"
-      (should= 3 (with-in-str "1" (core/get-selection {:interface :tui :status :select-board})))
-      (should= 4 (with-in-str "2" (core/get-selection {:interface :tui :status :select-board})))
-      (should= [3 3 3] (with-in-str "3" (core/get-selection {:interface :tui :status :select-board}))))
+                 (it "Select-board; gets the board size selection (3, 4, [3 3 3]) from console"
+                   (let [state        {:interface :tui :status :select-board}
+                         expected-3   {:interface :tui :status :select-board :response 3}
+                         expected-4   {:interface :tui :status :select-board :response 4}
+                         expected-333 {:interface :tui :status :select-board :response [3 3 3]}]
+                     (should= expected-3 (with-in-str "1" (core/get-selection state)))
+                     (should= expected-4 (with-in-str "2" (core/get-selection state)))
+                     (should= expected-333 (with-in-str "3" (core/get-selection state)))))
 
-    (it "In-progress; gets the number of the space the player wants to play"
-      (with-redefs [console/announce-player     (stub :announce-player)
-                    console/print-number-prompt (stub :print-prompt)]
-        (should= 4 (with-in-str "4\n" (core/get-selection {:interface :tui :status :in-progress :x-type :human
-                                                           :o-type    :human :active-player-index 0 :board helper/empty-board})))))
+                 (it "In-progress; gets the number of the space the player wants to play"
+                   (with-redefs [console/announce-player     (stub :announce-player)
+                                 console/print-number-prompt (stub :print-prompt)]
+                     (let [state    {:interface :tui :status :in-progress :x-type :human
+                                     :o-type    :human :active-player-index 0 :board helper/empty-board}
+                           expected (assoc state :response 3)]
+                       (should= expected (with-in-str "3\n" (core/get-selection state)))
+                       (should= expected (with-in-str "14\njunk\n3\n" (core/get-selection state))))))
 
-    (it "tie; gets a true/false"
-      (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :tie})))
-      (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :tie}))))
+                 (it "tie; gets a true/false"
+                   (let [state        {:interface :tui :status :tie}
+                         expected-true   (assoc state :response true)
+                         expected-false   (assoc state :response false)]
+                   (should= expected-true (with-in-str "y\n" (core/get-selection state)))
+                   (should= expected-false (with-in-str "n\n" (core/get-selection state)))))
 
-    (it "winner; gets a true/false"
-      (should= true (with-in-str "y\n" (core/get-selection {:interface :tui :status :winner})))
-      (should= false (with-in-str "n\n" (core/get-selection {:interface :tui :status :winner}))))
-    )
+                 (it "winner; gets a true/false"
+                   (let [state        {:interface :tui :status :winner}
+                         expected-true   (assoc state :response true)
+                         expected-false   (assoc state :response false)]
+                     (should= expected-true (with-in-str "y\n" (core/get-selection state)))
+                     (should= expected-false (with-in-str "n\n" (core/get-selection state)))))
+                 )
 
   (context "setup"
     (it "doesn't set up if status isn't config-x-type"
@@ -145,9 +175,17 @@
             expected       (core/fresh-start loaded-game)]
         (should= expected (sut/maybe-resume-game state))))
 
-    (it "starts the loop"
-      )
+    #_(it "starts the loop"
+        )
     )
+
+  (it "takes a human turn on the human's turn"
+    (with-redefs [core/get-selection (stub :get-selection {:return 5})]
+      (let [state    (helper/state-create {:status       :in-progress :interface :tui :x-type :human :o-type :computer
+                                           :o-difficulty :hard :board helper/empty-board})
+            expected (helper/state-create {:status       :in-progress :interface :tui :x-type :human :o-type :computer
+                                           :o-difficulty :hard :board helper/center-x-board})]
+        (should= expected (core/take-turn state)))))
 
   #_(it "should handle a complete game that ends in game-over"
       (let [initial-state    (core/initial-state {:interface :tui})

@@ -1,6 +1,11 @@
 (ns tic-tac-toe.core
   (:require [tic-tac-toe.board :as board]))
 
+
+(defn ->inspect [x]
+  (prn "x:" x)
+  x)
+
 (defn initial-state [state]
   (merge
     {:interface           :tui

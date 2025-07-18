@@ -99,8 +99,8 @@
   (before (reset! spec-helper/mock-db nil))
 
   (it "can tell what play-type of turn it is"
-    (should= true (sut/currently-human? (state-create {:interface :tui :active-player-index 0 :x-type :human :o-type :human}))))
-
+    (should= true (sut/currently-human? (state-create {:interface :tui :active-player-index 0 :x-type :human :o-type :human})))
+    (should= false (sut/currently-human? (state-create {:interface :tui :active-player-index 0 :x-type :computer :x-difficulty :medium :o-type :human}))))
 
   (it "dispatches turns correctly when it's a human turn"
     (with-redefs [sut/take-human-turn    (stub :human-turn)
@@ -109,6 +109,14 @@
                                     :o-difficulty :medium :board empty-board}))
       (should-have-invoked :human-turn)
       (should-not-have-invoked :computer-turn)))
+
+  (it "dispatches turns correctly when it's a computer turn"
+    (with-redefs [sut/take-human-turn    (stub :human-turn)
+                  sut/take-computer-turn (stub :computer-turn)]
+      (sut/take-turn (state-create {:interface    :tui :active-player-index 0 :o-type :human :x-type :computer
+                                    :x-difficulty :medium :board empty-board}))
+      (should-have-invoked :computer-turn)
+      (should-not-have-invoked :human-turn)))
 
   (it "The human turn method is called if the active player is human"
     (with-redefs [sut/take-human-turn (stub :human-turn)]
