@@ -226,4 +226,17 @@
                       sut/game-loop      (stub :game-loop {:return final-state})]
 
           (should= nil (core/start-game initial-state)))))
+
+  (context "play again phase"
+
+    (it "quits"
+      (with-redefs [functions/game-over? (fn [_] true)
+                    sut/play-again? (fn [_] false)
+                    console/exit-message (stub :exit-message)
+                    sut/exit-game! (stub :exit-game!) ]
+        (sut/play-game {:interface :tui :save ::mock :status :winner})
+        ;(should-have-invoked :exit-message)
+        (should-have-invoked :exit-game!)))
+    )
+
   )

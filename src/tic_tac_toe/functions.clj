@@ -2,6 +2,13 @@
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]))
 
+
+(def states-to-end
+  #{:tie :winner})
+
+(defn game-over? [{:keys [status]}]
+  (states-to-end status))
+
 (defn maybe-load-save [state]
   (let [saved-game (core/load-game state)]
     (if (= :found-save (:status saved-game))
@@ -56,12 +63,6 @@
   (if (player-played? state)
     (dissoc state :response)
     (core/do-take-human-turn state)))
-
-(def states-to-end
-  #{:tie :winner})
-
-(defn game-over? [{:keys [status]}]
-  (states-to-end status))
 
 (defn change-player [{:keys [active-player-index] :as state}]
   (if (player-played? state)
