@@ -1,6 +1,5 @@
 (ns tic-tac-toe.tui.in_progress_spec
   (:require [speclj.core :refer :all]
-            [tic-tac-toe.functions :as functions]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]
             [tic-tac-toe.spec-helper :as helper]
             [tic-tac-toe.tui.console :as console]
@@ -172,9 +171,6 @@
             state          (assoc starting-state :loaded-game loaded-game)
             expected       (core/fresh-start loaded-game)]
         (should= expected (sut/maybe-resume-game state))))
-
-    #_(it "starts the loop"
-        )
     )
 
   (it "takes a human turn on the human's turn"
@@ -230,7 +226,7 @@
   (context "play again phase"
 
     (it "quits"
-      (with-redefs [functions/game-over? (fn [_] true)
+      (with-redefs [core/game-over? (fn [_] true)
                     sut/play-again? (fn [_] false)
                     console/exit-message (stub :exit-message)
                     sut/exit-game! (stub :exit-game!) ]

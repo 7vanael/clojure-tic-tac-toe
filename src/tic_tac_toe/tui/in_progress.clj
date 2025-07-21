@@ -1,7 +1,6 @@
 (ns tic-tac-toe.tui.in-progress
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.functions :as functions]
             [tic-tac-toe.tui.console :as console]
             [tic-tac-toe.computer.hard]
             [tic-tac-toe.computer.easy]
@@ -57,7 +56,7 @@
     (-> state
         core/draw-state
         core/get-selection
-        functions/config-o-difficulty)
+        core/config-o-difficulty)
     state))
 
 (defn maybe-config-x-difficulty [{:keys [status] :as state}]
@@ -65,7 +64,7 @@
     (-> state
         core/draw-state
         core/get-selection
-        functions/config-x-difficulty)
+        core/config-x-difficulty)
     state))
 
 (defn maybe-resume-game [{:keys [loaded-game] :as state}]
@@ -78,19 +77,19 @@
     (-> state
         core/draw-state
         core/get-selection
-        functions/config-x-type
+        core/config-x-type
         maybe-config-x-difficulty
         core/draw-state
         core/get-selection
-        functions/config-o-type
+        core/config-o-type
         maybe-config-o-difficulty
         core/draw-state
         core/get-selection
-        functions/select-board)
+        core/select-board)
     state))
 
 (defn continue-loop? [state]
-  (if (functions/game-over? state)
+  (if (core/game-over? state)
     (:response (core/get-selection state)))
   true)
 
@@ -103,7 +102,7 @@
   (loop [state state]
     (let [state (maybe-setup-state state)]
       (core/draw-state state)
-      (if (functions/game-over? state)
+      (if (core/game-over? state)
         (if-not (play-again? state)
           (do (core/draw-state (assoc state :status :game-over))
               (exit-game!))

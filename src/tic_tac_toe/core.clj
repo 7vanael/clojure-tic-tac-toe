@@ -44,13 +44,6 @@
 (defmulti mouse-clicked (fn [state & _] (:status state)))
 (defmulti get-selection dual-dispatch)
 
-(defn currently-human? [state]
-  (= :human (active-player-type state)))
-
-(defn take-turn [state]
-  (if (currently-human? state)
-    (take-human-turn state)
-    (take-computer-turn state)))
 
 (defn do-take-human-turn [{:keys [board players active-player-index] :as state}]
   (let [next-play (:response state)
@@ -62,13 +55,32 @@
 (def states-to-break-loop
   #{:tie :winner})
 
-(defn change-player [{:keys [active-player-index players board] :as state}]
-  (let [current-char               (get-in players [active-player-index :character])
-        current-player-not-played? (= current-char (board/next-player board))
-        game-over?                 (states-to-break-loop (:status state))]
-    (if (or current-player-not-played? game-over?)
+(defn game-over? [{:keys [status]}]
+  (states-to-break-loop status))
+
+(defn player-played? [{:keys [active-player-index board players]}]
+  (let [current-char (get-in players [active-player-index :character])]
+    (not (= current-char (board/next-player board)))))
+
+(defn maybe-take-turn [state]
+  (if (player-played? state)
+    (dissoc state :response)
+    (do-take-human-turn state)))
+
+(defn currently-human? [state]
+  (= :human (active-player-type state)))
+
+(defn take-turn [state]
+  (if (currently-human? state)
+    (take-human-turn state) ;should this be maybe-take-turn?
+    (take-computer-turn state)))
+
+
+(defn change-player [{:keys [active-player-index] :as state}]
+    (if (or (not (player-played? state))
+            (game-over? state))
       state
-      (assoc state :active-player-index (if (= (:active-player-index state) 0) 1 0)))))
+      (assoc state :active-player-index (if (= active-player-index 0) 1 0))))
 
 (defn play-turn! [state]
   (-> state
@@ -135,3 +147,56 @@
     (if (= :found-save (:status saved-game))
       (assoc saved-game :interface (:interface state))
       (assoc (initial-state state) :status :config-x-type))))
+
+(defn maybe-load-save [state]
+  (let [saved-game (load-game state)]
+    (if (= :found-save (:status saved-game))
+      (assoc saved-game :interface (:interface state))
+      (assoc (initial-state state) :status :config-x-type))))
+
+(defn maybe-resume-save [state resume]
+  (if resume
+    (go-in-progress state)
+    (fresh-start state)))
+
+(defn config-x-type [state]
+  (let [play-type (:response state)
+        next-status (if (= play-type :human) :config-o-type :config-x-difficulty)
+        new-state   (assoc-in state [:players 0 :play-type] play-type)]
+    (dissoc (assoc new-state :status next-status) :response)))
+
+(defn config-x-difficulty [state]
+  (let [difficulty (:response state)
+        next-status  :config-o-type
+        new-state    (assoc-in state [:players 0 :difficulty] difficulty)]
+    (dissoc (assoc new-state :status next-status) :response)))
+
+(defn config-o-type [state]
+  (let [play-type (:response state)
+        next-status (if (= play-type :human) :select-board :config-o-difficulty)
+        new-state   (assoc-in state [:players 1 :play-type] play-type)]
+    (dissoc (assoc new-state :status next-status) :response)))
+
+(defn config-o-difficulty [state]
+  (let [difficulty (:response state)
+        next-status  :select-board
+        new-state    (assoc-in state [:players 1 :difficulty] difficulty)]
+    (dissoc (assoc new-state :status next-status) :response)))
+
+(defn select-board [state]
+  (let [board-size (:response state)
+        next-status :in-progress
+        new-state   (assoc state :board (board/new-board board-size))]
+    (dissoc (assoc new-state :status next-status) :response)))
+
+(defn maybe-play-again [state]
+  (if (:response state)
+    (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
+    (dissoc (assoc state :status :game-over) :response)))
+
+
+
+(defn maybe-take-turn [state]
+  (if (player-played? state)
+    (dissoc state :response)
+    (do-take-human-turn state)))
