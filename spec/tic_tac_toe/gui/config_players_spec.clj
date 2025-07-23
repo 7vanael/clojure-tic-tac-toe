@@ -16,12 +16,11 @@
         (should= :human (get-in result [:players 0 :play-type]))))
 
     (it "updates x-type to computer if computer button clicked and progresses state to config-o-type"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 432 :y 350}
               starting-state (assoc (helper/gui-mock-state) :status :config-x-type)
               result         (core/mouse-clicked starting-state event)]
           (should= :config-x-difficulty (:status result))
-          (should= :computer (get-in result [:players 0 :play-type])))))
+          (should= :computer (get-in result [:players 0 :play-type]))))
 
     (it "returns state unchanged if no button clicked on config-x-type"
       (let [event          {:x 2 :y 2}
@@ -32,20 +31,18 @@
 
   (context "config o-type"
     (it "updates o-type to Human if human button clicked and progresses state to select-board"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 144 :y 350}
               starting-state (assoc (helper/gui-mock-state) :status :config-o-type)
               result         (core/mouse-clicked starting-state event)]
           (should= :select-board (:status result))
-          (should= :human (get-in result [:players 1 :play-type])))))
+          (should= :human (get-in result [:players 1 :play-type]))))
 
     (it "updates o-type to computer if computer button clicked and progresses state to config-o-difficulty"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 432 :y 350}
               starting-state (assoc (helper/gui-mock-state) :status :config-o-type)
               result         (core/mouse-clicked starting-state event)]
           (should= :config-o-difficulty (:status result))
-          (should= :computer (get-in result [:players 1 :play-type])))))
+          (should= :computer (get-in result [:players 1 :play-type]))))
 
     (it "returns state unchanged if no button clicked on config-o-type"
       (let [event          {:x 2 :y 2}
@@ -56,28 +53,25 @@
 
   (context "config x-difficulty"
     (it "updates x-difficulty with easy if easy button is pressed and progresses state to config-o-type"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 288 :y 288}
               starting-state (assoc (helper/gui-mock-state) :status :config-x-difficulty)
               result         (core/mouse-clicked starting-state event)]
           (should= :config-o-type (:status result))
-          (should= :easy (get-in result [:players 0 :difficulty])))))
+          (should= :easy (get-in result [:players 0 :difficulty]))))
 
     (it "updates x-difficulty with medium if medium button is pressed and progresses state to config-o-type"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 288 :y 432}
               starting-state (assoc (helper/gui-mock-state) :status :config-x-difficulty)
               result         (core/mouse-clicked starting-state event)]
           (should= :config-o-type (:status result))
-          (should= :medium (get-in result [:players 0 :difficulty])))))
+          (should= :medium (get-in result [:players 0 :difficulty]))))
 
     (it "updates x-difficulty with hard if hard button is pressed and progresses state to config-o-type"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 288 :y 576}
               starting-state (assoc (helper/gui-mock-state) :status :config-x-difficulty)
               result         (core/mouse-clicked starting-state event)]
           (should= :config-o-type (:status result))
-          (should= :hard (get-in result [:players 0 :difficulty])))))
+          (should= :hard (get-in result [:players 0 :difficulty]))))
 
     (it "returns the state unchanged if no button is clicked"
       (let [event          {:x 2 :y 2}
@@ -88,28 +82,25 @@
 
   (context "config o-difficulty"
     (it "updates o-difficulty with with easy if easy button is pressed and progresses state to select-board"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 288 :y 288}
               starting-state (assoc (helper/gui-mock-state) :status :config-o-difficulty)
               result         (core/mouse-clicked starting-state event)]
           (should= :select-board (:status result))
-          (should= :easy (get-in result [:players 1 :difficulty])))))
+          (should= :easy (get-in result [:players 1 :difficulty]))))
 
     (it "updates o-difficulty with medium if medium button is pressed and progresses state to select-board"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 288 :y 432}
               starting-state (assoc (helper/gui-mock-state) :status :config-o-difficulty)
               result         (core/mouse-clicked starting-state event)]
           (should= :select-board (:status result))
-          (should= :medium (get-in result [:players 1 :difficulty])))))
+          (should= :medium (get-in result [:players 1 :difficulty]))))
 
     (it "updates o-difficulty with hard if hard button is pressed and progresses state to select-board"
-      (with-redefs [core/update-state (stub :update-state)]
         (let [event          {:x 288 :y 576}
               starting-state (assoc (helper/gui-mock-state) :status :config-o-difficulty)
               result         (core/mouse-clicked starting-state event)]
           (should= :select-board (:status result))
-          (should= :hard (get-in result [:players 1 :difficulty])))))
+          (should= :hard (get-in result [:players 1 :difficulty]))))
 
     (it "returns the state unchanged if no button is clicked"
       (let [event          {:x 2 :y 2}

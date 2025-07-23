@@ -21,9 +21,6 @@
   (let [play-options (board/play-options board)]
     (assoc state :response (console/get-next-play state play-options))))
 
-(defmethod core/update-state :in-progress [state]
-  (core/play-turn! state))
-
 (defmethod core/get-selection [:tui :select-board] [state]
   (assoc state :response (console/get-board-size core/board-options)))
 

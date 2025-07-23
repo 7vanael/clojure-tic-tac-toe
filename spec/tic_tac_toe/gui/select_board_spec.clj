@@ -15,20 +15,18 @@
       (should= expected result)))
 
   (it "assigns a 4x4 board to the state if 4x4 button pressed"
-    (with-redefs [core/update-state (stub :update-state)]
       (let [event          {:x 288 :y 432}
             starting-state (assoc (helper/gui-mock-state) :status :select-board)
             result         (core/mouse-clicked starting-state event)
             expected       (assoc starting-state :board helper/empty-4-board :status :in-progress)]
-        (should= expected result))))
+        (should= expected result)))
 
   (it "assigns a 3x3x3 board if 3x3x3 button pressed"
-    (with-redefs [core/update-state (stub :update-state)]
       (let [event          {:x 288 :y 576}
             starting-state (assoc (helper/gui-mock-state) :status :select-board)
             result         (core/mouse-clicked starting-state event)
             expected       (assoc starting-state :board helper/empty-3d-board :status :in-progress)]
-        (should= expected result))))
+        (should= expected result)))
 
   (it "returns the state unchanged if no button is clicked"
     (let [event          {:x 2 :y 2}
