@@ -6,6 +6,6 @@
 (defn no-clicked? [x y] (util/button-clicked? [x y] util/opt2-of-2-rect))
 
 (defmethod core/mouse-clicked :winner [state {:keys [x y]}]
-  (cond (yes-clicked? x y) (core/update-state state true)
+  (cond (yes-clicked? x y) (core/maybe-play-again (assoc state :response true))
         (no-clicked? x y) (System/exit 0) ;(assoc state :status :exit)?
         :else state))

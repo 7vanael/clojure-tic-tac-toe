@@ -25,7 +25,7 @@
     :title "Tic-Tac-Toe"
     :size [util/screen-width util/screen-height]
     :setup setup
-    :update core/play-turn!
+    :update update-gui
     :draw core/draw-state
     :mouse-pressed core/mouse-clicked
     :middleware [m/fun-mode]))

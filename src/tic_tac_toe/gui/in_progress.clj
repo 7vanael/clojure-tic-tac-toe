@@ -9,7 +9,8 @@
 (defn take-human-turn [state]
   (-> state
       core/do-take-human-turn
-      core/play-turn!))
+      core/play-turn!
+      ))
 
 (defmethod core/mouse-clicked :in-progress [{:keys [board] :as state} {:keys [x y]}]
   (let [clicked-cell (cells/find-clicked-cell board x y)

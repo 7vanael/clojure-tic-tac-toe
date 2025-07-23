@@ -7,7 +7,7 @@
 (defn board333-clicked? [x y] (util/button-clicked? [x y] util/opt3-of-3-rect))
 
 (defmethod core/mouse-clicked :select-board [state {:keys [x y]}]
-  (cond (board3-clicked? x y) (core/update-state state 3)
-        (board4-clicked? x y) (core/update-state state 4)
-        (board333-clicked? x y) (core/update-state state [3 3 3])
+  (cond (board3-clicked? x y) (core/select-board (assoc state :response 3))
+        (board4-clicked? x y) (core/select-board (assoc state :response 4))
+        (board333-clicked? x y) (core/select-board (assoc state :response [3 3 3]))
         :else state))

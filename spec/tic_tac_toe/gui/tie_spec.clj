@@ -13,9 +13,9 @@
 
   (it "calls update-state with true if yes button is clicked"
     (with-redefs [core/update-state (stub :update-state)]
-      (let [event {:x 144 :y 350}]
-        (core/mouse-clicked state event)
-        (should-have-invoked :update-state {:with [state true]}))))
+      (let [event {:x 144 :y 350}
+            result (core/mouse-clicked state event)]
+        (should= result (core/fresh-start state)))))
 
   #_(it "sets the status to exit to end game if 'no' button is pressed"
       ;This is currently ending the program.. can't figure out redefs- see winner
