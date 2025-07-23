@@ -11,7 +11,6 @@
       core/get-selection
       core/do-take-human-turn))
 
-
 (defmethod core/get-selection [:tui :winner] [state]
   (assoc state :response (= "y" (console/get-yes-no-response))))
 
@@ -88,11 +87,6 @@
         core/select-board)
     state))
 
-(defn continue-loop? [state]
-  (if (core/game-over? state)
-    (:response (core/get-selection state)))
-  true)
-
 (defn play-again? [state]
   (:response (core/get-selection state)))
 
@@ -107,21 +101,9 @@
           (do (core/draw-state (assoc state :status :game-over))
               (exit-game!))
           (recur (core/fresh-start state)))
-       (recur (core/play-turn! state))))))
+        (recur (core/play-turn! state))))))
 
 (defmethod core/start-game :tui [state]
   (let [loaded-game (core/load-game state)
         state       (maybe-resume-game (assoc state :loaded-game loaded-game))]
     (play-game state)))
-
-;(defn game-loop [state]
-;  (loop [current-state state]
-;    (core/draw-state current-state)
-;    (if (core/states-to-break-loop (:status current-state))
-;      (let [replay? (core/get-selection current-state)]
-;        (core/update-state current-state replay?))
-;      (let [next-state (core/play-turn! current-state)]
-;        (if (or (= :config-x-type (:status next-state))
-;                (= :game-over (:status next-state)))
-;          next-state
-;          (recur next-state))))))

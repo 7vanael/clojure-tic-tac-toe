@@ -190,13 +190,7 @@
     (dissoc (assoc new-state :status next-status) :response)))
 
 (defn maybe-play-again [state]
+  (delete-save state)
   (if (:response state)
     (assoc (initial-state {:interface (:interface state) :save (:save state)}) :status :config-x-type)
     (dissoc (assoc state :status :game-over) :response)))
-
-
-
-(defn maybe-take-turn [state]
-  (if (player-played? state)
-    (dissoc state :response)
-    (do-take-human-turn state)))

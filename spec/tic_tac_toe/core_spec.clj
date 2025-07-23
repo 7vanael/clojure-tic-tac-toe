@@ -343,5 +343,17 @@
       (let [ending-state (sut/maybe-play-again (assoc state-tie :response false))]
         (should= :game-over (:status ending-state))
         (should= (:board state-tie) (:board ending-state))))
+
+    (it "deletes the save at the end of a completed game"
+      (sut/save-game (assoc state-tie :interface :tui))
+      (let [loaded-game (sut/load-game {:interface :tui :save :mock})
+            updated-state (sut/maybe-play-again (assoc state-tie :response false))
+            next-loaded-game (sut/load-game {:interface :gui :save :mock})]
+        (should= :found-save (:status loaded-game))
+        (should= :tui (:interface loaded-game))
+        (should= :gui (:interface next-loaded-game))
+        (should-not-be :found-save (:status next-loaded-game))
+        (should= :game-over (:status updated-state))
+        ))
     )
   )
