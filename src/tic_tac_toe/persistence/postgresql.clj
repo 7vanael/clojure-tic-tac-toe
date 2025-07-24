@@ -54,9 +54,6 @@
   (if (keyword? setting) (name setting) setting))
 
 (defmethod core/save-game :sql [{:keys [board active-player-index status players game-id] :as state} & [source]]
-  (println "Save game called")
-  (prn "state:" state)
-  (prn "(:game-id state):" (:game-id state))
   (let [ds           (or source data-source)
         x-type       (or (get-in players [0 :play-type]) "nil")
         o-type       (or (get-in players [1 :play-type]) "nil")
@@ -71,9 +68,8 @@
                       :o_type              (keyword-or-nil o-type)
                       :o_difficulty        (keyword-or-nil o-difficulty)}
         result       (if game-id
-                       (do (println "updating save") (update-save ds sql-state game-id))
-                       (do (println "saving new") (first-save ds sql-state)))]
-    (prn "result:" result)
+                       (update-save ds sql-state game-id)
+                       (first-save ds sql-state))]
     (assoc state :game-id (:game_id result))))
 
 (defn load-existing [state ds]
@@ -106,6 +102,3 @@
         game-id   (delay (:game_id (first last-game)))]
     (when (seq last-game)
       (sql/delete! ds :tictactoe {:game_id @game-id}))))
-
-#_(defn core/get-all-games [state]
-    #_(return a map of all saved games))
