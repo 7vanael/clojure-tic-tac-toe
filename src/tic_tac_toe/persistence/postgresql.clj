@@ -81,7 +81,7 @@
 (defn load-last-in-progress [ds]
   (let [result (sql/query ds ["SELECT * FROM tictactoe WHERE (status = 'in-progress' OR status = 'found-save') ORDER BY game_id DESC LIMIT 1"]
                           {:builder-fn rs/as-unqualified-maps})]
-    (if-not (seq result) nil (assoc (parse-game (first result)) :status :found-save))))
+    (if-not (seq result) nil (core/save-game (assoc (parse-game (first result)) :status :found-save)))))
 
 (defn new-saved-starting-state [{:keys [interface]} ds]
   (core/save-game (core/initial-state {:interface interface :save :sql}) ds))
