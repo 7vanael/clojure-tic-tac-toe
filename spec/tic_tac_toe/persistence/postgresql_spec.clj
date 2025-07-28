@@ -148,6 +148,16 @@
         (should= (:board state) (:board loaded-state))
         (should-not-be-same (:board first-saved-state) (:board loaded-state))))
 
+    (it "loads the most recent found-save game when no game-id is provided if it is the most recent save"
+      (let [first-saved-state       (core/save-game state2 test-datasource)
+            saved-found-save-state (core/save-game (assoc state :status :found-save) test-datasource)
+            passed-in-state         {:interface :gui :save :sql}
+            loaded-state            (core/load-game passed-in-state test-datasource)]
+        (should= :found-save (:status loaded-state))
+        (should= (:game-id saved-found-save-state) (:game-id loaded-state))
+        (should= (:board state) (:board loaded-state))
+        (should-not-be-same (:board first-saved-state) (:board loaded-state))))
+
     (it "ignores completed games when looking for last in-progress game "
       (core/save-game (assoc state2 :status :game-over) test-datasource)
       (let [latest-in-progress (core/save-game state test-datasource)
