@@ -4,7 +4,7 @@
             [reagent.dom :as rdom]))
 
 (defn hello []
-      (if- true
+      (if true
         [:h1 "Hello from Reagent"]
         [:h1 "Goodbye from Reagent"]
         ))

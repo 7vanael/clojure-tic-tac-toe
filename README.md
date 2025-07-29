@@ -64,8 +64,11 @@ the last flag entered will be used.
 - `edn`: Save game data to a local file
 
 ### Web Server option
+To compile Javascript, run: 
+`lein cljsbuild once`
 
-Currently serving on localhost:8080 with command: 
+Then, to view on localhost:8080 with command: 
 `python3 -m http.server 8080`
 
+(then visit localhost:8080 in your browser)
 At this time, only test page is available. 
