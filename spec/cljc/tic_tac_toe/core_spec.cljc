@@ -95,19 +95,19 @@
 
 
 (def state-winner (state-create {:x-type :human :o-type :human :save :mock :status :winner
-                                        :board [["X" "O" "X"]
-                                                ["O" "X" "O"]
-                                                ["O" "X" "X"]] :active-player-index 0}))
+                                 :board [["X" "O" "X"]
+                                         ["O" "X" "O"]
+                                         ["O" "X" "X"]] :active-player-index 0}))
 
 (def state-tie (state-create {:x-type :human :o-type :human :save :mock :status :tie
-                                     :board [["X" "O" "X"]
-                                             ["X" "O" "O"]
-                                             ["O" "X" "X"]] :active-player-index 0}))
+                              :board [["X" "O" "X"]
+                                      ["X" "O" "O"]
+                                      ["O" "X" "X"]] :active-player-index 0}))
 
 (def state-in-progress (state-create {:x-type :human :o-type :human :save :mock :status :in-progress
-                                             :board [["X" "O" "X"]
-                                                     ["O" "X" "O"]
-                                                     ["O" "X" 9]] :active-player-index 1}))
+                                      :board [["X" "O" "X"]
+                                              ["O" "X" "O"]
+                                              ["O" "X" 9]] :active-player-index 1}))
 
 
 (describe "core"

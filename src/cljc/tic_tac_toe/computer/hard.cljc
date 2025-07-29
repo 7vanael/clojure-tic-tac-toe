@@ -1,7 +1,7 @@
 (ns tic-tac-toe.computer.hard
   (:require [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]
-            [tic-tac-toe.computer.computer-util :as util]))
+            [tic-tac-toe.computer.computer-utilc :as util]))
 
 (defn eval-board [board depth comp-char opp-char]
   (cond (board/winner? board comp-char) (- 10 depth)
@@ -55,8 +55,8 @@
         best-score     (second (apply max-key second scored-moves))
         blocking-moves (winning-moves board opp-char 0)]
     (if (> -7 best-score)
-        blocking-moves
-        scored-moves)))
+      blocking-moves
+      scored-moves)))
 
 (defn hard [{:keys [board active-player-index players] :as state}]
   (let [character (get-in players [active-player-index :character])

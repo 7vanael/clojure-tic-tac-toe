@@ -129,7 +129,7 @@
 
 (defn get-zs [board]
   (let [xy-pairs (mapcat #(map (partial vector %) (range (count board))) (range (count board)))]
-  (mapv #(z-line-lines % (count board)) xy-pairs)))
+    (mapv #(z-line-lines % (count board)) xy-pairs)))
 
 (defn ->line-coordinates [board start step]
   (take (count board) (iterate (partial next-location step) start)))
@@ -145,10 +145,10 @@
    (->line-coordinates board [0 (dec (count board))] [1 -1])])
 
 (defn get-all-lines-2d [board]
-    (let [rows (get-rows board)
-          cols (get-cols board)
-          diags (get-diags board)]
-      (concat rows cols diags)))
+  (let [rows (get-rows board)
+        cols (get-cols board)
+        diags (get-diags board)]
+    (concat rows cols diags)))
 
 (defn cube-diags [size]
   (cube->diag-start-steps size))
@@ -174,8 +174,8 @@
 (defn add-z-to-planes [z coords-panel]
   (map (fn [group]
          (mapv (fn [coord]
-                (vec (cons z coord)))
-              group))
+                 (vec (cons z coord)))
+               group))
        coords-panel))
 
 (defn get-all-lines-3d [board]
@@ -188,12 +188,12 @@
     (concat diag-line-coords z-lines panel-lines)))
 
 (defn get-all-lines [board]
-    (if (board-3d? board)
-      (get-all-lines-3d board)
-      (get-all-lines-2d board)))
+  (if (board-3d? board)
+    (get-all-lines-3d board)
+    (get-all-lines-2d board)))
 
 (defn start-step->values [board start step]
-    (map #(get-in board %) (->line-coordinates board start step)))
+  (map #(get-in board %) (->line-coordinates board start step)))
 
 (defn win-3d-diag? [board character]
   (let [size          (count board)

@@ -1,5 +1,5 @@
 (ns tic-tac-toe.computer.easy
-  (:require [tic-tac-toe.computer.computer-util :as util]
+  (:require [tic-tac-toe.computer.computer-utilc :as util]
             [tic-tac-toe.board :as board]
             [tic-tac-toe.core :as core]))
 

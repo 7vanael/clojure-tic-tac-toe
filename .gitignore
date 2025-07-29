@@ -15,3 +15,6 @@ game-save.edn
 
 # Database files
 .idea/*
+
+#JS created files
+resources/public/js/main.js

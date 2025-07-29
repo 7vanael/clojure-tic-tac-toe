@@ -48,8 +48,8 @@
   (let [next-play (:response state)
         clean-state (dissoc state :response)]
     (assoc clean-state :board (board/take-square board
-                                         (board/space->coordinates next-play board)
-                                         (get-in players [active-player-index :character])))))
+                                                 (board/space->coordinates next-play board)
+                                                 (get-in players [active-player-index :character])))))
 
 (def states-to-break-loop
   #{:tie :winner})
@@ -76,10 +76,10 @@
 
 
 (defn change-player [{:keys [active-player-index] :as state}]
-    (if (or (not (player-played? state))
-            (game-over? state))
-      state
-      (assoc state :active-player-index (if (= active-player-index 0) 1 0))))
+  (if (or (not (player-played? state))
+          (game-over? state))
+    state
+    (assoc state :active-player-index (if (= active-player-index 0) 1 0))))
 
 (defn play-turn! [state]
   (-> state

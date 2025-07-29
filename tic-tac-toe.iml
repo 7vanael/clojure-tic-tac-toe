@@ -4,6 +4,12 @@
     <content url="file://$MODULE_DIR$" dumb="true">
       <sourceFolder url="file://$MODULE_DIR$/dev-resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/spec/clj" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/spec/cljc" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/spec/cljs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/clj" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/cljc" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/cljs" isTestSource="false" />
     </content>
   </component>
   <component name="BuildSystem">

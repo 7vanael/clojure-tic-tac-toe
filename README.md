@@ -62,3 +62,10 @@ the last flag entered will be used.
 
 - `sql`: Save game data to a SQL database (PostgreSQL)
 - `edn`: Save game data to a local file
+
+### Web Server option
+
+Currently serving on localhost:8080 with command: 
+`python3 -m http.server 8080`
+
+At this time, only test page is available. 
