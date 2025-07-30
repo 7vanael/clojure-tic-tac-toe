@@ -12,9 +12,8 @@
                  [reagent "1.2.0"]
                  [org.clojure/clojurescript "1.12.42"]
                  [cljsjs/react "18.2.0-1"]
-                 [cljsjs/react-dom "18.2.0-1"]
-                 [speclj "3.4.3"]]
-  :profiles {:dev {:dependencies [
+                 [cljsjs/react-dom "18.2.0-1"]]
+  :profiles {:dev {:dependencies [[speclj "3.10.0"]
                                   [com.cleancoders.c3kit/scaffold "2.0.3"]
                                   ;[com.cleancoders.c3kit/wire "2.1.4"]
                                   ]}}
@@ -23,4 +22,5 @@
                                    :optimizations :simple
                                    :main tic-tac-toe.main}}]}
   :test-paths ["spec/clj" "spec/cljc" "spec/cljs"]
+  :aliases {"cljs" ["with-profile" "dev" "run" "-m" "c3kit.scaffold.cljs"]}
   :aot [tic-tac-toe.main])

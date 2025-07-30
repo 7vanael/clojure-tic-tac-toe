@@ -18,4 +18,5 @@ game-save.edn
 .idea/*
 
 #JS created files
+resources/public/cljs/*
 resources/public/js/main.js
