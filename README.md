@@ -69,6 +69,7 @@ To compile Javascript, run:
 
 Then, to view on localhost:8080 with command: 
 `python3 -m http.server 8080`
+after navigating to resources/public
 
 (then visit localhost:8080 in your browser)
 At this time, only test page is available. 
