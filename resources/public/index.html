@@ -6,7 +6,9 @@
 </head>
 <body>
 <div id="app">Loading.....?</div>
-<script src="js/main.js"></script>
-<script>tic_tac_toe.main.init();</script>
+<script src="./cljs/goog/base.js" type="text/javascript"></script>
+<script src="./cljs/tic_tac_toe_dev.js"></script>
+<script type="text/javascript">goog.require("tic_tac_toe.main")</script>
+<script type="text/javascript">tic_tac_toe.main.init() </script>
 </body>
 </html>

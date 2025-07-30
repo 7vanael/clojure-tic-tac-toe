@@ -1,0 +1,1 @@
+{:output-dir "resources/public/cljs/", :cache-analysis true, :sources ["spec/cljs" "src/cljs"], :optimizations :none, :cljs.closure/watch-triggered-build? true, :parallel-build true, :verbose true, :output-to "resources/public/cljs/tic_tac_toe_dev.js", :specs true, :watch-fn #'c3kit.scaffold.cljs/on-dev-compiled, :pretty-print true}

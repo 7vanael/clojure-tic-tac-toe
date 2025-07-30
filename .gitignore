@@ -9,6 +9,7 @@ pom.xml
 .lein-failures
 .lein-plugins
 .lein-repl-history
+.cpcache/*
 
 # Game save files
 game-save.edn
