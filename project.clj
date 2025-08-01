@@ -12,15 +12,17 @@
                  [reagent "1.2.0"]
                  [org.clojure/clojurescript "1.12.42"]
                  [cljsjs/react "18.2.0-1"]
-                 [cljsjs/react-dom "18.2.0-1"]]
+                 [cljsjs/react-dom "18.2.0-1"]
+                 [com.cleancoders.c3kit/wire "2.5.0"]]
   :profiles {:dev {:dependencies [[speclj "3.10.0"]
-                                  [com.cleancoders.c3kit/scaffold "2.0.3"]
-                                  ;[com.cleancoders.c3kit/wire "2.1.4"]
-                                  ]}}
+                                  [com.cleancoders.c3kit/scaffold "2.0.3"]]}}
+  :plugins [[speclj "3.10.0"]]
   :cljsbuild {:builds [{:source-paths ["spec/cljs" "src/cljs" "src/cljc" "resources"]
                         :compiler {:output-to "resources/public/js/main.js"
                                    :optimizations :simple
                                    :main tic-tac-toe.main}}]}
   :test-paths ["spec/clj" "spec/cljc" "spec/cljs"]
-  :aliases {"cljs" ["with-profile" "dev" "run" "-m" "c3kit.scaffold.cljs"]}
+  :aliases {"cljs" ["with-profile" "dev" "run" "-m" "c3kit.scaffold.cljs"]
+            ;"spec" ["-m" "speclj.main" "-c"] ;How can I not have this as plugin? need correct alias
+            }
   :aot [tic-tac-toe.main])

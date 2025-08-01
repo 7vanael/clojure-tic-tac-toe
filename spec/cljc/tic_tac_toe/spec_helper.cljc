@@ -1,6 +1,5 @@
 (ns tic-tac-toe.spec-helper
-  (:require [clojure.test :refer :all]
-            [tic-tac-toe.core :as core]))
+  (:require [tic-tac-toe.core :as core]))
 
 (defn gui-mock-state []
   (core/initial-state {:interface :gui :save :mock}))
