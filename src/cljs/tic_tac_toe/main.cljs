@@ -12,20 +12,81 @@
 (defmethod core/load-game :ratom [state] state)
 (defmethod core/delete-save :ratom [state] state)
 
+(defn configure-board-size [starting-option]
+  (let [option (first starting-option)
+        current-state (assoc @state :response option)
+        new-state (core/select-board current-state)]
+    (reset! state new-state)))
+
+(defn configure-o-difficulty [option]
+  (let [current-state (assoc @state :response option)
+        new-state (core/config-o-difficulty current-state)]
+    (reset! state new-state)))
+
+(defn configure-x-difficulty [option]
+  (let [current-state (assoc @state :response option)
+        new-state (core/config-x-difficulty current-state)]
+    (reset! state new-state)))
+
+(defn configure-o-type [option]
+  (let [current-state (assoc @state :response option)
+        new-state (core/config-o-type current-state)]
+    (reset! state new-state)))
+
+(defn configure-x-type [option]
+  (let [current-state (assoc @state :response option)
+        new-state (core/config-x-type current-state)]
+    (reset! state new-state)))
+
+(defn draw-select-board []
+  [:div.select-board
+   [:h2 "Select Board Size"]
+   [:div.options
+    (for [[option-key option-value] (take 2 core/difficulty-options)]
+      [:button.option
+       {:class [option-key :board-option]
+        :on-click (configure-board-size option-value)}
+       (name option-key)])]])
+
+(defn draw-config-o-difficulty []
+  [:div.config-o-difficulty
+   [:h2 "Choose O's Difficulty"]
+   [:div.options
+    (for [option core/difficulty-options]
+      [:button.option
+       {:class [option :o-difficulty]
+        :on-click (configure-o-difficulty option)}
+       (name option)])]])
+
+(defn draw-config-x-difficulty []
+  [:div.config-x-difficulty
+   [:h2 "Choose X's Difficulty"]
+   [:div.options
+    (for [option core/difficulty-options]
+      [:button.option
+       {:class [option :x-difficulty]
+        :on-click (configure-x-difficulty option)}
+       (name option)])]])
+
+(defn draw-config-o-type []
+  [:div.config-o-type
+   [:h2 "Choose O Player Type"]
+   [:div.options
+    (for [option core/player-options]
+      [:button.option
+       {:class [option :o-type]
+        :on-click (configure-o-type option)}
+       (name option)])]])
+
 (defn draw-config-x-type []
   [:div.config-x-type
    [:h2 "Choose X Player Type"]
    [:div.options
     (for [option core/player-options]
-      ^{:key option}
       [:button.option
-       {:class (when (= (:response state) option) "selected")
-        :on-click #(swap! state assoc :response option)}
-       (name option)])]
-   [:button.action-button
-    {:disabled (not (:response state))
-     :on-click #(handle-input (:response @state))}
-    "Next"]])
+       {:class [option :x-type]
+        :on-click (configure-x-type option)}
+       (name option)])]])
 
 
 (defn draw-welcome []
@@ -35,9 +96,13 @@
 
 (defn game-component []
   [:div.tic-tac-toe-app
-   (if (= @status-cursor :welcome)
-     (draw-welcome)
-     (draw-config-x-type))])
+   (cond (= @status-cursor :welcome) (draw-welcome)
+         (= @status-cursor :config-x-type)(draw-config-x-type)
+         (= @status-cursor :config-o-type) (draw-config-o-type)
+         (= @status-cursor :config-x-difficulty)(draw-config-x-difficulty)
+         (= @status-cursor :config-o-difficulty) (draw-config-o-difficulty)
+         (= @status-cursor :select-board) (draw-select-board)
+         )])
 
 (defn ^:export init []
   #_(reset! state (core/initial-state {:interface :static :save :ratom}))

@@ -10,6 +10,7 @@ pom.xml
 .lein-plugins
 .lein-repl-history
 .cpcache/*
+*.iml
 
 # Game save files
 game-save.edn

@@ -29,46 +29,136 @@
     )
 
   (context "config-x-type"
-    (before (reset! sut/state {:interface :static :status :config-x-type :save :ratom}))
+    (before (reset! sut/state {:interface :static :status :config-x-type :save :ratom
+                               :players [{:character "X" :play-type nil :difficulty nil}
+                                         {:character "O" :play-type nil :difficulty nil}]}))
     (it "renders config-x"
       (should-select ".config-x-type")
-      (should-select "div.config-x-type button.option"))
+      (should-select "div.config-x-type button.option")
+      (should-select ".human")
+      (should-select ".computer"))
+
+   (it "sets x-type to human if human button clicked"
+       (wire/click! ".human")
+       (should= :human (get-in @sut/state [:players 0 :play-type]))
+       (should= :config-o-type (:status @sut/state))
+       (should-select ".config-o-type"))
+
+   (it "sets x-type to computer if computer button clicked"
+       (wire/click! ".computer")
+       (should= :computer (get-in @sut/state [:players 0 :play-type]))
+       (should= :config-x-difficulty (:status @sut/state))
+       (should-select ".config-x-difficulty"))
     )
 
-  ;
-  ;(it "welcome screen renders correctly"
-  ;  (let [state {:status :welcome :interface :web}
-  ;        result (core/draw-state state)]
-  ;    (should= :div.welcome (first result))
-  ;    (should-contain "Welcome to Tic-Tac-Toe!" (str result))))
-  ;
-  ;(it "config screen shows player options"
-  ;  (let [state {:status :config-x-type :interface :web}
-  ;        result (core/draw-state state)]
-  ;    (should= :div.config (first result))
-  ;    (should-contain "Choose X Player Type" (str result))))
-  ;
-  ;(it "board renders with correct dimensions"
-  ;  (with-redefs [sut/state (r/atom {:status              :in-progress
-  ;                                        :interface           :web
-  ;                                        :board               [[nil nil nil]
-  ;                                                [nil nil nil]
-  ;                                                [nil nil nil]]
-  ;                                        :players             [{:character "X"} {:character "O"}]
-  ;                                        :active-player-index 0})]
-  ;               (let [state @sut/state
-  ;                     board-component (sut/render-board state)]
-  ;                 (should= :div.board (first board-component))
-  ;                 ;; Should have 3 rows for 3x3 board
-  ;                 (should= 3 (count (rest board-component))))))
-  ;
-  ;
-  ;
-  ;(it "processes welcome input correctly"
-  ;  (let [initial-state {:status :welcome :interface :web}
-  ;        result (sut/process-input (assoc initial-state :response :start))]
-  ;    (should= :config-x-type (:status result))))
-  ;
+  (context "config-o-type"
+    (before (reset! sut/state {:interface :static :status :config-o-type :save :ratom
+                               :players [{:character "X" :play-type :human :difficulty nil}
+                                         {:character "O" :play-type nil :difficulty nil}]}))
+    (it "renders config-o-type"
+      (should-select ".config-xo-type")
+      (should-select "div.config-o-type button.option")
+      (should-select ".human")
+      (should-select ".computer"))
+
+   (it "sets o-type to human if human button clicked"
+       (wire/click! ".human")
+       (should= :human (get-in @sut/state [:players 1 :play-type]))
+       (should= :select-board (:status @sut/state))
+       (should-select ".select-board"))
+
+   (it "sets x-type to computer if computer button clicked"
+       (wire/click! ".computer")
+       (should= :computer (get-in @sut/state [:players 1 :play-type]))
+       (should= :config-o-difficulty (:status @sut/state))
+       (should-select ".config-o-difficulty"))
+    )
+
+  (context "config-x-difficulty"
+    (before (reset! sut/state {:interface :static :status :config-x-difficulty :save :ratom
+                               :players [{:character "X" :play-type :computer :difficulty nil}
+                                         {:character "O" :play-type nil :difficulty nil}]}))
+    (it "renders config-x-difficulty"
+      (should-select ".config-x-difficulty")
+      (should-select "div.config-x-difficulty button.option")
+      (should-select ".easy")
+      (should-select ".medium")
+      (should-select ".hard"))
+
+   (it "sets x-difficulty to easy if easy button clicked"
+       (wire/click! ".easy")
+       (should= :easy (get-in @sut/state [:players 0 :difficulty]))
+       (should= :config-o-type (:status @sut/state))
+       (should-select ".config-o-type"))
+
+   (it "sets x-difficulty to medium if medium button clicked"
+       (wire/click! ".medium")
+       (should= :medium (get-in @sut/state [:players 0 :difficulty]))
+       (should= :config-o-type (:status @sut/state))
+       (should-select ".config-o-type"))
+
+   (it "sets x-difficulty to hard if hard button clicked"
+       (wire/click! ".hard")
+       (should= :hard (get-in @sut/state [:players 0 :difficulty]))
+       (should= :config-o-type (:status @sut/state))
+       (should-select ".config-o-type"))
+    )
+
+  (context "config-o-difficulty"
+    (before (reset! sut/state {:interface :static :status :config-o-difficulty :save :ratom
+                               :players [{:character "X" :play-type :human :difficulty nil}
+                                         {:character "O" :play-type :computer :difficulty nil}]}))
+    (it "renders config-o-difficulty"
+      (should-select ".config-o-difficulty")
+      (should-select "div.config-o-difficulty button.option")
+      (should-select ".easy")
+      (should-select ".medium")
+      (should-select ".hard"))
+
+   (it "sets o-difficulty to easy if easy button clicked"
+       (wire/click! ".easy")
+       (should= :easy (get-in @sut/state [:players 1 :difficulty]))
+       (should= :select-board (:status @sut/state))
+       (should-select ".select-board"))
+
+   (it "sets o-difficulty to medium if medium button clicked"
+       (wire/click! ".medium")
+       (should= :medium (get-in @sut/state [:players 1 :difficulty]))
+       (should= :select-board (:status @sut/state))
+       (should-select ".select-board"))
+
+   (it "sets o-difficulty to hard if hard button clicked"
+       (wire/click! ".hard")
+       (should= :hard (get-in @sut/state [:players 1 :difficulty]))
+       (should= :select-board (:status @sut/state))
+       (should-select ".select-board"))
+    )
+
+  (context "select-board"
+    (before (reset! sut/state {:interface :static :status :config-o-difficulty :save :ratom
+                               :players [{:character "X" :play-type :human :difficulty nil}
+                                         {:character "O" :play-type :computer :difficulty :hard}]}))
+    (it "renders select-board"
+      (should-select ".select-board")
+      (should-select "div.select-board button.option")
+      (should-select ".3x3")
+      (should-select ".4x4"))
+
+   (it "sets board to 3x3 if 3x3 button clicked"
+       (wire/click! ".3x3")
+       (should= [[1 2 3] [4 5 6] [7 8 9]] (:board @sut/state))
+       (should= :in-progress (:status @sut/state))
+       (should-select ".in-progress"))
+
+   (it "sets board to 4x4 if 4x4 button clicked"
+       (wire/click! ".4x4")
+       (should= [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16]] (:board @sut/state))
+       (should= :in-progress (:status @sut/state))
+       (should-select ".in-progress"))
+
+    )
+
+
   ;(it "processes board cell selection"
   ;  (let [initial-state {:status :in-progress
   ;                       :interface :web
