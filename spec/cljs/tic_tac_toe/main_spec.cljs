@@ -1,5 +1,5 @@
 (ns tic-tac-toe.main-spec
-  (:require-macros [speclj.core :refer [describe it should= should before context focus-context should-contain]]
+  (:require-macros [speclj.core :refer [describe it should= should before context focus-context should-contain should-be-nil]]
                    [c3kit.wire.spec-helperc :refer [should-select should-not-select]])
   (:require [reagent.core :as r]
             [c3kit.wire.spec-helper :as wire]
@@ -271,71 +271,49 @@
       ;But are they disabled?
       (wire/click! "#cell-6")
       ;(should= [["X" "X" "X"] ["O" "O" 6] [7 8 9]] (:board @sut/state))
-      (should= "Play Again?" (wire/text "#new-game"))
+      (should= "Play Again?" (wire/text "#new-game")))
 
+    (it "lets the player play again"
+      (wire/click! "#new-game")
+      (should-select ".config-x-type")
+      (should-select "div.config-x-type button.option")
+      (should-select ".human")
+      (should-select ".computer")
+      (should-be-nil (get-in @sut/state [:players 0 :play-type]))
+      (should-be-nil (get-in @sut/state [:players 1 :play-type]))
+      (should-be-nil (:board @sut/state))
       )
 
     )
 
+  (context "tie"
+    (before (do (reset! sut/state {:interface           :static :status :tie :save :ratom
+                                   :active-player-index 0 :board [["X" "X" "O"] ["O" "O" "X"] ["X" "X" "O"]]
+                                   :players             [{:character "X" :play-type :human :difficulty nil}
+                                                         {:character "O" :play-type :computer :difficulty :hard}]})
+                (wire/render [sut/game-component])))
 
-  ;(it "processes board cell selection"
-  ;  (let [initial-state {:status :in-progress
-  ;                       :interface :web
-  ;                       :board [[nil nil nil][nil nil nil][nil nil nil]]
-  ;                       :players [{:character "X" :play-type :human}
-  ;                                 {:character "O" :play-type :human}]
-  ;                       :active-player-index 0
-  ;                       :response 0}
-  ;        result (sut/process-input initial-state)]
-  ;    ;; Should place X in first position
-  ;    (should= "X" (get-in result [:board 0 0]))))
-  ;
-  ;
-  ;(describe "DOM integration"
-  ;  (it "can render component to DOM"
-  ;    (let [container (js/document.createElement "div")
-  ;          root (rdomc/create-root container)]
-  ;      (.setAttribute container "id" "test-container")
-  ;      (js/document.body.appendChild container)
-  ;
-  ;      ;; Render your component
-  ;      (rdomc/render root [sut/game-component])
-  ;
-  ;      ;; Test that it rendered
-  ;      (should= 1 (.-length (.getElementsByClassName container "tic-tac-toe-app")))
-  ;
-  ;      ;; Cleanup
-  ;      (js/document.body.removeChild container))))
-  ;
-  ;
-  ;(it "clicking start button updates state"
-  ;  (with-redefs [sut/state (r/atom {:status :welcome :interface :web})]
-  ;               ;; Simulate the handle-input call that would happen on click
-  ;               (sut/handle-input :start)
-  ;
-  ;               ;; Check that state was updated
-  ;               (should= :config-x-type (:status @sut/state))))
-  ;
-  ;(it "selecting player type updates response"
-  ;  (with-redefs [sut/state (r/atom {:status :config-x-type :interface :web})]
-  ;               ;; Simulate clicking human option
-  ;               (swap! sut/state assoc :response :human)
-  ;
-  ;               (should= :human (:response @sut/state))))
-  ;
-  ;(it "processes full game setup flow"
-  ;  (with-redefs [sut/state (r/atom (core/initial-state {:interface :web}))]
-  ;               ;; Start game
-  ;               (sut/handle-input :start)
-  ;               (should= :config-x-type (:status @sut/state))
-  ;
-  ;               ;; Configure X as human
-  ;               (swap! sut/state assoc :response :human)
-  ;               (sut/handle-input :human)
-  ;               (should= :config-o-type (:status @sut/state))
-  ;
-  ;               ;; Configure O as computer
-  ;               (swap! sut/state assoc :response :computer)
-  ;               (sut/handle-input :computer)
-  ;               (should= :config-o-difficulty (:status @sut/state))))
+    (it "displays game-over state"
+      (should-select ".game-over")
+      (should-select "#new-game")
+      (should-contain "It's a tie! Good game" (wire/text "h2.game-over"))
+      (should= [["X" "X" "O"] ["O" "O" "X"] ["X" "X" "O"]] (:board @sut/state))
+      (should= "Play Again?" (wire/text "#new-game"))
+      (should= 9 (wire/count-all "button.move-button"))
+      (wire/click! "#cell-6")
+      (should= [["X" "X" "O"] ["O" "O" "X"] ["X" "X" "O"]] (:board @sut/state))
+      (should= "Play Again?" (wire/text "#new-game")))
+
+    (it "lets the player play again"
+      (wire/click! "#new-game")
+      (should-select ".config-x-type")
+      (should-select "div.config-x-type button.option")
+      (should-select ".human")
+      (should-select ".computer")
+      (should-be-nil (get-in @sut/state [:players 0 :play-type]))
+      (should-be-nil (get-in @sut/state [:players 1 :play-type]))
+      (should-be-nil (:board @sut/state)))
+
+    )
+
   )

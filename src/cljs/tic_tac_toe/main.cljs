@@ -11,6 +11,10 @@
 (defmethod core/load-game :ratom [state] state)
 (defmethod core/delete-save :ratom [state] state)
 
+(defn play-again []
+  (let [new-state (core/fresh-start @state)]
+    (reset! state new-state)))
+
 (defmethod core/take-human-turn :static [state]
   (core/do-take-human-turn state))
 
@@ -67,14 +71,14 @@
   (let [current-char (get-in players [active-player-index :character])]
     (case status
       :in-progress [:h2.current-player (str "Player " current-char "'s turn")]
-      :tie [:h2.game-over "It's a tie!"]
+      :tie [:h2.game-over "It's a tie! Good game"]
       :winner [:h2.game-over (str "Player " current-char " wins! Good game")])))
 
 (defn draw-end []
   [:div.game-over
    (render-game-announcement @state)
    (render-board-table)
-   [:button.option {:id "new-game" :class "new-game" :on-click #(core/fresh-start @state)}
+   [:button.option {:id "new-game" :class "new-game" :on-click #(play-again)}
     "Play Again?"]])
 
 (defn draw-board []
