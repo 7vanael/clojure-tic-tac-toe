@@ -42,51 +42,62 @@
   [:div.select-board
    [:h2 "Select Board Size"]
    [:div.options
-    (for [[option-key option-value] (take 2 core/difficulty-options)]
+    (doall
+      (for [[option-key option-value] (take 2 core/difficulty-options)]
+        ^{:key (name option-key)}
       [:button.option
-       {:class [option-key :board-option]
-        :on-click (configure-board-size option-value)}
-       (name option-key)])]])
+       {:id (name option-key)
+        :class [option-key :board-option]
+        :on-click #(configure-board-size option-value)}
+       (name option-key)]))]])
 
 (defn draw-config-o-difficulty []
   [:div.config-o-difficulty
    [:h2 "Choose O's Difficulty"]
    [:div.options
-    (for [option core/difficulty-options]
+    (doall
+      (for [option core/difficulty-options] ^{:key (name option)}
       [:button.option
-       {:class [option :o-difficulty]
-        :on-click (configure-o-difficulty option)}
-       (name option)])]])
+       {:id (name option)
+        :class [option :o-difficulty]
+        :on-click #(configure-o-difficulty option)}
+       (name option)]))]])
 
 (defn draw-config-x-difficulty []
   [:div.config-x-difficulty
    [:h2 "Choose X's Difficulty"]
    [:div.options
-    (for [option core/difficulty-options]
+    (doall
+      (for [option core/difficulty-options] ^{:key (name option)}
       [:button.option
-       {:class [option :x-difficulty]
-        :on-click (configure-x-difficulty option)}
-       (name option)])]])
+       {:id (name option)
+        :class [option :x-difficulty]
+        :on-click #(configure-x-difficulty option)}
+       (name option)]))]])
 
 (defn draw-config-o-type []
   [:div.config-o-type
    [:h2 "Choose O Player Type"]
    [:div.options
-    (for [option core/player-options]
+    (doall
+      (for [option core/player-options] ^{:key (name option)}
       [:button.option
-       {:class [option :o-type]
-        :on-click (configure-o-type option)}
-       (name option)])]])
+       {:id (name option)
+        :class [option :o-type]
+        :on-click #(configure-o-type option)}
+       (name option)]))]])
 
 (defn draw-config-x-type []
   [:div.config-x-type
    [:h2 "Choose X Player Type"]
    [:div.options
-    (for [option core/player-options]
+    (doall
+      (for [option core/player-options] ^{:key (name option)}
       [:button.option
-       {:class [option :x-type]
-        :on-click (configure-x-type option)}
-       (name option)])]])
+       {:id (name option)
+        :class [option :x-type]
+        :on-click #(configure-x-type option)}
+       (name option)]))]])
 
 
 (defn draw-welcome []
@@ -105,11 +116,8 @@
          )])
 
 (defn ^:export init []
-  #_(reset! state (core/initial-state {:interface :static :save :ratom}))
-  (dom/render [game-component] (wjs/element-by-id "app")))
-
-;(dom/render [layout] (.getElementById js/document "app-root"))
-
+  (let [root (rdomc/create-root (wjs/element-by-id "app"))]
+    (rdomc/render root [game-component])))
 
 
 
