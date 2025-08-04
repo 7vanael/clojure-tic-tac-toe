@@ -2,7 +2,6 @@
   (:require [tic-tac-toe.core :as core]
             [reagent.core :as r]
             [reagent.dom :as dom]
-            [reagent.dom.client :as rdomc]
             [c3kit.wire.js :as wjs]))
 
 (defonce state (r/atom (core/initial-state {:interface :static :save :ratom :status :welcome})))
@@ -12,9 +11,11 @@
 (defmethod core/load-game :ratom [state] state)
 (defmethod core/delete-save :ratom [state] state)
 
-(defn configure-board-size [starting-option]
-  (let [option (first starting-option)
-        current-state (assoc @state :response option)
+(defmethod core/take-human-turn :static [state]
+  (core/do-take-human-turn state))
+
+(defn configure-board-size [option]
+  (let [current-state (assoc @state :response option)
         new-state (core/select-board current-state)]
     (reset! state new-state)))
 
@@ -38,18 +39,63 @@
         new-state (core/config-x-type current-state)]
     (reset! state new-state)))
 
+(defn make-move [value]
+  (let [current-state (assoc @state :response value)
+        new-state (dissoc (core/play-turn! current-state) :response)]
+    (reset! state new-state)))
+
+(defn render-cell [cell cell-index is-active? row-index]
+  (let [cell-number (+ (* (count (:board @state)) (dec row-index)) cell-index)
+        key (str "cell-" cell-number)
+        class (if (or (= cell "X") (= cell "O")) "occupied" "empty")]
+    [:td {:class class :key key}
+     [:button.move-button {:id key
+                           :disabled? (when-not is-active?)
+                           :on-click #(make-move cell)}
+      cell]]))
+
+(defn render-row [row row-index is-active?]
+  [:tr {:key row-index } (doall (map-indexed #(render-cell %2 (inc %1) is-active? row-index) row))])
+
+
+(defn render-board-table []
+  (let [is-active? (and (= :in-progress @status-cursor) (core/currently-human? @state))
+        board (:board @state)]
+    [:table [:tbody (doall (map-indexed #(render-row %2 (inc %1) is-active?) board))]]))
+
+(defn render-game-announcement [{:keys [status active-player-index players]}]
+  (let [current-char (get-in players [active-player-index :character])]
+    (case status
+      :in-progress [:h2.current-player (str "Player " current-char "'s turn")]
+      :tie [:h2.game-over "It's a tie!"]
+      :winner [:h2.game-over (str "Player " current-char " wins! Good game")])))
+
+(defn draw-end []
+  [:div.game-over
+   (render-game-announcement @state)
+   (render-board-table)
+   [:button.option {:id "new-game" :class "new-game" :on-click #(core/fresh-start @state)}
+    "Play Again?"]])
+
+(defn draw-board []
+  [:div.in-progress
+   (render-game-announcement @state)
+   (render-board-table)])
+
 (defn draw-select-board []
   [:div.select-board
    [:h2 "Select Board Size"]
    [:div.options
-    (doall
-      (for [[option-key option-value] (take 2 core/difficulty-options)]
-        ^{:key (name option-key)}
       [:button.option
-       {:id (name option-key)
-        :class [option-key :board-option]
-        :on-click #(configure-board-size option-value)}
-       (name option-key)]))]])
+       {:id "board-3x3"
+        :class ["board-3x3" :board-option]
+        :on-click #(configure-board-size 3)}
+       "3 x 3"]
+    [:button.option
+       {:id "board-4x4"
+        :class ["board-4x4" :board-option]
+        :on-click #(configure-board-size 4)}
+       "4 x 4"]]])
 
 (defn draw-config-o-difficulty []
   [:div.config-o-difficulty
@@ -79,7 +125,7 @@
   [:div.config-o-type
    [:h2 "Choose O Player Type"]
    [:div.options
-    (doall
+    (do
       (for [option core/player-options] ^{:key (name option)}
       [:button.option
        {:id (name option)
@@ -91,7 +137,7 @@
   [:div.config-x-type
    [:h2 "Choose X Player Type"]
    [:div.options
-    (doall
+    (do
       (for [option core/player-options] ^{:key (name option)}
       [:button.option
        {:id (name option)
@@ -113,11 +159,12 @@
          (= @status-cursor :config-x-difficulty)(draw-config-x-difficulty)
          (= @status-cursor :config-o-difficulty) (draw-config-o-difficulty)
          (= @status-cursor :select-board) (draw-select-board)
-         )])
+         (= @status-cursor :in-progress) (draw-board)
+         (= @status-cursor :tie) (draw-end)
+         (= @status-cursor :winner) (draw-end))])
 
 (defn ^:export init []
-  (let [root (rdomc/create-root (wjs/element-by-id "app"))]
-    (rdomc/render root [game-component])))
+  (dom/render [game-component] (wjs/element-by-id "app")))
 
 
 

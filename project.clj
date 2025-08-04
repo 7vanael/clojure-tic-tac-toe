@@ -11,8 +11,6 @@
                  [org.clojure/tools.cli "1.1.230"]
                  [reagent "1.2.0"]
                  [org.clojure/clojurescript "1.12.42"]
-                 [cljsjs/react "18.2.0-1"]
-                 [cljsjs/react-dom "18.2.0-1"]
                  [com.cleancoders.c3kit/wire "2.5.0"]]
   :profiles {:dev {:dependencies [[speclj "3.10.0"]
                                   [com.cleancoders.c3kit/scaffold "2.0.3"]]}}

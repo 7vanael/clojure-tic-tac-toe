@@ -2,8 +2,7 @@
   (:require [tic-tac-toe.core :as core]
             [tic-tac-toe.board :as board]
             [reagent.core :as r]
-            [reagent.dom :as rdom]
-            [reagent.dom.client :as rdomc]))
+            [reagent.dom :as rdom]))
 
 (defmethod core/draw-state [:static :welcome] [state]
   [:div.welcome
