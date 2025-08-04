@@ -54,7 +54,7 @@
         class (if (or (= cell "X") (= cell "O")) "occupied" "empty")]
     [:td {:class class :key key}
      [:button.move-button {:id key
-                           :disabled? (when-not is-active?)
+                           :disabled (not is-active?)
                            :on-click #(make-move cell)}
       cell]]))
 

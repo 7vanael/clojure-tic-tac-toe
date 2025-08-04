@@ -261,16 +261,15 @@
                                                          {:character "O" :play-type :computer :difficulty :hard}]})
                 (wire/render [sut/game-component])))
 
-    (it "displays game-over state"
+    (it "displays game-over state with disabled buttons"
       (should-select ".game-over")
       (should-select "#new-game")
       (should-contain "Player X wins! Good game" (wire/text "h2.game-over"))
       (should= [["X" "X" "X"] ["O" "O" 6] [7 8 9]] (:board @sut/state))
       (should= "Play Again?" (wire/text "#new-game"))
-      (should= 9 (wire/count-all "button.move-button"))
-      ;But are they disabled?
+      (should= 9 (wire/count-all "button.move-button:disabled"))
       (wire/click! "#cell-6")
-      ;(should= [["X" "X" "X"] ["O" "O" 6] [7 8 9]] (:board @sut/state))
+      (should= [["X" "X" "X"] ["O" "O" 6] [7 8 9]] (:board @sut/state))
       (should= "Play Again?" (wire/text "#new-game")))
 
     (it "lets the player play again"
@@ -299,7 +298,7 @@
       (should-contain "It's a tie! Good game" (wire/text "h2.game-over"))
       (should= [["X" "X" "O"] ["O" "O" "X"] ["X" "X" "O"]] (:board @sut/state))
       (should= "Play Again?" (wire/text "#new-game"))
-      (should= 9 (wire/count-all "button.move-button"))
+      (should= 9 (wire/count-all "button.move-button:disabled"))
       (wire/click! "#cell-6")
       (should= [["X" "X" "O"] ["O" "O" "X"] ["X" "X" "O"]] (:board @sut/state))
       (should= "Play Again?" (wire/text "#new-game")))
