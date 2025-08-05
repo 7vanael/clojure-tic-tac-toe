@@ -92,7 +92,7 @@
   [:div.game-over
    (render-game-announcement @state)
    (render-board-table)
-   [:button.option {:id "new-game" :class "new-game" :on-click #(play-again)}
+   [:button.action-button {:id "new-game" :class "new-game" :on-click #(play-again)}
     "Play Again?"]])
 
 (defn draw-board []
@@ -104,14 +104,14 @@
   [:div.select-board
    [:h2 "Select Board Size"]
    [:div.options
-    [:button.option
+    [:button.action-button
      {:id       "board-3x3"
       :class    ["board-3x3" :board-option]
       :on-click #(configure-board-size 3)}
      "3 x 3"]
-    [:button.option
+    [:button.action-button
      {:id       "board-4x4"
-      :class    ["board-4x4" :board-option]
+      :class    ["board-4x4" :board-option ]
       :on-click #(configure-board-size 4)}
      "4 x 4"]]])
 
@@ -121,7 +121,7 @@
    [:div.options
     (doall
       (for [option core/difficulty-options] ^{:key (name option)}
-                                            [:button.option
+                                            [:button.action-button
                                              {:id       (name option)
                                               :class    [option :o-difficulty]
                                               :on-click #(configure-o-difficulty option)}
@@ -133,7 +133,7 @@
    [:div.options
     (doall
       (for [option core/difficulty-options] ^{:key (name option)}
-                                            [:button.option
+                                            [:button.action-button
                                              {:id       (name option)
                                               :class    [option :x-difficulty]
                                               :on-click #(configure-x-difficulty option)}
@@ -145,7 +145,7 @@
    [:div.options
     (do
       (for [option core/player-options] ^{:key (name option)}
-                                        [:button.option
+                                        [:button.action-button
                                          {:id       (name option)
                                           :class    [option :o-type]
                                           :on-click #(configure-o-type option)}
@@ -157,7 +157,7 @@
    [:div.options
     (do
       (for [option core/player-options] ^{:key (name option)}
-                                        [:button.option
+                                        [:button.action-button
                                          {:id       (name option)
                                           :class    [option :x-type]
                                           :on-click #(configure-x-type option)}

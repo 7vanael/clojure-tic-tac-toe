@@ -43,7 +43,7 @@
                            :players   [{:character "X" :play-type nil :difficulty nil}
                                        {:character "O" :play-type nil :difficulty nil}]})
       (should-select ".config-x-type")
-      (should-select "div.config-x-type button.option")
+      (should-select "div.config-x-type button.action-button")
       (should-select ".human")
       (should-select ".computer"))
 
@@ -68,7 +68,7 @@
               (wire/render [sut/game-component])))
     (it "renders config-o-type"
       (should-select ".config-o-type")
-      (should-select "div.config-o-type button.option")
+      (should-select "div.config-o-type button.action-button")
       (should-select ".human")
       (should-select ".computer"))
 
@@ -93,7 +93,7 @@
               (wire/render [sut/game-component])))
     (it "renders config-x-difficulty"
       (should-select ".config-x-difficulty")
-      (should-select "div.config-x-difficulty button.option")
+      (should-select "div.config-x-difficulty button.action-button")
       (should-select ".easy")
       (should-select ".medium")
       (should-select ".hard"))
@@ -125,7 +125,7 @@
               (wire/render [sut/game-component])))
     (it "renders config-o-difficulty"
       (should-select ".config-o-difficulty")
-      (should-select "div.config-o-difficulty button.option")
+      (should-select "div.config-o-difficulty button.action-button")
       (should-select ".easy")
       (should-select ".medium")
       (should-select ".hard"))
@@ -157,7 +157,7 @@
               (wire/render [sut/game-component])))
     (it "renders select-board"
       (should-select ".select-board")
-      (should-select "div.select-board button.option")
+      (should-select "div.select-board button.action-button")
       (should-select ".board-3x3")
       (should-select ".board-4x4"))
 
@@ -297,7 +297,7 @@
     (it "lets the player play again"
       (wire/click! "#new-game")
       (should-select ".config-x-type")
-      (should-select "div.config-x-type button.option")
+      (should-select "div.config-x-type button.action-button")
       (should-select ".human")
       (should-select ".computer")
       (should-be-nil (get-in @sut/state [:players 0 :play-type]))
@@ -328,7 +328,7 @@
     (it "lets the player play again"
       (wire/click! "#new-game")
       (should-select ".config-x-type")
-      (should-select "div.config-x-type button.option")
+      (should-select "div.config-x-type button.action-button")
       (should-select ".human")
       (should-select ".computer")
       (should-be-nil (get-in @sut/state [:players 0 :play-type]))
