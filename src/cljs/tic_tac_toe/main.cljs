@@ -27,14 +27,14 @@
     (reset! state (core/play-turn! @state))
     (when (and (= :in-progress (:status @state))
                (not (core/currently-human? @state)))
-      (maybe-take-computer-turn))))
+      (js/setTimeout #(maybe-take-computer-turn) 200))))
 
 (defn configure-board-size [option]
   (let [current-state (assoc @state :response option)
         new-state     (core/select-board current-state)]
     (reset! state new-state)
     (reset! status-cursor :in-progress)
-    (maybe-take-computer-turn)))
+    (js/setTimeout #(maybe-take-computer-turn) 10)))
 
 (defn configure-o-difficulty [option]
   (let [current-state (assoc @state :response option)
