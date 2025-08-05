@@ -7,7 +7,7 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]))
 
-(defonce state (r/atom (core/initial-state {:interface :static :save :ratom :status :welcome})))
+(def state (r/atom (core/initial-state {:interface :static :save :ratom :status :welcome})))
 (def status-cursor (r/cursor state [:status]))
 
 (defmethod core/save-game :ratom [state] state)
@@ -27,14 +27,14 @@
     (reset! state (core/play-turn! @state))
     (when (and (= :in-progress (:status @state))
                (not (core/currently-human? @state)))
-      (js/setTimeout #(maybe-take-computer-turn) 200))))
+      (js/setTimeout maybe-take-computer-turn 200))))
 
 (defn configure-board-size [option]
   (let [current-state (assoc @state :response option)
         new-state     (core/select-board current-state)]
     (reset! state new-state)
     (reset! status-cursor :in-progress)
-    (js/setTimeout #(maybe-take-computer-turn) 10)))
+    (js/setTimeout maybe-take-computer-turn 10)))
 
 (defn configure-o-difficulty [option]
   (let [current-state (assoc @state :response option)
