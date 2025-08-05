@@ -151,9 +151,9 @@
 
   (context "select-board"
     (before (do
-              (reset! sut/state {:interface :static :status :select-board :save :ratom
+              (reset! sut/state {:interface :static :status :select-board :save :ratom :active-player-index 0
                                  :players   [{:character "X" :play-type :human :difficulty nil}
-                                             {:character "O" :play-type :computer :difficulty :hard}]})
+                                             {:character "O" :play-type :human :difficulty nil}]})
               (wire/render [sut/game-component])))
     (it "renders select-board"
       (should-select ".select-board")
@@ -172,9 +172,27 @@
       (should= [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16]] (:board @sut/state))
       (should= :in-progress (:status @sut/state))
       (should-select ".in-progress"))
-
     )
 
+  (context "select-board when computer goes first:"
+    (before (do
+              (reset! sut/state {:interface :static :status :select-board :save :ratom :active-player-index 0
+                                 :players   [{:character "X" :play-type :computer :difficulty :hard}
+                                             {:character "O" :play-type :human :difficulty nil}]})
+              (wire/render [sut/game-component])))
+
+    (it "starts the computer turn if computer is first, returns state when it's the human's turn"
+      (wire/click! ".board-4x4")
+      (should= :in-progress @sut/status-cursor)
+      (should= 1 (:active-player-index @sut/state))
+      (should= :computer (get-in @sut/state [:players 0 :play-type]))
+
+      (let [board   (:board @sut/state)
+            x-count (count (filter #{"X"} (flatten board)))]
+        (should= 1 x-count))
+      (should= 15 (wire/count-all "td.empty"))
+      )
+    )
   (context "in-progress- initial-state"
     (before (do (reset! sut/state {:interface           :static :status :in-progress :save :ratom
                                    :active-player-index 0 :board [[1 2 3] [4 5 6] [7 8 9]]
@@ -207,18 +225,18 @@
     (it "doesn't allow the same cell to be clicked twice"
       (wire/click! "#cell-5")
       (should-contain "Player O's turn" (wire/text "h2.current-player"))
-      (should=  [[1 2 3] [4 "X" 6] [7 8 9]] (:board @sut/state))
+      (should= [[1 2 3] [4 "X" 6] [7 8 9]] (:board @sut/state))
       (wire/click! "#cell-5")
       (should-contain "Player O's turn" (wire/text "h2.current-player"))
-      (should=  [[1 2 3] [4 "X" 6] [7 8 9]] (:board @sut/state)))
+      (should= [[1 2 3] [4 "X" 6] [7 8 9]] (:board @sut/state)))
 
     (it "does allow the next player to click to claim a different square"
       (wire/click! "#cell-5")
       (should-contain "Player O's turn" (wire/text "h2.current-player"))
-      (should=  [[1 2 3] [4 "X" 6] [7 8 9]] (:board @sut/state))
+      (should= [[1 2 3] [4 "X" 6] [7 8 9]] (:board @sut/state))
       (wire/click! "#cell-3")
       (should-contain "Player X's turn" (wire/text "h2.current-player"))
-      (should=  [[1 2 "O"] [4 "X" 6] [7 8 9]] (:board @sut/state)))
+      (should= [[1 2 "O"] [4 "X" 6] [7 8 9]] (:board @sut/state)))
 
     )
 
@@ -315,4 +333,29 @@
 
     )
 
+  (context "human move"
+    (before (do
+              (reset! sut/state {:status              :in-progress
+                                 :interface           :static
+                                 :save                :ratom
+                                 :board               [[1 2 3] [4 5 6] [7 8 9]]
+                                 :active-player-index 0
+                                 :players             [{:character "X" :play-type :human}
+                                                       {:character "O" :play-type :computer :difficulty :easy}]})
+              (reset! sut/status-cursor :in-progress)
+              (wire/render [sut/game-component])))
+
+    (it "human move triggers computer move"
+      (wire/click! "#cell-5")
+      (should= "X" (get-in @sut/state [:board 1 1]))
+      (should= 0 (:active-player-index @sut/state))
+
+      (let [board   (:board @sut/state)
+            o-count (count (filter #{"O"} (flatten board)))]
+        (should= 1 o-count))
+      (should= 7 (wire/count-all "td.empty"))
+      (should= 2 (wire/count-all "td.occupied"))
+      )
+
+    )
   )
