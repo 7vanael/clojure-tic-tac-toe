@@ -14,10 +14,15 @@
 (defmethod core/take-human-turn :static [state]
   (core/do-take-human-turn state))
 
+(defn computer-turn? []
+  (and (= :in-progress (:status @state))
+       (not (core/currently-human? @state))))
+
 (defn maybe-take-computer-turn []
   ;;TODO clean this function?  are both whens doing the same thing? :
-  (when (and (= :in-progress @status-cursor)
-             (not (core/currently-human? @state)))
+  ;; It tries to call maybe-take-computer-turn if the second when clause is
+  ;; replaced with the computer-turn? method.
+  (when computer-turn?
     (reset! state (core/play-turn! @state))
     (when (and (= :in-progress (:status @state))
                (not (core/currently-human? @state)))

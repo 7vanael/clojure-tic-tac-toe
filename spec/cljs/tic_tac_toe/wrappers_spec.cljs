@@ -11,11 +11,9 @@
             [tic-tac-toe.draw]))
 
 
-(describe "core wrappers for static"
+(describe "static; core wrappers"
   (with-stubs)
   (wire/with-root-dom)
-
-  #_(before (wire/render [sut/game-component]))
 
   (it "make-move calls core/play-turn! and gives computer a chance to play"
     (with-redefs [sut/maybe-take-computer-turn (stub :computer-chance)]
@@ -27,7 +25,6 @@
                                     :players             [{:character "X" :play-type :human :difficulty nil}
                                                           {:character "O" :play-type :human :difficulty nil}]})
                  (reset! sut/status-cursor :in-progress)
-                 #_(wire/render [sut/game-component])
                  (sut/make-move 5)
                  (should= "X" (get-in @sut/state [:board 1 1]))
                  (should= 1 (:active-player-index @sut/state))
@@ -155,6 +152,8 @@
                                                                    {:character "O" :play-type :computer :difficulty :easy}]})
                           (sut/maybe-take-computer-turn)
                           (should= 0 (:active-player-index @sut/state))
+                          ;(prn "@sut/state:" @sut/state)
+                          ;(prn "(core/currently-human? @sut/state):" (core/currently-human? @sut/state))
                           (should-not-have-invoked :timeout)))
 
            (it "when playing computer vs computer, computer calls computer's turn again"
@@ -197,5 +196,4 @@
              (should= "X" (get-in @sut/state [:board 1 1]))
              (should= 1 (:active-player-index @sut/state)))
            )
-
   )

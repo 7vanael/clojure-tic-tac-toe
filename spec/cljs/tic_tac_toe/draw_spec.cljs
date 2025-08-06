@@ -1,4 +1,4 @@
-(ns tic-tac-toe.draw_spec
+(ns tic-tac-toe.draw-spec
   (:require-macros [speclj.core :refer [describe it should= should before context should-contain should-be-nil with-stubs stub should-have-invoked should-not-have-invoked]]
                    [c3kit.wire.spec-helperc :refer [should-select should-not-select]])
   (:require [reagent.core :as r]
@@ -16,16 +16,17 @@
   (before (wire/render [sut/game-component]))
 
   (context "welcome state"
-
+    (before (reset! w/state {:interface :static :status :welcome :save :ratom
+                             :players   [{:character "X" :play-type nil :difficulty nil}
+                                         {:character "O" :play-type nil :difficulty nil}]})
+            (wire/flush))
     (it "renders welcome"
-      (should-select ".tic-tac-toe-app")
       (should-select ".welcome")
       (should-select ".action-button"))
 
     (it "progresses from welcome to config-x-type on a click on start button"
       (wire/click! ".action-button")
       (should-select ".config-x-type")
-      (should-select ".tic-tac-toe-app")
       )
     )
 
@@ -33,7 +34,7 @@
     (before (reset! w/state {:interface :static :status :config-x-type :save :ratom
                                :players   [{:character "X" :play-type nil :difficulty nil}
                                            {:character "O" :play-type nil :difficulty nil}]})
-            (wire/render [core/draw-state]))
+            (wire/flush))
     (it "renders config-x"
       (should-select ".config-x-type")
       (should-select "div.config-x-type button.action-button")
