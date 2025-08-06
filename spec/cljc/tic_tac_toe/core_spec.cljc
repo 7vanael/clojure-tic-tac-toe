@@ -1,5 +1,5 @@
 (ns tic-tac-toe.core-spec
-  (:require [speclj.core :refer :all]
+  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [describe before redefs-around context it with-stubs should-have-invoked stub should= should should-not should-not-have-invoked should-not=]]
             [tic-tac-toe.core :as sut]
             [tic-tac-toe.persistence.spec-helper :as spec-helper]))
 
@@ -233,7 +233,6 @@
             expected-state (state-create {:interface :tui :status :select-board :save :mock :o-type :human})]
         (should= expected-state (sut/config-o-type starting-state))))
 
-
     (it "Config-o-difficulty; changes status to select-board once difficulty is selected"
       (let [starting-state (state-create {:interface :tui :status :config-o-difficulty :save :mock :o-type :computer :response :easy})
             expected-state (state-create {:interface :tui :status :select-board :save :mock :o-type :computer :o-difficulty :easy})]
@@ -243,7 +242,6 @@
       (let [starting-state (state-create {:interface :tui :status :select-board :save :mock :response 3})
             expected-state (state-create {:interface :tui :status :in-progress :save :mock :board [[1 2 3] [4 5 6] [7 8 9]]})]
         (should= expected-state (sut/select-board starting-state))))
-
 
     (it "can play again; status back to config x-type, state reset"
       (let [ending-state (sut/maybe-play-again (assoc state-tie :response true))]
@@ -263,8 +261,7 @@
         (should= :found-save (:status loaded-game))
         (should= :tui (:interface loaded-game))
         (should= :gui (:interface next-loaded-game))
-        (should-not-be :found-save (:status next-loaded-game))
-        (should= :game-over (:status updated-state))
-        ))
+        (should-not= :found-save (:status next-loaded-game))
+        (should= :game-over (:status updated-state))))
     )
   )

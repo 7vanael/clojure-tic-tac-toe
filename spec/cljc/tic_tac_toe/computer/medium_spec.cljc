@@ -1,5 +1,5 @@
 (ns tic-tac-toe.computer.medium-spec
-  (:require [speclj.core :refer :all]
+  (:require [speclj.core  #?(:clj :refer :cljs :refer-macros) [describe it with-stubs stub should-have-invoked should-not-have-invoked]]
             [tic-tac-toe.computer.medium]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.core-spec :as test-computer]

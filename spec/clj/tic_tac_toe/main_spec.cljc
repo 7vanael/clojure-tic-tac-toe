@@ -1,5 +1,5 @@
 (ns tic-tac-toe.main-spec
-  (:require [speclj.core :refer :all]
+  (:require [speclj.core :refer [describe it with-stubs should= stub should-have-invoked]]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.main :as sut]))
 

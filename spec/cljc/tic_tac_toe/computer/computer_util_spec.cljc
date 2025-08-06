@@ -1,5 +1,5 @@
 (ns tic-tac-toe.computer.computer-util-spec
-  (:require [speclj.core :refer :all]
+  (:require [speclj.core  #?(:clj :refer :cljs :refer-macros) [describe it should=]]
             [tic-tac-toe.computer.computer-utilc :as sut]))
 
 (def board-o-could-win

@@ -1,11 +1,6 @@
 (ns tic-tac-toe.core
   (:require [tic-tac-toe.board :as board]))
 
-
-(defn ->inspect [x]
-  (prn "x:" x)
-  x)
-
 (defn initial-state [state]
   (merge
     {:interface           :tui
@@ -71,9 +66,8 @@
 
 (defn take-turn [state]
   (if (currently-human? state)
-    (take-human-turn state) ;should this be maybe-take-turn?
+    (take-human-turn state)
     (take-computer-turn state)))
-
 
 (defn change-player [{:keys [active-player-index] :as state}]
   (if (or (not (player-played? state))

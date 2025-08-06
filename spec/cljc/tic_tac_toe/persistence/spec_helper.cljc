@@ -1,5 +1,5 @@
 (ns tic-tac-toe.persistence.spec-helper
-  (:require [speclj.core :refer :all]
+  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [describe it should=]]
             [tic-tac-toe.core :as core]))
 
 (def mock-db (atom nil))

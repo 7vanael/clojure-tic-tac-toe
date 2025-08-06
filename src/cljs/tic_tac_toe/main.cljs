@@ -7,6 +7,8 @@
             [tic-tac-toe.computer.easy]
             [tic-tac-toe.computer.medium]))
 
+;;TODO draw/play namespace?
+
 (def state (r/atom (core/initial-state {:interface :static :save :ratom :status :welcome})))
 (def status-cursor (r/cursor state [:status]))
 
@@ -22,6 +24,7 @@
   (core/do-take-human-turn state))
 
 (defn maybe-take-computer-turn []
+  ;;TODO clean this function?  are both whens doing the same thing? : 
   (when (and (= :in-progress @status-cursor)
              (not (core/currently-human? @state)))
     (reset! state (core/play-turn! @state))
@@ -170,6 +173,7 @@
    [:button.action-button {:on-click #(reset! status-cursor :config-x-type)} "Start Game"]])
 
 (defn game-component []
+  ;;TODO core/draw-state? : 
   [:div.tic-tac-toe-app
    (cond (= @status-cursor :welcome) (draw-welcome)
          (= @status-cursor :config-x-type) (draw-config-x-type)
@@ -183,13 +187,3 @@
 
 (defn ^:export init []
   (dom/render [game-component] (wjs/element-by-id "app")))
-
-
-
-
-;
-;(def time-cursor (r/cursor state [:time]))
-;
-;(defn small-component []
-;  (let [time @time-cursor]
-;    [:h3 "time:" time]))

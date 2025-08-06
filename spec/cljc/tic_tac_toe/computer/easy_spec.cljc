@@ -1,5 +1,5 @@
 (ns tic-tac-toe.computer.easy-spec
-  (:require [speclj.core :refer :all]
+  (:require [speclj.core  #?(:clj :refer :cljs :refer-macros) [describe it should-not with-stubs should-have-invoked stub]]
             [tic-tac-toe.computer.easy :as easy]
             [tic-tac-toe.core :as core]
             [tic-tac-toe.board_spec :as test-board]))

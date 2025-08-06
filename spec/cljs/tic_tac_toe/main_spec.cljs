@@ -14,10 +14,10 @@
   (with-stubs)
   (wire/with-root-dom)
 
-  (before (wire/render [sut/game-component] (wire/select "#root")))
+  (before (wire/render [sut/game-component]))
 
   (context "welcome state"
-    (before (reset! sut/state {:interface :static :status :welcome :save :ratom}))
+
     (it "renders welcome"
       (should-select ".tic-tac-toe-app")
       (should-select ".welcome")
@@ -31,11 +31,11 @@
     )
 
   (context "config-x-type"
-    (before (do
+    (before
               (reset! sut/state {:interface :static :status :config-x-type :save :ratom
                                  :players   [{:character "X" :play-type nil :difficulty nil}
                                              {:character "O" :play-type nil :difficulty nil}]})
-              (wire/render [sut/game-component])))
+              (wire/render [sut/game-component]))
     (it "renders config-x"
       (should-select ".config-x-type")
       (should-select "div.config-x-type button.action-button")
@@ -56,11 +56,11 @@
     )
 
   (context "config-o-type"
-    (before (do
+    (before
               (reset! sut/state {:interface :static :status :config-o-type :save :ratom
                                  :players   [{:character "X" :play-type :human :difficulty nil}
                                              {:character "O" :play-type nil :difficulty nil}]})
-              (wire/render [sut/game-component])))
+              (wire/flush))
     (it "renders config-o-type"
       (should-select ".config-o-type")
       (should-select "div.config-o-type button.action-button")
@@ -81,11 +81,10 @@
     )
 
   (context "config-x-difficulty"
-    (before (do
-              (reset! sut/state {:interface :static :status :config-x-difficulty :save :ratom
+    (before (reset! sut/state {:interface :static :status :config-x-difficulty :save :ratom
                                  :players   [{:character "X" :play-type :computer :difficulty nil}
                                              {:character "O" :play-type nil :difficulty nil}]})
-              (wire/render [sut/game-component])))
+              (wire/render [sut/game-component]))
     (it "renders config-x-difficulty"
       (should-select ".config-x-difficulty")
       (should-select "div.config-x-difficulty button.action-button")
@@ -113,11 +112,10 @@
     )
 
   (context "config-o-difficulty"
-    (before (do
-              (reset! sut/state {:interface :static :status :config-o-difficulty :save :ratom
+    (before (reset! sut/state {:interface :static :status :config-o-difficulty :save :ratom
                                  :players   [{:character "X" :play-type :human :difficulty nil}
                                              {:character "O" :play-type :computer :difficulty nil}]})
-              (wire/render [sut/game-component])))
+              (wire/render [sut/game-component]))
     (it "renders config-o-difficulty"
       (should-select ".config-o-difficulty")
       (should-select "div.config-o-difficulty button.action-button")
@@ -145,11 +143,10 @@
     )
 
   (context "select-board"
-    (before (do
-              (reset! sut/state {:interface :static :status :select-board :save :ratom :active-player-index 0
+    (before (reset! sut/state {:interface :static :status :select-board :save :ratom :active-player-index 0
                                  :players   [{:character "X" :play-type :human :difficulty nil}
                                              {:character "O" :play-type :human :difficulty nil}]})
-              (wire/render [sut/game-component])))
+              (wire/render [sut/game-component]))
     (it "renders select-board"
       (should-select ".select-board")
       (should-select "div.select-board button.action-button")
@@ -170,11 +167,10 @@
     )
 
   (context "select-board when computer goes first:"
-    (before (do
-              (reset! sut/state {:interface :static :status :select-board :save :ratom :active-player-index 0
+    (before (reset! sut/state {:interface :static :status :select-board :save :ratom :active-player-index 0
                                  :players   [{:character "X" :play-type :computer :difficulty :hard}
                                              {:character "O" :play-type :human :difficulty nil}]})
-              (wire/render [sut/game-component])))
+              (wire/render [sut/game-component]))
 
     (it "starts the computer turn if computer is first"
       (with-redefs [js/setTimeout (stub :timeout)]
@@ -184,11 +180,11 @@
     )
 
   (context "in-progress- initial-state"
-    (before (do (reset! sut/state {:interface           :static :status :in-progress :save :ratom
+    (before (reset! sut/state {:interface           :static :status :in-progress :save :ratom
                                    :active-player-index 0 :board [[1 2 3] [4 5 6] [7 8 9]]
                                    :players             [{:character "X" :play-type :human :difficulty nil}
                                                          {:character "O" :play-type :human :difficulty nil}]})
-                (wire/render [sut/game-component])))
+                (wire/render [sut/game-component]))
 
     (it "renders in-progress"
       (should-select ".in-progress")
@@ -257,11 +253,11 @@
     )
 
   (context "in-progress to tie"
-    (before (do (reset! sut/state {:interface           :static :status :in-progress :save :ratom
+    (before (reset! sut/state {:interface           :static :status :in-progress :save :ratom
                                    :active-player-index 0 :board [["X" "X" "O"] ["O" "O" "X"] ["X" 8 "O"]]
                                    :players             [{:character "X" :play-type :human :difficulty nil}
                                                          {:character "O" :play-type :computer :difficulty :hard}]})
-                (wire/render [sut/game-component])))
+                (wire/render [sut/game-component]))
 
     (it "ends the game in a tie"
       (wire/click! "#cell-8")
@@ -273,11 +269,11 @@
     )
 
   (context "in-progress to winner"
-    (before (do (reset! sut/state {:interface           :static :status :in-progress :save :ratom
+    (before (reset! sut/state {:interface           :static :status :in-progress :save :ratom
                                    :active-player-index 0 :board [["X" "X" 3] ["O" "O" 6] [7 8 9]]
                                    :players             [{:character "X" :play-type :human :difficulty nil}
                                                          {:character "O" :play-type :computer :difficulty :hard}]})
-                (wire/render [sut/game-component])))
+                (wire/render [sut/game-component]))
 
     (it "ends the game in a tie"
       (wire/click! "#cell-3")
@@ -289,11 +285,11 @@
     )
 
   (context "winner"
-    (before (do (reset! sut/state {:interface           :static :status :winner :save :ratom
+    (before (reset! sut/state {:interface           :static :status :winner :save :ratom
                                    :active-player-index 0 :board [["X" "X" "X"] ["O" "O" 6] [7 8 9]]
                                    :players             [{:character "X" :play-type :human :difficulty nil}
                                                          {:character "O" :play-type :computer :difficulty :hard}]})
-                (wire/render [sut/game-component])))
+                (wire/render [sut/game-component]))
 
     (it "displays game-over state with disabled buttons"
       (should-select ".game-over")
@@ -316,15 +312,14 @@
       (should-be-nil (get-in @sut/state [:players 1 :play-type]))
       (should-be-nil (:board @sut/state))
       )
-
     )
 
   (context "tie"
-    (before (do (reset! sut/state {:interface           :static :status :tie :save :ratom
+    (before (reset! sut/state {:interface           :static :status :tie :save :ratom
                                    :active-player-index 0 :board [["X" "X" "O"] ["O" "O" "X"] ["X" "X" "O"]]
                                    :players             [{:character "X" :play-type :human :difficulty nil}
                                                          {:character "O" :play-type :computer :difficulty :hard}]})
-                (wire/render [sut/game-component])))
+                (wire/render [sut/game-component]))
 
     (it "displays game-over state"
       (should-select ".game-over")
