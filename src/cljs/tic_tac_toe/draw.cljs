@@ -1,24 +1,24 @@
 (ns tic-tac-toe.draw
   (:require [tic-tac-toe.core :as core]
-            [tic-tac-toe.main :as m]))
+            [tic-tac-toe.wrappers :as w]))
 
 
 (defn render-cell [cell cell-index is-active? row-index]
-  (let [cell-number (+ (* (count (:board @m/state)) (dec row-index)) cell-index)
+  (let [cell-number (+ (* (count (:board @w/state)) (dec row-index)) cell-index)
         key         (str "cell-" cell-number)
         class       (if (or (= cell "X") (= cell "O")) "occupied" "empty")]
     [:td {:class class :key key}
      [:button.move-button {:id       key
                            :disabled (not is-active?)
-                           :on-click #(m/make-move cell)}
+                           :on-click #(w/make-move cell)}
       cell]]))
 
 (defn render-row [row row-index is-active?]
   [:tr {:key row-index} (doall (map-indexed #(render-cell %2 (inc %1) is-active? row-index) row))])
 
 (defn render-board-table []
-  (let [is-active? (and (= :in-progress @m/status-cursor) (core/currently-human? @m/state))
-        board      (:board @m/state)]
+  (let [is-active? (and (= :in-progress @w/status-cursor) (core/currently-human? @w/state))
+        board      (:board @w/state)]
     [:table [:tbody (doall (map-indexed #(render-row %2 (inc %1) is-active?) board))]]))
 
 (defn render-game-announcement [{:keys [status active-player-index players]}]
@@ -30,9 +30,9 @@
 
 (defn draw-end []
   [:div.game-over
-   (render-game-announcement @m/state)
+   (render-game-announcement @w/state)
    (render-board-table)
-   [:button.action-button {:id "new-game" :class "new-game" :on-click #(m/play-again)}
+   [:button.action-button {:id "new-game" :class "new-game" :on-click #(w/play-again)}
     "Play Again?"]])
 
 (defmethod core/draw-state [:static :winner] [_] (draw-end))
@@ -41,7 +41,7 @@
 
 (defmethod core/draw-state [:static :in-progress] [_]
   [:div.in-progress
-   (render-game-announcement @m/state)
+   (render-game-announcement @w/state)
    (render-board-table)])
 
 (defmethod core/draw-state [:static :select-board] [_]
@@ -51,12 +51,12 @@
     [:button.action-button
      {:id       "board-3x3"
       :class    ["board-3x3" :board-option]
-      :on-click #(m/configure-board-size 3)}
+      :on-click #(w/configure-board-size 3)}
      "3 x 3"]
     [:button.action-button
      {:id       "board-4x4"
       :class    ["board-4x4" :board-option ]
-      :on-click #(m/configure-board-size 4)}
+      :on-click #(w/configure-board-size 4)}
      "4 x 4"]]])
 
 (defmethod core/draw-state [:static :config-o-difficulty] [_]
@@ -69,7 +69,7 @@
                                             [:button.action-button
                                              {:id       (name option)
                                               :class    [option :o-difficulty]
-                                              :on-click #(m/configure-o-difficulty option)}
+                                              :on-click #(w/configure-o-difficulty option)}
                                              (name option)]))]])
 
 (defmethod core/draw-state [:static :config-x-difficulty] [_]
@@ -81,7 +81,7 @@
                                             [:button.action-button
                                              {:id       (name option)
                                               :class    [option :x-difficulty]
-                                              :on-click #(m/configure-x-difficulty option)}
+                                              :on-click #(w/configure-x-difficulty option)}
                                              (name option)]))]])
 
 (defmethod core/draw-state [:static :config-o-type] [_]
@@ -93,7 +93,7 @@
                                         [:button.action-button
                                          {:id       (name option)
                                           :class    [option :o-type]
-                                          :on-click #(m/configure-o-type option)}
+                                          :on-click #(w/configure-o-type option)}
                                          (name option)]))]])
 
 (defmethod core/draw-state [:static :config-x-type] [_]
@@ -105,11 +105,11 @@
                                         [:button.action-button
                                          {:id       (name option)
                                           :class    [option :x-type]
-                                          :on-click #(m/configure-x-type option)}
+                                          :on-click #(w/configure-x-type option)}
                                          (name option)]))]])
 
 
 (defmethod core/draw-state [:static :welcome] [_]
   [:div.welcome
    [:h1 {:id "welcome"} "Welcome to Tic-Tac-Toe!"]
-   [:button.action-button {:on-click #(reset! m/status-cursor :config-x-type)} "Start Game"]])
+   [:button.action-button {:on-click #(reset! w/status-cursor :config-x-type)} "Start Game"]])
