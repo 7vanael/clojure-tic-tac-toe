@@ -26,6 +26,16 @@ Run the game with default settings (TUI interface, SQL save):
 lein run
 `
 
+### Specs
+`lein spec -a`
+will auto run tests for Clojure tests
+
+`lein cljs`
+will auto run tests for ClojureScript 
+
+Common code is tested in both batches.
+
+
 ### Command Line Options
 
 | Description | Valid Values         | Default |
@@ -64,7 +74,7 @@ the last flag entered will be used.
 - `edn`: Save game data to a local file
 
 ### Web Server option
-To compile Javascript and run tests, run: 
+To compile ClojureScript and run tests, run: 
 
 `lein cljs`
 
@@ -73,4 +83,6 @@ Then, to view on localhost:8080 with command:
 after navigating to resources/public
 
 (then visit localhost:8080 in your browser)
-At this time, only test page is available. 
+
+Save options are not available in the static web page version, but is 
+in both Quil --gui and CLI --tui

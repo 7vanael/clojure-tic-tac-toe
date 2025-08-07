@@ -20,7 +20,5 @@
                                    :optimizations :simple
                                    :main tic-tac-toe.main}}]}
   :test-paths ["spec/clj" "spec/cljc" "spec/cljs"]
-  :aliases {"cljs" ["with-profile" "dev" "run" "-m" "c3kit.scaffold.cljs"]
-            ;"spec" ["-m" "speclj.main" "-c"] ;How can I not have this as plugin? need correct alias
-            }
+  :aliases {"cljs" ["with-profile" "dev" "run" "-m" "c3kit.scaffold.cljs"]}
   :aot [tic-tac-toe.main])
