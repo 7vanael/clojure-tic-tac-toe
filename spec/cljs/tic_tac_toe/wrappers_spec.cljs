@@ -144,56 +144,52 @@
 
 
   (context "computer turn"
-           (it "when playing computer vs human, computer goes once"
-             (with-redefs [js/setTimeout (stub :timeout)]
-                          (reset! sut/state {:interface           :static :status :in-progress :save :ratom
-                                             :active-player-index 1 :board [[1 2 3] [4 5 6] ["X" 8 9]]
-                                             :players             [{:character "X" :play-type :human :difficulty nil}
-                                                                   {:character "O" :play-type :computer :difficulty :easy}]})
-                          (sut/maybe-take-computer-turn)
-                          (should= 0 (:active-player-index @sut/state))
-                          ;(prn "@sut/state:" @sut/state)
-                          ;(prn "(core/currently-human? @sut/state):" (core/currently-human? @sut/state))
-                          (should-not-have-invoked :timeout)))
+    (it "when playing computer vs human, computer goes once"
+      (with-redefs [js/setTimeout (stub :timeout)]
+                   (reset! sut/state {:interface           :static :status :in-progress :save :ratom
+                                      :active-player-index 1 :board [[1 2 3] [4 5 6] ["X" 8 9]]
+                                      :players             [{:character "X" :play-type :human :difficulty nil}
+                                                            {:character "O" :play-type :computer :difficulty :easy}]})
+                   (sut/maybe-take-computer-turn)
+                   (should= 0 (:active-player-index @sut/state))))
 
-           (it "when playing computer vs computer, computer calls computer's turn again"
-             (with-redefs [js/setTimeout (stub :timeout)]
-                          (reset! sut/state {:interface           :static :status :in-progress :save :ratom
-                                             :active-player-index 1 :board [[1 2 3] [4 5 6] ["X" 8 9]]
-                                             :players             [{:character "X" :play-type :computer :difficulty :hard}
-                                                                   {:character "O" :play-type :computer :difficulty :easy}]})
-                          (sut/maybe-take-computer-turn)
-                          (should-have-invoked :timeout)
-                          (should= 0 (:active-player-index @sut/state))))
-           )
+    (it "when playing computer vs computer, computer can go multiple times"
+      (with-redefs [js/setTimeout (fn [f _] (f))]
+                   (reset! sut/state {:interface           :static :status :in-progress :save :ratom
+                         :active-player-index 1 :board [["X" 2 3] [4 "O" "X"] ["X" 8 "O"]]
+                         :players             [{:character "X" :play-type :computer :difficulty :hard}
+                                               {:character "O" :play-type :computer :difficulty :hard}]})
+      (sut/maybe-take-computer-turn)
+      (should= 0 (:active-player-index @sut/state))
+      (should= 0 (count (filter number? (flatten (:board @sut/state))))))))
 
   (context "human move"
-           (it "human move triggers computer move if playing human v computer"
-             (with-redefs [sut/maybe-take-computer-turn (stub :computer-turn)]
-                          (reset! sut/state {:status              :in-progress
-                                :interface           :static
-                                :save                :ratom
-                                :board               [[1 2 3] [4 5 6] [7 8 9]]
-                                :active-player-index 0
-                                :players             [{:character "X" :play-type :human :difficulty nil}
-                                                      {:character "O" :play-type :computer :difficulty :easy}]})
-             (reset! sut/status-cursor :in-progress)
-             (wire/flush)
-             (sut/make-move 5)
-             (should= "X" (get-in @sut/state [:board 1 1]))
-             (should-have-invoked :computer-turn)))
+    (it "human move triggers computer move if playing human v computer"
+      (with-redefs [sut/maybe-take-computer-turn (stub :computer-turn)]
+                   (reset! sut/state {:status              :in-progress
+                                      :interface           :static
+                                      :save                :ratom
+                                      :board               [[1 2 3] [4 5 6] [7 8 9]]
+                                      :active-player-index 0
+                                      :players             [{:character "X" :play-type :human :difficulty nil}
+                                                            {:character "O" :play-type :computer :difficulty :easy}]})
+                   (reset! sut/status-cursor :in-progress)
+                   (wire/flush)
+                   (sut/make-move 5)
+                   (should= "X" (get-in @sut/state [:board 1 1]))
+                   (should-have-invoked :computer-turn)))
 
-           (it "human move only results in one turn being taken if playing human v human"
-             (reset! sut/state {:status              :in-progress
-                                :interface           :static
-                                :save                :ratom
-                                :board               [[1 2 3] [4 5 6] [7 8 9]]
-                                :active-player-index 0
-                                :players             [{:character "X" :play-type :human :difficulty nil}
-                                                      {:character "O" :play-type :human :difficulty nil}]})
-             (reset! sut/status-cursor :in-progress)
-             (sut/make-move 5)
-             (should= "X" (get-in @sut/state [:board 1 1]))
-             (should= 1 (:active-player-index @sut/state)))
-           )
+    (it "human move only results in one turn being taken if playing human v human"
+      (reset! sut/state {:status              :in-progress
+                         :interface           :static
+                         :save                :ratom
+                         :board               [[1 2 3] [4 5 6] [7 8 9]]
+                         :active-player-index 0
+                         :players             [{:character "X" :play-type :human :difficulty nil}
+                                               {:character "O" :play-type :human :difficulty nil}]})
+      (reset! sut/status-cursor :in-progress)
+      (sut/make-move 5)
+      (should= "X" (get-in @sut/state [:board 1 1]))
+      (should= 1 (:active-player-index @sut/state)))
+    )
   )

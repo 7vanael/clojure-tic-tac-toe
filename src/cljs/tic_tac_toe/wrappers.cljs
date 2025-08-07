@@ -14,25 +14,21 @@
 (defmethod core/take-human-turn :static [state]
   (core/do-take-human-turn state))
 
-(defn computer-turn? []
-  (and (= :in-progress (:status @state))
-       (not (core/currently-human? @state))))
+(defn computer-turn? [state]
+  (and (= :in-progress (:status state))
+       (not (core/currently-human? state))))
 
 (defn maybe-take-computer-turn []
   ;;TODO clean this function?  are both whens doing the same thing? :
   ;; It tries to call maybe-take-computer-turn if the second when clause is
   ;; replaced with the computer-turn? method.
-  (when computer-turn?
+  (when (computer-turn? @state)
     (reset! state (core/play-turn! @state))
-    (when (and (= :in-progress (:status @state))
-               (not (core/currently-human? @state)))
-      (js/setTimeout maybe-take-computer-turn 200))))
+    (js/setTimeout maybe-take-computer-turn 20)))
 
 (defn configure-board-size [option]
-  (let [current-state (assoc @state :response option)
-        new-state     (core/select-board current-state)]
-    (reset! state new-state)
-    (reset! status-cursor :in-progress)
+  (let [current-state (assoc @state :response option)]
+    (swap! state #(core/select-board current-state))
     (js/setTimeout maybe-take-computer-turn 10)))
 
 (defn configure-o-difficulty [option]
